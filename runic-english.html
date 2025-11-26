@@ -3,7 +3,7 @@
 	<style>
 		main {
 			display: grid;
-			grid-template-columns: repeat(16, 1fr);
+			grid-template-columns: repeat(24, 1fr);
 			gap: 1rem;
 		}
 		svg {
@@ -77,6 +77,8 @@
 			// symbols
 			'-': ['0,2 2,2'],
 			':': ['1,0 1,1', '1,3 1,4'],
+			'.': ['1,3 1,4'],
+			' ': [],
 		}
 
 		const coords2svg = (lines) => {
@@ -93,21 +95,27 @@
 		</svg>`
 		}
 
+		const RUNES = Object.fromEntries(
+			Object.entries(PATHS).map(([char, lines]) => {
+				const svgLines = lines.map((path) =>
+					path
+						.split(' ')
+						.map((coord) =>
+							coord.split(',').map((txt) => parseFloat(txt))
+						)
+				)
+				return [char, coords2svg(svgLines)]
+			})
+		)
+
 		onload = () => {
 			// preview of glyphs
-			document.querySelector('main').innerHTML = Object.entries(PATHS)
-				.map(([char, lines]) =>
-					lines.map((path) =>
-						path
-							.split(' ')
-							.map((coord) =>
-								coord.split(',').map((txt) => parseFloat(txt))
-							)
-					)
-				)
-				.reduce((html, lines) => {
-					return html + coords2svg(lines)
-				}, '')
+			document.querySelector('main').innerHTML =
+				Object.values(RUNES).join('\n') +
+				'                Embers of the Nephilim: GHOST GIRL              AND THE                 GHOST GIANT             Andrew R. H. Quinn'
+					.split('')
+					.map((char) => RUNES[char])
+					.join('\n')
 		}
 	</script>
 </body>
