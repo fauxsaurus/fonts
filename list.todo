@@ -1,0 +1,17 @@
+[ ] fix lowercase f
+[ ] fix lowercase i
+[ ] fix lowercase j
+[ ] create a way to create non-contiguous lines to dot is and js
+[ ] rebalance the font widths to make the upper case B more inline with its historical dimensions (i.e., the widths of the points of the b are too long)
+
+[ ] either make this a monospaced font (by altering i & j or add code to dynamically determine the width the characters)
+[ ] up the dimensions to a min of 1000 px
+[ ] add appropriate margins around glyphs based on stroke-width
+
+[ ] DX
+	[ ] Replace character arrays with tab separated values to denote each line?
+
+[ ] fonts
+	[ ] English in the style of Ancient Norse Runes (Elder Futhark)
+		[ ] A metal cast font title-casing variant
+	[ ] Ancient Norse Runes (Elder Futhark) for Transliteration
