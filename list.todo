@@ -1,6 +1,4 @@
-[ ] fix lowercase f
-[ ] fix lowercase i
-[ ] fix lowercase j
+[ ] fix : BCDEFKSZbcdefgjkpqrsz
 [ ] create a way to create non-contiguous lines to dot is and js
 [ ] rebalance the font widths to make the upper case B more inline with its historical dimensions (i.e., the widths of the points of the b are too long)
 
@@ -15,3 +13,7 @@
 	[ ] English in the style of Ancient Norse Runes (Elder Futhark)
 		[ ] A metal cast font title-casing variant
 	[ ] Ancient Norse Runes (Elder Futhark) for Transliteration
+[ ] Deployment
+	[ ] Select a free for commercial use font license
+	[ ] Create automatic deployments to bundle and offer the font file downloads on GitHub pages
+	[ ] Upload files to Google Fonts (with proper biz account)
