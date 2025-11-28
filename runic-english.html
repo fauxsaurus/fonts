@@ -1,4 +1,4 @@
-<!DOCTYPE html> <head></head>
+<!doctype html> <head></head>
 <body>
 	<style>
 		main {
@@ -7,6 +7,7 @@
 			gap: 1rem;
 		}
 		svg {
+			background: #eeee;
 			height: auto;
 			width: 100px;
 		}
@@ -85,11 +86,11 @@
 			const svgLines = lines.map((coords) =>
 				coords
 					.map((coord) => coord.map((int) => int * BASE).join(','))
-					.join(' ')
+					.join(' '),
 			)
 
 			return `<svg viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}">
-			<g style="fill:none; stroke: #000; stroke-width: 10;">
+			<g style="fill:none; stroke: #000; stroke-width: 40;">
 				${svgLines.map((svgCoords) => `<path d="M${svgCoords}" />`)}
 			</g>
 		</svg>`
@@ -101,11 +102,11 @@
 					path
 						.split(' ')
 						.map((coord) =>
-							coord.split(',').map((txt) => parseFloat(txt))
-						)
+							coord.split(',').map((txt) => parseFloat(txt)),
+						),
 				)
 				return [char, coords2svg(svgLines)]
-			})
+			}),
 		)
 
 		onload = () => {
