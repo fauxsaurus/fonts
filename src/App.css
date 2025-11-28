@@ -4,10 +4,14 @@ main {
 	gap: 1rem;
 }
 div {
+	--spacing: 0.5rem;
+
 	background: #eeee;
+	padding-left: var(--spacing);
+
 	svg {
 		height: 100px;
-		margin-right: 0.5rem;
+		margin-right: var(--spacing);
 		width: auto;
 	}
 }
