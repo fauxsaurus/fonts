@@ -3,8 +3,11 @@ main {
 	grid-template-columns: repeat(24, 1fr);
 	gap: 1rem;
 }
-svg {
+div {
 	background: #eeee;
-	height: auto;
-	width: 100px;
+	svg {
+		height: 100px;
+		margin-right: 0.5rem;
+		width: auto;
+	}
 }

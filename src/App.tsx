@@ -64,9 +64,9 @@ const PATHS = {
 }
 
 const BASE = 100
+const STROKE_WIDTH = 40
 
-const HEIGHT = BASE * 6
-const WIDTH = BASE * 2
+const HEIGHT = BASE * 6 + STROKE_WIDTH
 
 const GlyphPreview = ({children}: {children: string}) => {
 	const charsCoords = children.split('').map((char) => {
@@ -81,25 +81,43 @@ const GlyphPreview = ({children}: {children: string}) => {
 
 	return (
 		<div>
-			{charsCoords.map((charCoords, i) => (
-				<svg
-					key={i}
-					viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-					xmlns="http://www.w3.org/2000/svg"
-					width={WIDTH}
-					height={HEIGHT}
-				>
-					<g style={{fill: 'none', stroke: '#000', strokeWidth: 40}}>
-						{charCoords.map((lineCoords, i) => {
-							const svgCoords = lineCoords.map(
-								({x, y}) => `${x},${y}`
-							)
+			{charsCoords.map((charCoords, i) => {
+				const allXs = charCoords.flat().map(({x}) => x).sort((a,b) => a - b) // prettier-ignore
 
-							return <path d={`M${svgCoords}`} key={i} />
-						})}
-					</g>
-				</svg>
-			))}
+				const minX = allXs[0]
+				const maxX = allXs.slice(-1)[0]
+
+				const width = maxX - minX + STROKE_WIDTH
+
+				return (
+					<svg
+						key={i}
+						viewBox={`0 0 ${width} ${HEIGHT}`}
+						xmlns="http://www.w3.org/2000/svg"
+						width={width}
+						height={HEIGHT}
+					>
+						<g
+							style={{
+								fill: 'none',
+								stroke: '#000',
+								strokeWidth: STROKE_WIDTH,
+							}}
+						>
+							{charCoords.map((lineCoords, i) => {
+								const svgCoords = lineCoords.map(
+									({x, y}) =>
+										`${x + STROKE_WIDTH / 2},${
+											y + STROKE_WIDTH / 2
+										}`
+								)
+
+								return <path d={`M${svgCoords}`} key={i} />
+							})}
+						</g>
+					</svg>
+				)
+			})}
 		</div>
 	)
 }
