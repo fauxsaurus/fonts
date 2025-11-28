@@ -66,7 +66,7 @@ const PATHS = {
 const BASE = 100
 
 const HEIGHT = BASE * 6
-const WIDTH = BASE * 3
+const WIDTH = BASE * 2
 
 const GlyphPreview = ({children}: {children: string}) => {
 	const charsCoords = children.split('').map((char) => {
