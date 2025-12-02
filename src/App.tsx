@@ -130,9 +130,9 @@ function App() {
 			<h1>Runic English</h1>
 			<GlyphPreview>{Object.keys(PATHS).join('')}</GlyphPreview>
 			<GlyphPreview>Embers of the Nephilim:</GlyphPreview>
-			<GlyphPreview>GHOST GIRL</GlyphPreview>
+			<GlyphPreview>Ghost Girl</GlyphPreview>
 			<GlyphPreview>and the</GlyphPreview>
-			<GlyphPreview>GHOST Giant</GlyphPreview>
+			<GlyphPreview>Ghost Giant</GlyphPreview>
 			<GlyphPreview>Andrew R. H. Quinn</GlyphPreview>
 		</>
 	)
