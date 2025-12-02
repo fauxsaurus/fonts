@@ -1,9 +1,11 @@
+import {line2triangularTipCoords} from './triangle'
 import './App.css'
 
 const PATHS = {
 	// uppercase
 	A: ['0,0 0,4', '2,1 2,4', '0,0 2,1', '0,1 2,2'],
 	B: ['0,0 0,4 2,3 0,2 2,1 0,0'],
+	// $: ['0,0 0,4', '0,1.5, 1.25,2.75 0,4', '0,0 1.25,1.25 0,2.5'],
 	C: ['2,0 0,2 2,4'],
 	D: ['0,0 0,4 2,2 0,0'],
 	E: ['2,0 0,2 2,2 0,2 2,4'],
@@ -123,9 +125,130 @@ const GlyphPreview = ({children}: {children: string}) => {
 	)
 }
 
+const GlyphPreviewMetal = ({children}: {children: string}) => {
+	const base = 250
+	const strokeWidth = 100
+	const height = base * 6 + strokeWidth
+
+	const charsCoords = children.split('').map((char) => {
+		const rawStringLines = PATHS[char as keyof typeof PATHS]
+		return rawStringLines.map((line) =>
+			line.split(' ').map((pair) => {
+				const [x, y] = pair.split(',').map((txt) => parseFloat(txt))
+				return {x: x * base, y: y * base}
+			})
+		)
+	})
+
+	return (
+		<div>
+			{charsCoords.map((charCoords, i) => {
+				const allXs = charCoords.flat().map(({x}) => x).sort((a,b) => a - b) // prettier-ignore
+
+				const minX = allXs[0]
+				const maxX = allXs.slice(-1)[0]
+
+				const width = maxX - minX + strokeWidth
+
+				return (
+					<svg
+						key={i}
+						viewBox={`0 0 ${width} ${height}`}
+						xmlns="http://www.w3.org/2000/svg"
+						width={width}
+						height={height}
+					>
+						<g
+							style={{
+								fill: 'none',
+								stroke: '#000',
+								strokeWidth: strokeWidth,
+							}}
+						>
+							{charCoords.map((lineCoords, i) => {
+								const svgCoords = lineCoords.map(
+									({x, y}) =>
+										`${x + strokeWidth / 2},${
+											y + strokeWidth / 2
+										}`
+								)
+
+								const [start0, start1] = lineCoords
+									.slice(0, 2)
+									.map(({x, y}) => ({
+										x: x + strokeWidth / 2,
+										y: y + strokeWidth / 2,
+									}))
+
+								const [end1, end0] = lineCoords
+									.slice(-2)
+									.map(({x, y}) => ({
+										x: x + strokeWidth / 2,
+										y: y + strokeWidth / 2,
+									}))
+
+								return (
+									<>
+										<path key={i} d={`M${svgCoords}`} />
+										<path
+											key={`${i}-start-cap`}
+											stroke="none"
+											fill="red"
+											d={
+												'M' +
+												line2triangularTipCoords(
+													start0,
+													start1,
+													strokeWidth / 2
+												)
+													.map(
+														(pt) =>
+															`${pt.x},${pt.y}`
+													)
+													.join(' ') +
+												'z'
+											}
+										/>
+										<path
+											key={`${i}-end-cap`}
+											stroke="none"
+											fill="lime"
+											d={
+												'M' +
+												line2triangularTipCoords(
+													end0,
+													end1,
+													strokeWidth / 2
+												)
+													.map(
+														(pt) =>
+															`${pt.x},${pt.y}`
+													)
+													.join(' ') +
+												'z'
+											}
+										/>
+									</>
+								)
+							})}
+						</g>
+					</svg>
+				)
+			})}
+		</div>
+	)
+}
+
 function App() {
 	return (
 		<>
+			<h1>Runic English (Metal)</h1>
+			<GlyphPreviewMetal>{Object.keys(PATHS).join('')}</GlyphPreviewMetal>
+			<GlyphPreviewMetal>Embers of the Nephilim:</GlyphPreviewMetal>
+			<GlyphPreviewMetal>Ghost Girl</GlyphPreviewMetal>
+			<GlyphPreviewMetal>and the</GlyphPreviewMetal>
+			<GlyphPreviewMetal>Ghost Giant</GlyphPreviewMetal>
+			<GlyphPreviewMetal>Andrew R. H. Quinn</GlyphPreviewMetal>
 			<h1>Runic English</h1>
 			<GlyphPreview>{Object.keys(PATHS).join('')}</GlyphPreview>
 			<GlyphPreview>Embers of the Nephilim:</GlyphPreview>
