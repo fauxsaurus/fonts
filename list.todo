@@ -1,18 +1,25 @@
 [ ] fix: BDEFKsz
-	[ ] start with c (as that echoes out to nearly every other character)
 	[ ] close gaps on ABDGIOPQRmno
 	[ ] make H the same height as the rest
-	[ ] bring the colon parts closer to the center (do not touch the top or the lower baseline)
+	[ ] divide X & x into 4 equal segments for better alternating shading
 [ ] rebalance the font widths to make the upper case B more inline with its historical dimensions (i.e., the widths of the points of the b are too long)
+[ ] ensure that stroke widths don't narrow at corners... (need to redo adj pts calculations if so)
 
 [ ] up the dimensions to a min of 1000 px
 
 [ ] DX
 	[ ] Replace character arrays with tab separated values to denote each line?
+	[ ] Have `pts2glyphSegmentPts()` return a simple diamond if an array of length 1 is passed in.
 
 [ ] fonts
 	[ ] English in the style of Ancient Norse Runes (Elder Futhark)
 		[ ] A metal cast font title-casing variant
+			[ ] calculate the corners of intersections points
+			[ ] get a list of all coords to redetermine boundaries and translate things to be bounded by 0,0 automatically
+			[ ] use fill to draw around the edges
+			[ ] add a small border around the edges
+			[ ] divide all the corners of the segment by a thin line (the same width as the border) bisecting all the angles
+			[ ] alternate lighting and shading fills on between those segments for a compass-like aesthetic
 	[ ] Ancient Norse Runes (Elder Futhark) for Transliteration
 [ ] Deployment
 	[ ] Select a free for commercial use font license
