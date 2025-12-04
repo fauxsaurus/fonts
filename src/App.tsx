@@ -64,7 +64,7 @@ const PATHS = {
 	z: ['0,1.5 1.25,2.75 0,2.75, 1.25,4'],
 	// symbols
 	'-': ['0,2 2,2'],
-	':': ['0,0 0,1', '0,3 0,4'],
+	':': ['0,0.25 0,1.25', '0,2.75 0,3.75'],
 	'.': ['0,3 0,4'],
 	_: ['0,4 2,4'],
 	' ': ['0,4 2,4'],
@@ -168,32 +168,30 @@ const GlyphPreviewMetal = ({children}: {children: string}) => {
 								stroke: '#000',
 								strokeWidth: strokeWidth,
 							}}
+							transform={`translate(${strokeWidth / 2},${
+								strokeWidth / 2
+							})`}
 						>
 							{charCoords.map((lineCoords, i) => {
-								const svgCoords = lineCoords.map(
-									({x, y}) =>
-										`${x + strokeWidth / 2},${
-											y + strokeWidth / 2
-										}`
+								const glyphPts = pts2glyphSegmentPts(
+									strokeWidth,
+									lineCoords.map(({x, y}) => [x, y] as IPt)
 								)
 
-								const [start0, start1] = lineCoords
-									.slice(0, 2)
-									.map(({x, y}) => ({
-										x: x + strokeWidth / 2,
-										y: y + strokeWidth / 2,
-									}))
+								const svgCoords = lineCoords.map(
+									({x, y}) => `${x},${y}`
+								)
 
-								const [end1, end0] = lineCoords
-									.slice(-2)
-									.map(({x, y}) => ({
-										x: x + strokeWidth / 2,
-										y: y + strokeWidth / 2,
-									}))
+								const [start0, start1] = lineCoords.slice(0, 2)
+								const [end1, end0] = lineCoords.slice(-2)
 
 								return (
 									<>
-										<path key={i} d={`M${svgCoords}`} />
+										<path
+											key={i}
+											d={`M${svgCoords.join(' ')}`}
+											// stroke-linejoin="bevel"
+										/>
 										<path
 											key={`${i}-start-cap`}
 											stroke="none"
@@ -232,6 +230,60 @@ const GlyphPreviewMetal = ({children}: {children: string}) => {
 												'z'
 											}
 										/>
+										{glyphPts
+											.flatMap(
+												(
+													derivative,
+													i,
+													derivatives
+												) => {
+													const rtn = []
+													if (!i)
+														rtn.push(
+															derivative.prevPt
+														)
+													rtn.push(
+														derivative.centerPt,
+														...derivative.adjPts
+													)
+
+													if (
+														derivatives.length -
+															1 ===
+														i
+													)
+														rtn.push(
+															derivative.nextPt
+														)
+
+													return rtn
+												}
+											)
+											.map(([cx, cy], i) => {
+												return (
+													<circle
+														key={i}
+														{...{cx, cy}}
+														fill="#fc0"
+														stroke="none"
+														r={strokeWidth / 4}
+													/>
+												)
+											})}
+										{/* {svgCoords.map((coordPairStr, i) => {
+											const [cx, cy] =
+												coordPairStr.split(',')
+
+											return (
+												<circle
+													key={i}
+													{...{cx, cy}}
+													fill="#fc0"
+													stroke="none"
+													r={strokeWidth / 4}
+												/>
+											)
+										})} */}
 									</>
 								)
 							})}
