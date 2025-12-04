@@ -1,4 +1,8 @@
-import {line2triangularTipCoords} from './triangle'
+import {
+	line2triangularTipCoords,
+	pts2glyphSegmentPts,
+	type IPt,
+} from './geometry'
 import './App.css'
 
 const PATHS = {
