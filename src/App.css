@@ -1,6 +1,6 @@
 main {
 	display: grid;
-	grid-template-columns: repeat(24, 1fr);
+	grid-template-columns: repeat(12, 1fr);
 	gap: 1rem;
 }
 div {
@@ -10,7 +10,7 @@ div {
 	padding-left: var(--spacing);
 
 	svg {
-		height: 100px;
+		height: 200px;
 		margin-right: var(--spacing);
 		width: auto;
 	}
