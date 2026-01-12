@@ -86,15 +86,13 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 		])
 	}, [] as {centerPt: IPt; vectors: {h: number; v: number}; edges: [IPt, IPt]}[])
 
-	// todo: find the pts of intersection on the parallel slopes(need to pair up the proper pts, need to build upon prior intersection pts...), merge this in with the prior calculation (i.e., non-start/end pts just need the prior entry to determine their intersection pts from the prior edges--which are also intersection pts--and their own parallel edge pts [in other words, edge points don't need to persist past their own iteration's calculation.])
+	// todo: cache2 with the prior calculation (i.e., non-start/end pts just need the prior entry to determine their intersection pts from the prior edges--which are also intersection pts--and their own parallel edge pts [in other words, edge points don't need to persist past their own iteration's calculation.]), overlay the raw svg path coords to see if the newly calculated intersection pts line up with the distant black pts for G
 	const cache2 = cache.reduce((cache2, cacheEntry, i, cache) => {
 		// first and last pts need no modification
 		if (!i || i === cache.length - 1)
 			return cache2.concat([
 				{edges: cacheEntry.edges, intersection: cacheEntry.edges},
 			])
-
-		// @todo calculate a single potential intersection pt, draw single intersection pt, calculate all four potential intersection pts, determine pts are needed programmatically, somehow figure out which pts are needed and only do the 2/4 relevant calculations
 
 		const priorCacheEntry = cache[i - 1]
 
@@ -106,7 +104,17 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 
 		const i1 = getIntersectionPoint(x1, y1, h1, v1, x2, y2, h2, v2)
 
-		return cache2.concat([{edges: cacheEntry.edges, intersection: [i1]}])
+		const [x3, y3] = priorCacheEntry.edges[1]
+		const {h: h3, v: v3} = priorCacheEntry.vectors
+
+		const [x4, y4] = cacheEntry.edges[1]
+		const {h: h4, v: v4} = cacheEntry.vectors
+
+		const i2 = getIntersectionPoint(x3, y3, h3, v3, x4, y4, h4, v4)
+
+		return cache2.concat([
+			{edges: cacheEntry.edges, intersection: [i1, i2]},
+		])
 	}, [] as {edges: [IPt, IPt]; intersection: IPt[]}[])
 
 	return (
@@ -115,7 +123,7 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 				{JSON.stringify({strokes}, null, 4)}{' '}
 			</pre>
 			<svg
-				viewBox="-100 -100 1200 1200"
+				viewBox="-200 -200 1400 1400"
 				xmlns="http://www.w3.org/2000/svg"
 				width={1000}
 				height={1000}
@@ -167,7 +175,7 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 											cx={x}
 											cy={y}
 											r="10"
-											fill="lime"
+											fill={['lime', 'black'][i]}
 											key={`intersection-${i}`}
 										/>
 									)
