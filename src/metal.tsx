@@ -29,11 +29,29 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 	const {strokes, strokeWidth} = props
 	const offsetWidth = strokeWidth / 2
 
-	// todo: find the pts of intersection on the parallel slopes(need to pair up the proper pts), todo handle the last pt instead of returning cache immediately
+	// todo: find the pts of intersection on the parallel slopes(need to pair up the proper pts)
 
 	const cache = strokes.slice(0).reduce((cache, pt, i, pts) => {
-		// omit last part for simplicity (need to calculate a next pt-- or rather borrow the last calculated vector to extend the line)
-		if (i === pts.length - 1) return cache
+		// @todo do something if pts.length === 1
+		if (i === pts.length - 1) {
+			const {h, v} = cache[i - 1].vectors
+
+			const tmpPt1: IPt = [pt[0] + offsetWidth, pt[1]]
+
+			const angle = Math.atan2(v, h)
+
+			// +/-90 deg (aka 1/2 PI) for perpendicularity to current slope
+			const edge1 = rotatePt(pt, tmpPt1, angle - Math.PI / 2)
+			const edge2 = rotatePt(pt, tmpPt1, angle + Math.PI / 2)
+
+			return cache.concat([
+				{
+					centerPt: pt,
+					vectors: {h, v},
+					edges: [edge1, edge2] as [IPt, IPt],
+				},
+			])
+		}
 
 		const nextPt = pts[i + 1]
 
@@ -69,53 +87,50 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 				height={1000}
 				style={{background: '#eee', height: '30rem'}}
 			>
-				{
-					// omit last part for simplicity (need to calculate a next pt-- or rather borrow the last calculated vector to extend the line)
-					strokes.slice(0).map((pt, i, pts) => {
-						if (i === pts.length - 1) return ''
+				{strokes.slice(0).map((pt, i, pts) => {
+					const [magentaPt, bluePt] = cache[i].edges
+					const nextPt = pts[i + 1]
 
-						const [magentaPt, bluePt] = cache[i].edges
-						const nextPt = pts[i + 1]
-
-						return (
-							<>
-								<g
-									stroke="#fc0"
-									stroke-width={strokeWidth}
-									opacity={0.5}
-									key={`${i}-path`}
-								>
+					return (
+						<>
+							<g
+								stroke="#fc0"
+								stroke-width={strokeWidth}
+								opacity={0.5}
+								key={`${i}-path`}
+							>
+								{nextPt && (
 									<path
 										d={`M${pt.join(',')} ${nextPt.join(
 											','
 										)}`}
 									/>
-								</g>
-								<g key={`${i}-pts`} style={{opacity: 0.5}}>
-									<circle
-										cx={pt[0]}
-										cy={pt[1]}
-										r="20"
-										fill="red"
-									/>
+								)}
+							</g>
+							<g key={`${i}-pts`} style={{opacity: 0.5}}>
+								<circle
+									cx={pt[0]}
+									cy={pt[1]}
+									r="20"
+									fill="red"
+								/>
 
-									<circle
-										cx={magentaPt[0]}
-										cy={magentaPt[1]}
-										r="20"
-										fill="magenta"
-									/>
-									<circle
-										cx={bluePt[0]}
-										cy={bluePt[1]}
-										r="20"
-										fill="blue"
-									/>
-								</g>
-							</>
-						)
-					})
-				}
+								<circle
+									cx={magentaPt[0]}
+									cy={magentaPt[1]}
+									r="20"
+									fill="magenta"
+								/>
+								<circle
+									cx={bluePt[0]}
+									cy={bluePt[1]}
+									r="20"
+									fill="blue"
+								/>
+							</g>
+						</>
+					)
+				})}
 			</svg>
 			<br />
 		</>
