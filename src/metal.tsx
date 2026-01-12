@@ -9,16 +9,12 @@ type IProps = {
 
 const COLORS = 'red,lime,blue,magenta,yellow,cyan'.split(',')
 
-const rotatePtZRadiansAroundCenter = (
-	centerPt: IPt,
-	pt: IPt,
-	radians: number
-) => {
+const rotatePt = (centerPt: IPt, currentPt: IPt, radians: number) => {
 	const cx = centerPt[0]
 	const cy = centerPt[1]
 
-	const tmpX = pt[0]
-	const tmpY = pt[1]
+	const tmpX = currentPt[0]
+	const tmpY = currentPt[1]
 
 	const cos = Math.cos(radians)
 	const sin = Math.sin(radians)
@@ -33,7 +29,33 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 	const {strokes, strokeWidth} = props
 	const offsetWidth = strokeWidth / 2
 
-	// todo: draw that for the next line segment
+	// todo: find the pts of intersection on the parallel slopes(need to pair up the proper pts), todo handle the last pt instead of returning cache immediately
+
+	const cache = strokes.slice(0).reduce((cache, pt, i, pts) => {
+		// omit last part for simplicity (need to calculate a next pt-- or rather borrow the last calculated vector to extend the line)
+		if (i === pts.length - 1) return cache
+
+		const nextPt = pts[i + 1]
+
+		const h = nextPt[0] - pt[0]
+		const v = nextPt[1] - pt[1]
+
+		const tmpPt1: IPt = [pt[0] + offsetWidth, pt[1]]
+
+		const angle = Math.atan2(v, h)
+
+		// +/-90 deg (aka 1/2 PI) for perpendicularity to current slope
+		const edge1 = rotatePt(pt, tmpPt1, angle - Math.PI / 2)
+		const edge2 = rotatePt(pt, tmpPt1, angle + Math.PI / 2)
+
+		return cache.concat([
+			{
+				centerPt: pt,
+				vectors: {h, v},
+				edges: [edge1, edge2] as [IPt, IPt],
+			},
+		])
+	}, [] as {centerPt: IPt; vectors: {h: number; v: number}; edges: [IPt, IPt]}[])
 
 	return (
 		<>
@@ -52,25 +74,8 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 					strokes.slice(0).map((pt, i, pts) => {
 						if (i === pts.length - 1) return ''
 
+						const [magentaPt, bluePt] = cache[i].edges
 						const nextPt = pts[i + 1]
-
-						const h = nextPt[0] - pt[0]
-						const v = nextPt[1] - pt[1]
-
-						const tmpPt1: IPt = [pt[0] + offsetWidth, pt[1]]
-
-						// -90 deg (1/2 PI) for perpendicularity to current slope
-						const magentaPt = rotatePtZRadiansAroundCenter(
-							pt,
-							tmpPt1,
-							Math.atan2(v, h) - Math.PI / 2
-						)
-
-						const bluePt = rotatePtZRadiansAroundCenter(
-							pt,
-							tmpPt1,
-							Math.atan2(v, h) + Math.PI / 2
-						)
 
 						return (
 							<>
@@ -93,12 +98,7 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 										r="20"
 										fill="red"
 									/>
-									<circle
-										cx={tmpPt1[0]}
-										cy={tmpPt1[1]}
-										r="20"
-										fill="lime"
-									/>
+
 									<circle
 										cx={magentaPt[0]}
 										cy={magentaPt[1]}
