@@ -4,6 +4,8 @@ import {
 	type IPt,
 } from './geometry'
 import './App.css'
+import {Metal} from './metal'
+import {pts2angularOutline} from './take-idk'
 
 const PATHS = {
 	// uppercase
@@ -85,7 +87,6 @@ const GlyphPreview = ({children}: {children: string}) => {
 			})
 		)
 	})
-
 	return (
 		<div>
 			{charsCoords.map((charCoords, i) => {
@@ -154,6 +155,14 @@ const GlyphPreviewMetal = ({children}: {children: string}) => {
 
 				const width = maxX - minX + strokeWidth
 
+				charCoords.forEach((cords) =>
+					pts2angularOutline(
+						cords.map(({x, y}) => [x, y] as [number, number]),
+						strokeWidth
+					)
+				)
+				// console.log('\n')
+
 				return (
 					<svg
 						key={i}
@@ -174,7 +183,7 @@ const GlyphPreviewMetal = ({children}: {children: string}) => {
 						>
 							{charCoords.map((lineCoords, i) => {
 								const glyphPts = pts2glyphSegmentPts(
-									strokeWidth,
+									strokeWidth * 1,
 									lineCoords.map(({x, y}) => [x, y] as IPt)
 								)
 
@@ -299,6 +308,9 @@ function App() {
 	return (
 		<>
 			<h1>Runic English (Metal)</h1>
+			<Metal config={{paths: PATHS, base: 250, strokeWidth: 100}}>
+				{Object.keys(PATHS).join('')}
+			</Metal>
 			<GlyphPreviewMetal>{Object.keys(PATHS).join('')}</GlyphPreviewMetal>
 			<GlyphPreviewMetal>Embers of the Nephilim:</GlyphPreviewMetal>
 			<GlyphPreviewMetal>Ghost Girl</GlyphPreviewMetal>
