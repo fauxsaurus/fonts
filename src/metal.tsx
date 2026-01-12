@@ -25,6 +25,13 @@ const rotatePt = (centerPt: IPt, currentPt: IPt, radians: number) => {
 	return [newX, newY]
 }
 
+const pts2vectors = (pt: IPt, nextPt: IPt) => {
+	const h = nextPt[0] - pt[0]
+	const v = nextPt[1] - pt[1]
+
+	return {h, v}
+}
+
 const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 	const {strokes, strokeWidth} = props
 	const offsetWidth = strokeWidth / 2
@@ -33,30 +40,12 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 
 	const cache = strokes.slice(0).reduce((cache, pt, i, pts) => {
 		// @todo do something if pts.length === 1
-		if (i === pts.length - 1) {
-			const {h, v} = cache[i - 1].vectors
 
-			const tmpPt1: IPt = [pt[0] + offsetWidth, pt[1]]
-
-			const angle = Math.atan2(v, h)
-
-			// +/-90 deg (aka 1/2 PI) for perpendicularity to current slope
-			const edge1 = rotatePt(pt, tmpPt1, angle - Math.PI / 2)
-			const edge2 = rotatePt(pt, tmpPt1, angle + Math.PI / 2)
-
-			return cache.concat([
-				{
-					centerPt: pt,
-					vectors: {h, v},
-					edges: [edge1, edge2] as [IPt, IPt],
-				},
-			])
-		}
-
-		const nextPt = pts[i + 1]
-
-		const h = nextPt[0] - pt[0]
-		const v = nextPt[1] - pt[1]
+		// if last, reuse prior vectors (since they will not have changed)
+		const {h, v} =
+			i < pts.length - 1
+				? pts2vectors(pt, pts[i + 1])
+				: cache[i - 1].vectors
 
 		const tmpPt1: IPt = [pt[0] + offsetWidth, pt[1]]
 
