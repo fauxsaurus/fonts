@@ -34,33 +34,11 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 	const offsetWidth = strokeWidth / 2
 
 	// todo: draw that for the next line segment
-	const pt = strokes[0]
-	const nextPt = strokes[1]
-
-	const h = nextPt[0] - pt[0]
-	const v = nextPt[1] - pt[1]
-
-	const theta = Math.atan2(v, h)
-
-	const tmpPt1: IPt = [pt[0] + offsetWidth, pt[1]]
-
-	// -90 deg (1/2 PI) for perpendicularity to current slope
-	const magentaPt = rotatePtZRadiansAroundCenter(
-		pt,
-		tmpPt1,
-		Math.atan2(v, h) - Math.PI / 2
-	)
-
-	const bluePt = rotatePtZRadiansAroundCenter(
-		pt,
-		tmpPt1,
-		Math.atan2(v, h) + Math.PI / 2
-	)
 
 	return (
 		<>
 			<pre style={{color: '#000'}}>
-				{JSON.stringify({strokes, vectors: {h, v}, theta}, null, 4)}{' '}
+				{JSON.stringify({strokes}, null, 4)}{' '}
 			</pre>
 			<svg
 				viewBox="-100 -100 1200 1200"
@@ -69,33 +47,75 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 				height={1000}
 				style={{background: '#eee', height: '30rem'}}
 			>
-				<g stroke="#fc0" stroke-width={strokeWidth}>
-					<path
-						d={`M${strokes[0].join(',')} ${strokes[1].join(',')}`}
-					/>
-				</g>
-				<g style={{opacity: 0.5}}>
-					<circle
-						cx={strokes[0][0]}
-						cy={strokes[0][1]}
-						r="20"
-						fill="red"
-					/>
-					<circle cx={tmpPt1[0]} cy={tmpPt1[1]} r="20" fill="lime" />
-					<circle
-						cx={magentaPt[0]}
-						cy={magentaPt[1]}
-						r="20"
-						fill="magenta"
-					/>
-					<circle cx={bluePt[0]} cy={bluePt[1]} r="20" fill="blue" />
-					<circle
-						cx={strokes[1][0]}
-						cy={strokes[1][1]}
-						r="20"
-						fill="black"
-					/>
-				</g>
+				{
+					// omit last part for simplicity (need to calculate a next pt-- or rather borrow the last calculated vector to extend the line)
+					strokes.slice(0).map((pt, i, pts) => {
+						if (i === pts.length - 1) return ''
+
+						const nextPt = pts[i + 1]
+
+						const h = nextPt[0] - pt[0]
+						const v = nextPt[1] - pt[1]
+
+						const tmpPt1: IPt = [pt[0] + offsetWidth, pt[1]]
+
+						// -90 deg (1/2 PI) for perpendicularity to current slope
+						const magentaPt = rotatePtZRadiansAroundCenter(
+							pt,
+							tmpPt1,
+							Math.atan2(v, h) - Math.PI / 2
+						)
+
+						const bluePt = rotatePtZRadiansAroundCenter(
+							pt,
+							tmpPt1,
+							Math.atan2(v, h) + Math.PI / 2
+						)
+
+						return (
+							<>
+								<g
+									stroke="#fc0"
+									stroke-width={strokeWidth}
+									opacity={0.5}
+									key={`${i}-path`}
+								>
+									<path
+										d={`M${pt.join(',')} ${nextPt.join(
+											','
+										)}`}
+									/>
+								</g>
+								<g key={`${i}-pts`} style={{opacity: 0.5}}>
+									<circle
+										cx={pt[0]}
+										cy={pt[1]}
+										r="20"
+										fill="red"
+									/>
+									<circle
+										cx={tmpPt1[0]}
+										cy={tmpPt1[1]}
+										r="20"
+										fill="lime"
+									/>
+									<circle
+										cx={magentaPt[0]}
+										cy={magentaPt[1]}
+										r="20"
+										fill="magenta"
+									/>
+									<circle
+										cx={bluePt[0]}
+										cy={bluePt[1]}
+										r="20"
+										fill="blue"
+									/>
+								</g>
+							</>
+						)
+					})
+				}
 			</svg>
 			<br />
 		</>
@@ -113,7 +133,7 @@ export const Metal = (props: IProps) => {
 	const characters = props.children.split('')
 	const characterCoords = paths2coordinates(base, paths)
 
-	const tmp = characterCoords['C'][0].slice(0, 2)
+	const tmp = characterCoords['G'][0]
 	console.log(tmp)
 
 	return (
