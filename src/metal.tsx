@@ -31,12 +31,34 @@ const pts2vectors = (pt: IPt, nextPt: IPt) => {
 
 	return {h, v}
 }
+const getIntersectionPoint = (
+	x1: number,
+	y1: number,
+	h1: number,
+	v1: number,
+	x2: number,
+	y2: number,
+	h2: number,
+	v2: number
+): IPt => {
+	const D = h1 * v2 - v1 * h2
+
+	if (D === 0)
+		throw new Error(
+			'Lines are parallel or coincident; no unique intersection point.'
+		)
+
+	const t = ((x2 - x1) * v2 - (y2 - y1) * h2) / D
+
+	const x = x1 + t * h1
+	const y = y1 + t * v1
+
+	return [x, y]
+}
 
 const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 	const {strokes, strokeWidth} = props
 	const offsetWidth = strokeWidth / 2
-
-	// todo: find the pts of intersection on the parallel slopes(need to pair up the proper pts)
 
 	const cache = strokes.slice(0).reduce((cache, pt, i, pts) => {
 		// @todo do something if pts.length === 1
@@ -63,6 +85,29 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 			},
 		])
 	}, [] as {centerPt: IPt; vectors: {h: number; v: number}; edges: [IPt, IPt]}[])
+
+	// todo: find the pts of intersection on the parallel slopes(need to pair up the proper pts, need to build upon prior intersection pts...), merge this in with the prior calculation (i.e., non-start/end pts just need the prior entry to determine their intersection pts from the prior edges--which are also intersection pts--and their own parallel edge pts [in other words, edge points don't need to persist past their own iteration's calculation.])
+	const cache2 = cache.reduce((cache2, cacheEntry, i, cache) => {
+		// first and last pts need no modification
+		if (!i || i === cache.length - 1)
+			return cache2.concat([
+				{edges: cacheEntry.edges, intersection: cacheEntry.edges},
+			])
+
+		// @todo calculate a single potential intersection pt, draw single intersection pt, calculate all four potential intersection pts, determine pts are needed programmatically, somehow figure out which pts are needed and only do the 2/4 relevant calculations
+
+		const priorCacheEntry = cache[i - 1]
+
+		const [x1, y1] = priorCacheEntry.edges[0]
+		const {h: h1, v: v1} = priorCacheEntry.vectors
+
+		const [x2, y2] = cacheEntry.edges[0]
+		const {h: h2, v: v2} = cacheEntry.vectors
+
+		const i1 = getIntersectionPoint(x1, y1, h1, v1, x2, y2, h2, v2)
+
+		return cache2.concat([{edges: cacheEntry.edges, intersection: [i1]}])
+	}, [] as {edges: [IPt, IPt]; intersection: IPt[]}[])
 
 	return (
 		<>
@@ -116,6 +161,17 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 									r="20"
 									fill="blue"
 								/>
+								{cache2[i].intersection.map(([x, y], i) => {
+									return (
+										<circle
+											cx={x}
+											cy={y}
+											r="10"
+											fill="lime"
+											key={`intersection-${i}`}
+										/>
+									)
+								})}
 							</g>
 						</>
 					)
