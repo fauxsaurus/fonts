@@ -64,6 +64,7 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 		centerPt: IPt
 		vectors: {h: number; v: number}
 		edges: [IPt, IPt]
+		intersection: [IPt, IPt]
 	}
 
 	const cache = strokes.slice(0).reduce((cache, centerPt, i, pts) => {
@@ -74,6 +75,7 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 			i < pts.length - 1
 				? pts2vectors(centerPt, pts[i + 1])
 				: cache[i - 1].vectors
+		const vectors = {h, v}
 
 		const tmpPt1: IPt = [centerPt[0] + offsetWidth, centerPt[1]]
 
@@ -82,44 +84,38 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 		// +/-90 deg (aka 1/2 PI) for perpendicularity to current slope
 		const edge1 = rotatePt(centerPt, tmpPt1, angle - Math.PI / 2)
 		const edge2 = rotatePt(centerPt, tmpPt1, angle + Math.PI / 2)
+		const edges = [edge1, edge2] as [IPt, IPt]
 
-		return cache.concat([
-			{centerPt, vectors: {h, v}, edges: [edge1, edge2]} as ICacheEntry,
-		])
-	}, [] as ICacheEntry[])
-
-	const cache2 = cache.reduce((cache2, cacheEntry, i, cache) => {
-		// first and last pts need no modification
-		if (!i || i === cache.length - 1)
-			return cache2.concat([
-				{...cacheEntry, intersection: cacheEntry.edges},
+		// first and last pts can reuse edges for intersection pts
+		if (!i || i === pts.length - 1)
+			return cache.concat([
+				{centerPt, vectors: {h, v}, edges, intersection: edges},
 			])
 
 		const priorCacheEntry = cache[i - 1]
-
 		const [x1, y1] = priorCacheEntry.edges[0]
 		const {h: h1, v: v1} = priorCacheEntry.vectors
 
-		const [x2, y2] = cacheEntry.edges[0]
-		const {h: h2, v: v2} = cacheEntry.vectors
+		const [x2, y2] = edges[0]
+		const {h: h2, v: v2} = vectors
 
 		const i1 = getIntersectionPoint(x1, y1, h1, v1, x2, y2, h2, v2)
 
 		const [x3, y3] = priorCacheEntry.edges[1]
 		const {h: h3, v: v3} = priorCacheEntry.vectors
 
-		const [x4, y4] = cacheEntry.edges[1]
-		const {h: h4, v: v4} = cacheEntry.vectors
+		const [x4, y4] = edges[1]
+		const {h: h4, v: v4} = vectors
 
 		const i2 = getIntersectionPoint(x3, y3, h3, v3, x4, y4, h4, v4)
 
-		return cache2.concat([
-			{...cacheEntry, edges: cacheEntry.edges, intersection: [i1, i2]},
+		return cache.concat([
+			{centerPt, vectors: {h, v}, edges, intersection: [i1, i2]},
 		])
-	}, [] as {centerPt: IPt; vectors: {h: number; v: number}; edges: [IPt, IPt]; intersection: IPt[]}[])
+	}, [] as ICacheEntry[])
 
-	const firstPt = cache2[0]
-	const lastPt = cache2.slice(-1)[0]
+	const firstPt = cache[0]
+	const lastPt = cache.slice(-1)[0]
 
 	const pointyStartPt = extendLineWithVector(
 		firstPt.centerPt,
@@ -135,7 +131,7 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 	)
 
 	// craft `<path>` pts: pointyStartPt, firstPt.edges, ...nonLastPt.intersection, lastPt.edges, pointyEndPt
-	const relevantPts = cache2.reduce(
+	const relevantPts = cache.reduce(
 		(relevantPts, cacheEntry) => {
 			relevantPts.left.push(cacheEntry.intersection[0])
 			relevantPts.right.push(cacheEntry.intersection[1])
