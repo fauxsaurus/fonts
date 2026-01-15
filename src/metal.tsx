@@ -56,8 +56,7 @@ const getIntersectionPoint = (
 	return [x, y]
 }
 
-const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
-	const {strokes, strokeWidth} = props
+const stroke2pathPts = (strokeWidth: number, strokes: IPt[]) => {
 	const offsetWidth = strokeWidth / 2
 
 	type ICacheEntry = {
@@ -75,7 +74,6 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 			i < pts.length - 1
 				? pts2vectors(centerPt, pts[i + 1])
 				: cache[i - 1].vectors
-		const vectors = {h, v}
 
 		const tmpPt1: IPt = [centerPt[0] + offsetWidth, centerPt[1]]
 
@@ -97,17 +95,15 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 		const {h: h1, v: v1} = priorCacheEntry.vectors
 
 		const [x2, y2] = edges[0]
-		const {h: h2, v: v2} = vectors
 
-		const i1 = getIntersectionPoint(x1, y1, h1, v1, x2, y2, h2, v2)
+		const i1 = getIntersectionPoint(x1, y1, h1, v1, x2, y2, h, v)
 
 		const [x3, y3] = priorCacheEntry.edges[1]
 		const {h: h3, v: v3} = priorCacheEntry.vectors
 
 		const [x4, y4] = edges[1]
-		const {h: h4, v: v4} = vectors
 
-		const i2 = getIntersectionPoint(x3, y3, h3, v3, x4, y4, h4, v4)
+		const i2 = getIntersectionPoint(x3, y3, h3, v3, x4, y4, h, v)
 
 		return cache.concat([
 			{centerPt, vectors: {h, v}, edges, intersection: [i1, i2]},
@@ -140,10 +136,15 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 		},
 		{left: [] as IPt[], right: [] as IPt[]}
 	)
-	const pathPts = [pointyStartPt]
+	return [pointyStartPt]
 		.concat(relevantPts.left)
 		.concat([pointyEndPt])
 		.concat(relevantPts.right.slice().reverse())
+}
+
+const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
+	const {strokes, strokeWidth} = props
+	const pathPts = stroke2pathPts(strokeWidth, strokes)
 		.map((pt) => pt.join(','))
 		.join(' ')
 
