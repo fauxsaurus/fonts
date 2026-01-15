@@ -91,7 +91,7 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 		// first and last pts need no modification
 		if (!i || i === cache.length - 1)
 			return cache2.concat([
-				{edges: cacheEntry.edges, intersection: cacheEntry.edges},
+				{...cacheEntry, intersection: cacheEntry.edges},
 			])
 
 		const priorCacheEntry = cache[i - 1]
@@ -113,9 +113,25 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 		const i2 = getIntersectionPoint(x3, y3, h3, v3, x4, y4, h4, v4)
 
 		return cache2.concat([
-			{edges: cacheEntry.edges, intersection: [i1, i2]},
+			{...cacheEntry, edges: cacheEntry.edges, intersection: [i1, i2]},
 		])
-	}, [] as {edges: [IPt, IPt]; intersection: IPt[]}[])
+	}, [] as {centerPt: IPt; vectors: {h: number; v: number}; edges: [IPt, IPt]; intersection: IPt[]}[])
+
+	const firstPt = cache2[0]
+	const lastPt = cache2.slice(-1)[0]
+
+	const pointyStartPt = extendLineWithVector(
+		firstPt.centerPt,
+		firstPt.vectors.h * -1,
+		firstPt.vectors.v * -1,
+		strokeWidth / 2
+	)
+	const pointyEndPt = extendLineWithVector(
+		lastPt.centerPt,
+		lastPt.vectors.h,
+		lastPt.vectors.v,
+		strokeWidth / 2
+	)
 
 	return (
 		<>
@@ -129,6 +145,20 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 				height={1000}
 				style={{background: '#eee', height: '30rem'}}
 			>
+				<circle
+					cx={pointyStartPt[0]}
+					cy={pointyStartPt[1]}
+					r="5"
+					fill="cyan"
+					key="start-pt"
+				/>
+				<circle
+					cx={pointyEndPt[0]}
+					cy={pointyEndPt[1]}
+					r="5"
+					fill="cyan"
+					key="end-pt"
+				/>
 				{strokes.slice(0).map((pt, i, pts) => {
 					const [magentaPt, bluePt] = cache[i].edges
 					const nextPt = pts[i + 1]
@@ -188,6 +218,28 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 			<br />
 		</>
 	)
+}
+
+const extendLineWithVector = (
+	[startX, startY]: IPt,
+	dirH: number,
+	dirV: number,
+	distance: number
+): IPt => {
+	const magnitude = Math.sqrt(dirH * dirH + dirV * dirV)
+
+	// Check if the magnitude is zero to avoid division by zero
+	if (magnitude === 0) return [startX, startY]
+
+	// 2. Normalize the direction vector to get a unit vector
+	const unitH = dirH / magnitude
+	const unitV = dirV / magnitude
+
+	// 3. Calculate the new coordinates
+	const newX = startX + unitH * distance
+	const newY = startY + unitV * distance
+
+	return [newX, newY]
 }
 
 export const Metal = (props: IProps) => {
