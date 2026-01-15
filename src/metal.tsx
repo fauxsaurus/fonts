@@ -60,33 +60,34 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 	const {strokes, strokeWidth} = props
 	const offsetWidth = strokeWidth / 2
 
-	const cache = strokes.slice(0).reduce((cache, pt, i, pts) => {
+	type ICacheEntry = {
+		centerPt: IPt
+		vectors: {h: number; v: number}
+		edges: [IPt, IPt]
+	}
+
+	const cache = strokes.slice(0).reduce((cache, centerPt, i, pts) => {
 		// @todo do something if pts.length === 1
 
 		// if last, reuse prior vectors (since they will not have changed)
 		const {h, v} =
 			i < pts.length - 1
-				? pts2vectors(pt, pts[i + 1])
+				? pts2vectors(centerPt, pts[i + 1])
 				: cache[i - 1].vectors
 
-		const tmpPt1: IPt = [pt[0] + offsetWidth, pt[1]]
+		const tmpPt1: IPt = [centerPt[0] + offsetWidth, centerPt[1]]
 
 		const angle = Math.atan2(v, h)
 
 		// +/-90 deg (aka 1/2 PI) for perpendicularity to current slope
-		const edge1 = rotatePt(pt, tmpPt1, angle - Math.PI / 2)
-		const edge2 = rotatePt(pt, tmpPt1, angle + Math.PI / 2)
+		const edge1 = rotatePt(centerPt, tmpPt1, angle - Math.PI / 2)
+		const edge2 = rotatePt(centerPt, tmpPt1, angle + Math.PI / 2)
 
 		return cache.concat([
-			{
-				centerPt: pt,
-				vectors: {h, v},
-				edges: [edge1, edge2] as [IPt, IPt],
-			},
+			{centerPt, vectors: {h, v}, edges: [edge1, edge2]} as ICacheEntry,
 		])
-	}, [] as {centerPt: IPt; vectors: {h: number; v: number}; edges: [IPt, IPt]}[])
+	}, [] as ICacheEntry[])
 
-	// todo: cache2 with the prior calculation (i.e., non-start/end pts just need the prior entry to determine their intersection pts from the prior edges--which are also intersection pts--and their own parallel edge pts [in other words, edge points don't need to persist past their own iteration's calculation.]), overlay the raw svg path coords to see if the newly calculated intersection pts line up with the distant black pts for G
 	const cache2 = cache.reduce((cache2, cacheEntry, i, cache) => {
 		// first and last pts need no modification
 		if (!i || i === cache.length - 1)
@@ -124,20 +125,34 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 		firstPt.centerPt,
 		firstPt.vectors.h * -1,
 		firstPt.vectors.v * -1,
-		strokeWidth / 2
+		offsetWidth
 	)
 	const pointyEndPt = extendLineWithVector(
 		lastPt.centerPt,
 		lastPt.vectors.h,
 		lastPt.vectors.v,
-		strokeWidth / 2
+		offsetWidth
 	)
+
+	// craft `<path>` pts: pointyStartPt, firstPt.edges, ...nonLastPt.intersection, lastPt.edges, pointyEndPt
+	const relevantPts = cache2.reduce(
+		(relevantPts, cacheEntry) => {
+			relevantPts.left.push(cacheEntry.intersection[0])
+			relevantPts.right.push(cacheEntry.intersection[1])
+
+			return relevantPts
+		},
+		{left: [] as IPt[], right: [] as IPt[]}
+	)
+	const pathPts = [pointyStartPt]
+		.concat(relevantPts.left)
+		.concat([pointyEndPt])
+		.concat(relevantPts.right.slice().reverse())
+		.map((pt) => pt.join(','))
+		.join(' ')
 
 	return (
 		<>
-			<pre style={{color: '#000'}}>
-				{JSON.stringify({strokes}, null, 4)}{' '}
-			</pre>
 			<svg
 				viewBox="-200 -200 1400 1400"
 				xmlns="http://www.w3.org/2000/svg"
@@ -145,75 +160,7 @@ const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
 				height={1000}
 				style={{background: '#eee', height: '30rem'}}
 			>
-				<circle
-					cx={pointyStartPt[0]}
-					cy={pointyStartPt[1]}
-					r="5"
-					fill="cyan"
-					key="start-pt"
-				/>
-				<circle
-					cx={pointyEndPt[0]}
-					cy={pointyEndPt[1]}
-					r="5"
-					fill="cyan"
-					key="end-pt"
-				/>
-				{strokes.slice(0).map((pt, i, pts) => {
-					const [magentaPt, bluePt] = cache[i].edges
-					const nextPt = pts[i + 1]
-
-					return (
-						<>
-							<g
-								stroke="#fc0"
-								stroke-width={strokeWidth}
-								opacity={0.5}
-								key={`${i}-path`}
-							>
-								{nextPt && (
-									<path
-										d={`M${pt.join(',')} ${nextPt.join(
-											','
-										)}`}
-									/>
-								)}
-							</g>
-							<g key={`${i}-pts`} style={{opacity: 0.5}}>
-								<circle
-									cx={pt[0]}
-									cy={pt[1]}
-									r="20"
-									fill="red"
-								/>
-
-								<circle
-									cx={magentaPt[0]}
-									cy={magentaPt[1]}
-									r="20"
-									fill="magenta"
-								/>
-								<circle
-									cx={bluePt[0]}
-									cy={bluePt[1]}
-									r="20"
-									fill="blue"
-								/>
-								{cache2[i].intersection.map(([x, y], i) => {
-									return (
-										<circle
-											cx={x}
-											cy={y}
-											r="10"
-											fill={['lime', 'black'][i]}
-											key={`intersection-${i}`}
-										/>
-									)
-								})}
-							</g>
-						</>
-					)
-				})}
+				<path d={`M${pathPts}Z `} fill="silver" stroke="none" />
 			</svg>
 			<br />
 		</>
