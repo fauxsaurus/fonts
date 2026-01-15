@@ -142,22 +142,94 @@ const stroke2pathPts = (strokeWidth: number, strokes: IPt[]) => {
 		.concat(relevantPts.right.slice().reverse())
 }
 
-const Temp = (props: {strokes: IPt[]; strokeWidth: number}) => {
-	const {strokes, strokeWidth} = props
-	const pathPts = stroke2pathPts(strokeWidth, strokes)
-		.map((pt) => pt.join(','))
-		.join(' ')
+const strokes2Width = (strokesPts: IPt[]) => {
+	const xs = strokesPts.map(([x]) => x).sort((a, b) => b - a)
+	const maxX = xs[0]
+	const minX = xs.slice(-1)[0]
+
+	return maxX - minX
+}
+
+const Temp = (props: {glyphs: IPt[][][]; strokeWidth: number}) => {
+	const {glyphs, strokeWidth} = props
+
+	const glyphCache = glyphs.reduce((cache, strokes, i) => {
+		const strokesCache = strokes.map((stroke) =>
+			stroke2pathPts(strokeWidth, stroke)
+		)
+
+		const width = strokes2Width(strokesCache.flat())
+
+		const {offset: priorOffset, width: priorMaxX} = cache[i - 1] ?? {
+			offset: 0,
+			width: 0,
+		}
+		const offset = priorOffset + priorMaxX + (i ? strokeWidth : 0)
+
+		return cache.concat([{offset, width, pts: strokesCache}])
+	}, [] as {offset: number; width: number; pts: IPt[][]}[])
+
+	const xs = glyphCache
+		.flatMap((cache) => {
+			const pts = cache.pts.flat()
+
+			const xs = pts.map(([x]) => x).sort((a, b) => b - a)
+
+			return [xs.slice(-1)[0], xs[0]]
+		})
+		.sort((a, b) => b - a)
+
+	const ys = glyphCache
+		.flatMap((cache) => {
+			const pts = cache.pts.flat()
+
+			// const xs = pts.map(([x]) => x).sort((a, b) => b - a)
+			const ys = pts.map(([_, y]) => y).sort((a, b) => b - a)
+
+			return [ys.slice(-1)[0], ys[0]]
+		})
+		.sort((a, b) => b - a)
+
+	const maxY = ys[0]
+	const minY = ys.slice(-1)[0]
+
+	const svgHeight = Math.ceil(maxY - minY) * 1.2
+
+	const minX = xs.slice(-1)[0]
+
+	const lastGlyph = glyphCache.slice(-1)[0]
+	const svgWidth = Math.ceil(lastGlyph.offset + lastGlyph.width - minX)
 
 	return (
 		<>
 			<svg
-				viewBox="-200 -200 1400 1400"
+				viewBox={`${minX} ${minY} ${svgWidth} ${maxY}`}
 				xmlns="http://www.w3.org/2000/svg"
-				width={1000}
-				height={1000}
-				style={{background: '#eee', height: '30rem'}}
+				width={svgWidth}
+				height={svgHeight}
+				style={{background: '#eee'}}
 			>
-				<path d={`M${pathPts}Z `} fill="silver" stroke="none" />
+				<g fill="silver" stroke="none">
+					{glyphCache.map((strokesCache, glyphI) => (
+						<g
+							key={`glyph-${glyphI}`}
+							transform={`translate(${strokesCache.offset}, 0)`}
+						>
+							{strokesCache.pts.map((strokePts, strokeI) => {
+								const pathPts = strokePts
+									.map((pt) => pt.join(','))
+									.join(' ')
+
+								return (
+									<path
+										key={`stroke-${strokeI}`}
+										d={`M${pathPts}Z `}
+									/>
+								)
+							})}
+						</g>
+					))}
+				</g>
 			</svg>
 			<br />
 		</>
@@ -197,12 +269,16 @@ export const Metal = (props: IProps) => {
 	const characters = props.children.split('')
 	const characterCoords = paths2coordinates(base, paths)
 
-	const tmp = characterCoords['G'][0]
-	console.log(tmp)
+	const words = 'Ghost Girl and'
+	const tmp = words.split('').map((letter) => characterCoords[letter])
+
+	const words2 = 'the Ghost Giant'
+	const tmp2 = words2.split('').map((letter) => characterCoords[letter])
 
 	return (
 		<>
-			<Temp strokes={tmp} strokeWidth={strokeWidth}></Temp>
+			<Temp glyphs={tmp} strokeWidth={strokeWidth}></Temp>
+			<Temp glyphs={tmp2} strokeWidth={strokeWidth}></Temp>
 			{characters.map((character, i) => {
 				const width = base * 3
 
