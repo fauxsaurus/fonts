@@ -5,7 +5,6 @@ import {
 } from './geometry'
 import './App.css'
 import {Metal} from './metal'
-import {pts2angularOutline} from './take-idk'
 
 const PATHS = {
 	// uppercase
@@ -130,180 +129,6 @@ const GlyphPreview = ({children}: {children: string}) => {
 	)
 }
 
-const GlyphPreviewMetal = ({children}: {children: string}) => {
-	const base = 250
-	const strokeWidth = 100
-	const height = base * 6 + strokeWidth
-
-	const charsCoords = children.split('').map((char) => {
-		const rawStringLines = PATHS[char as keyof typeof PATHS]
-		return rawStringLines.map((line) =>
-			line.split(' ').map((pair) => {
-				const [x, y] = pair.split(',').map((txt) => parseFloat(txt))
-				return {x: x * base, y: y * base}
-			})
-		)
-	})
-
-	return (
-		<div>
-			{charsCoords.map((charCoords, i) => {
-				const allXs = charCoords.flat().map(({x}) => x).sort((a,b) => a - b) // prettier-ignore
-
-				const minX = allXs[0]
-				const maxX = allXs.slice(-1)[0]
-
-				const width = maxX - minX + strokeWidth
-
-				charCoords.forEach((cords) =>
-					pts2angularOutline(
-						cords.map(({x, y}) => [x, y] as [number, number]),
-						strokeWidth
-					)
-				)
-				// console.log('\n')
-
-				return (
-					<svg
-						key={i}
-						viewBox={`0 0 ${width} ${height}`}
-						xmlns="http://www.w3.org/2000/svg"
-						width={width}
-						height={height}
-					>
-						<g
-							style={{
-								fill: 'none',
-								stroke: '#000',
-								strokeWidth: strokeWidth,
-							}}
-							transform={`translate(${strokeWidth / 2},${
-								strokeWidth / 2
-							})`}
-						>
-							{charCoords.map((lineCoords, i) => {
-								const glyphPts = pts2glyphSegmentPts(
-									strokeWidth * 1,
-									lineCoords.map(({x, y}) => [x, y] as IPt)
-								)
-
-								const svgCoords = lineCoords.map(
-									({x, y}) => `${x},${y}`
-								)
-
-								const [start0, start1] = lineCoords.slice(0, 2)
-								const [end1, end0] = lineCoords.slice(-2)
-
-								return (
-									<>
-										<path
-											key={i}
-											d={`M${svgCoords.join(' ')}`}
-											// stroke-linejoin="bevel"
-										/>
-										<path
-											key={`${i}-start-cap`}
-											stroke="none"
-											fill="red"
-											d={
-												'M' +
-												line2triangularTipCoords(
-													start0,
-													start1,
-													strokeWidth / 2
-												)
-													.map(
-														(pt) =>
-															`${pt.x},${pt.y}`
-													)
-													.join(' ') +
-												'z'
-											}
-										/>
-										<path
-											key={`${i}-end-cap`}
-											stroke="none"
-											fill="lime"
-											d={
-												'M' +
-												line2triangularTipCoords(
-													end0,
-													end1,
-													strokeWidth / 2
-												)
-													.map(
-														(pt) =>
-															`${pt.x},${pt.y}`
-													)
-													.join(' ') +
-												'z'
-											}
-										/>
-										{glyphPts
-											.flatMap(
-												(
-													derivative,
-													i,
-													derivatives
-												) => {
-													const rtn = []
-													if (!i)
-														rtn.push(
-															derivative.prevPt
-														)
-													rtn.push(
-														derivative.centerPt,
-														...derivative.adjPts
-													)
-
-													if (
-														derivatives.length -
-															1 ===
-														i
-													)
-														rtn.push(
-															derivative.nextPt
-														)
-
-													return rtn
-												}
-											)
-											.map(([cx, cy], i) => {
-												return (
-													<circle
-														key={i}
-														{...{cx, cy}}
-														fill="#fc0"
-														stroke="none"
-														r={strokeWidth / 4}
-													/>
-												)
-											})}
-										{/* {svgCoords.map((coordPairStr, i) => {
-											const [cx, cy] =
-												coordPairStr.split(',')
-
-											return (
-												<circle
-													key={i}
-													{...{cx, cy}}
-													fill="#fc0"
-													stroke="none"
-													r={strokeWidth / 4}
-												/>
-											)
-										})} */}
-									</>
-								)
-							})}
-						</g>
-					</svg>
-				)
-			})}
-		</div>
-	)
-}
-
 function App() {
 	return (
 		<>
@@ -311,12 +136,6 @@ function App() {
 			<Metal config={{paths: PATHS, base: 250, strokeWidth: 100}}>
 				{Object.keys(PATHS).join('')}
 			</Metal>
-			<GlyphPreviewMetal>{Object.keys(PATHS).join('')}</GlyphPreviewMetal>
-			<GlyphPreviewMetal>Embers of the Nephilim:</GlyphPreviewMetal>
-			<GlyphPreviewMetal>Ghost Girl</GlyphPreviewMetal>
-			<GlyphPreviewMetal>and the</GlyphPreviewMetal>
-			<GlyphPreviewMetal>Ghost Giant</GlyphPreviewMetal>
-			<GlyphPreviewMetal>Andrew R. H. Quinn</GlyphPreviewMetal>
 			<h1>Runic English</h1>
 			<GlyphPreview>{Object.keys(PATHS).join('')}</GlyphPreview>
 			<GlyphPreview>Embers of the Nephilim:</GlyphPreview>
