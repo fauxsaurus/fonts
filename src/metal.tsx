@@ -43,7 +43,9 @@ const getIntersectionPoint = (
 
 	if (D === 0)
 		throw new Error(
-			'Lines are parallel or coincident; no unique intersection point.'
+			`Lines are parallel or coincident; no unique intersection point (${JSON.stringify(
+				{x1, y1, h1, v1, x2, y2, h2, v2}
+			)}).`
 		)
 
 	const t = ((x2 - x1) * v2 - (y2 - y1) * h2) / D
@@ -151,21 +153,24 @@ const strokes2Width = (strokesPts: IPt[]) => {
 const Temp = (props: {glyphs: IPt[][][]; strokeWidth: number}) => {
 	const {glyphs, strokeWidth} = props
 
-	const glyphCache = glyphs.reduce((cache, strokes, i) => {
-		const strokesCache = strokes.map((stroke) =>
-			stroke2pathPts(strokeWidth, stroke)
-		)
+	const glyphCache = glyphs.reduce(
+		(cache, strokes, i) => {
+			const strokesCache = strokes.map((stroke) =>
+				stroke2pathPts(strokeWidth, stroke)
+			)
 
-		const width = strokes2Width(strokesCache.flat())
+			const width = strokes2Width(strokesCache.flat())
 
-		const {offset: priorOffset, width: priorMaxX} = cache[i - 1] ?? {
-			offset: 0,
-			width: 0,
-		}
-		const offset = priorOffset + priorMaxX + (i ? strokeWidth : 0)
+			const {offset: priorOffset, width: priorMaxX} = cache[i - 1] ?? {
+				offset: 0,
+				width: 0,
+			}
+			const offset = priorOffset + priorMaxX + (i ? strokeWidth : 0)
 
-		return cache.concat([{offset, width, pts: strokesCache}])
-	}, [] as {offset: number; width: number; pts: IPt[][]}[])
+			return cache.concat([{offset, width, pts: strokesCache}])
+		},
+		[] as {offset: number; width: number; pts: IPt[][]}[]
+	)
 
 	const xs = glyphCache
 		.flatMap((cache) => {
@@ -258,14 +263,11 @@ const extendLineWithVector = (
 
 export const Metal = (props: IProps) => {
 	const {base, paths, strokeWidth} = props.config
-	const height = base * 6
-	const offsetWidth = strokeWidth / 2
 
-	// distance to extend line for pointy equilateral triangle tips
-	const eqTriangleHeight = (strokeWidth * Math.sqrt(3)) / 2
-
-	const characters = props.children.split('')
 	const characterCoords = paths2coordinates(base, paths)
+
+	const words0 = 'Embers of the Nephilim:'
+	const tmp0 = words0.split('').map((letter) => characterCoords[letter])
 
 	const words = 'Ghost Girl and'
 	const tmp = words.split('').map((letter) => characterCoords[letter])
@@ -275,8 +277,17 @@ export const Metal = (props: IProps) => {
 
 	return (
 		<>
+			<Temp glyphs={tmp0} strokeWidth={strokeWidth}></Temp>
 			<Temp glyphs={tmp} strokeWidth={strokeWidth}></Temp>
 			<Temp glyphs={tmp2} strokeWidth={strokeWidth}></Temp>
+			<Temp
+				glyphs={Object.values(characterCoords).slice(0, 26)}
+				strokeWidth={strokeWidth}
+			></Temp>
+			<Temp
+				glyphs={Object.values(characterCoords).slice(26)}
+				strokeWidth={strokeWidth}
+			></Temp>
 		</>
 	)
 }
