@@ -1,8 +1,3 @@
-import {
-	line2triangularTipCoords,
-	pts2glyphSegmentPts,
-	type IPt,
-} from './geometry'
 import './App.css'
 import {Metal} from './metal'
 
