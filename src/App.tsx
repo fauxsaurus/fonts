@@ -72,7 +72,7 @@ function App() {
 	return (
 		<>
 			<h1>Runic English (Metal)</h1>
-			<Metal config={{paths: PATHS, base: 250, strokeWidth: 100}}>
+			<Metal config={{paths: PATHS, base: 512, strokeWidth: 204.8}}>
 				{Object.keys(PATHS).join('')}
 			</Metal>
 		</>
