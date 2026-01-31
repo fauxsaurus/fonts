@@ -150,7 +150,7 @@ const strokes2Width = (strokesPts: IPt[]) => {
 	return maxX - minX
 }
 
-const Temp = (props: {glyphs: IPt[][][]; strokeWidth: number}) => {
+const Line = (props: {glyphs: IPt[][][]; strokeWidth: number}) => {
 	const {glyphs, strokeWidth} = props
 
 	const glyphCache = glyphs.reduce(
@@ -275,7 +275,7 @@ ${Object.keys(characterCoords).slice(26).join('')}`.split('\n')
 	return lines.map((line, lineNumber) => {
 		const glyphs = line.split('').map((letter) => characterCoords[letter])
 
-		return <Temp key={lineNumber} {...{glyphs, strokeWidth}} />
+		return <Line key={lineNumber} {...{glyphs, strokeWidth}} />
 	})
 }
 
