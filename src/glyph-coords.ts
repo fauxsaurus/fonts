@@ -11,9 +11,9 @@ export const STROKE_WIDTH = 200 // 204.8 = same the same ratio as 100 to a 1000-
 
 const offsetWidth = STROKE_WIDTH / 2 // 90 degree triangle height used to extend points
 
-const uppperYbound = -241.4213562373095 // derived from the top of G
+const upperYbound = -241.4213562373095 // derived from the top of G
 
-const adjustedUpperYbound = uppperYbound + offsetWidth // for vertical lines
+const adjustedUpperYbound = upperYbound + offsetWidth // for vertical lines
 
 export const Glyph_Coords = {
 	A: [
