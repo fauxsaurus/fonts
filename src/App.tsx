@@ -1,6 +1,7 @@
 import './App.css'
 import {Metal} from './metal'
 
+// @todo Draw a red line from the upper Y coord of G under each letter throughout each line of text. Draw a similar line for the lower bound. And center. Stretch out the upper points to align with the upper bound of G (title letters first, then all).Lower the bounds of all letters. Establish lower case consistency for qp with gjy. Alter BPR point widths (using coords below). Try to adjust letter widths for more consistency.
 const PATHS = {
 	// uppercase
 	A: ['0,4 0,0 2,1 2,4', '0,1 2,2'],
@@ -67,64 +68,6 @@ const PATHS = {
 	' ': ['0,4 2,4'],
 }
 
-const BASE = 100
-const STROKE_WIDTH = 40
-
-const HEIGHT = BASE * 6 + STROKE_WIDTH
-
-const GlyphPreview = ({children}: {children: string}) => {
-	const charsCoords = children.split('').map((char) => {
-		const rawStringLines = PATHS[char as keyof typeof PATHS]
-		return rawStringLines.map((line) =>
-			line.split(' ').map((pair) => {
-				const [x, y] = pair.split(',').map((txt) => parseFloat(txt))
-				return {x: x * BASE, y: y * BASE}
-			})
-		)
-	})
-	return (
-		<div>
-			{charsCoords.map((charCoords, i) => {
-				const allXs = charCoords.flat().map(({x}) => x).sort((a,b) => a - b) // prettier-ignore
-
-				const minX = allXs[0]
-				const maxX = allXs.slice(-1)[0]
-
-				const width = maxX - minX + STROKE_WIDTH
-
-				return (
-					<svg
-						key={i}
-						viewBox={`0 0 ${width} ${HEIGHT}`}
-						xmlns="http://www.w3.org/2000/svg"
-						width={width}
-						height={HEIGHT}
-					>
-						<g
-							style={{
-								fill: 'none',
-								stroke: '#000',
-								strokeWidth: STROKE_WIDTH,
-							}}
-						>
-							{charCoords.map((lineCoords, i) => {
-								const svgCoords = lineCoords.map(
-									({x, y}) =>
-										`${x + STROKE_WIDTH / 2},${
-											y + STROKE_WIDTH / 2
-										}`
-								)
-
-								return <path d={`M${svgCoords}`} key={i} />
-							})}
-						</g>
-					</svg>
-				)
-			})}
-		</div>
-	)
-}
-
 function App() {
 	return (
 		<>
@@ -132,13 +75,6 @@ function App() {
 			<Metal config={{paths: PATHS, base: 250, strokeWidth: 100}}>
 				{Object.keys(PATHS).join('')}
 			</Metal>
-			<h1>Runic English</h1>
-			<GlyphPreview>{Object.keys(PATHS).join('')}</GlyphPreview>
-			<GlyphPreview>Embers of the Nephilim:</GlyphPreview>
-			<GlyphPreview>Ghost Girl</GlyphPreview>
-			<GlyphPreview>and the</GlyphPreview>
-			<GlyphPreview>Ghost Giant</GlyphPreview>
-			<GlyphPreview>Andrew R. H. Quinn</GlyphPreview>
 		</>
 	)
 }
