@@ -3,8 +3,7 @@ type IY = number
 type IPt = [IX, IY]
 
 type IProps = {
-	children: string
-	config: {base: number; paths: Record<string, string[]>; strokeWidth: number}
+	config: {glyphCoords: Record<string, number[][][]>; strokeWidth: number}
 }
 
 const rotatePt = (centerPt: IPt, currentPt: IPt, radians: number) => {
@@ -262,9 +261,12 @@ const extendLineWithVector = (
 }
 
 export const Metal = (props: IProps) => {
-	const {base, paths, strokeWidth} = props.config
+	const {glyphCoords, strokeWidth} = props.config
 
-	const characterCoords = paths2coordinates(base, paths)
+	const characterCoords = glyphCoords as Record<string, IPt[][]>
+
+	console.log(characterCoords)
+
 	const lines = `Embers of the Nephilim:
 Ghost Girl
 and the
@@ -277,26 +279,4 @@ ${Object.keys(characterCoords).slice(26).join('')}`.split('\n')
 
 		return <Line key={lineNumber} {...{glyphs, strokeWidth}} />
 	})
-}
-
-const paths2coordinates = (
-	base: number,
-	paths: Record<string, string[]>
-): Record<string, IPt[][]> => {
-	const entries = Object.entries(paths).map(([character, stringCoords]) => {
-		const lines = stringCoords.map((stringOfCoords) =>
-			stringOfCoords
-				.split(' ')
-				.map(
-					(coordPair) =>
-						coordPair
-							.split(',')
-							.map((string) => parseFloat(string) * base) as IPt
-				)
-		)
-
-		return [character, lines]
-	})
-
-	return Object.fromEntries(entries)
 }
