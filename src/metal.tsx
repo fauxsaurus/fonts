@@ -265,31 +265,18 @@ export const Metal = (props: IProps) => {
 	const {base, paths, strokeWidth} = props.config
 
 	const characterCoords = paths2coordinates(base, paths)
+	const lines = `Embers of the Nephilim:
+Ghost Girl
+and the
+Ghost Giant
+${Object.keys(characterCoords).slice(0, 26).join('')}
+${Object.keys(characterCoords).slice(26).join('')}`.split('\n')
 
-	const words0 = 'Embers of the Nephilim:'
-	const tmp0 = words0.split('').map((letter) => characterCoords[letter])
+	return lines.map((line, lineNumber) => {
+		const glyphs = line.split('').map((letter) => characterCoords[letter])
 
-	const words = 'Ghost Girl and'
-	const tmp = words.split('').map((letter) => characterCoords[letter])
-
-	const words2 = 'the Ghost Giant'
-	const tmp2 = words2.split('').map((letter) => characterCoords[letter])
-
-	return (
-		<>
-			<Temp glyphs={tmp0} strokeWidth={strokeWidth}></Temp>
-			<Temp glyphs={tmp} strokeWidth={strokeWidth}></Temp>
-			<Temp glyphs={tmp2} strokeWidth={strokeWidth}></Temp>
-			<Temp
-				glyphs={Object.values(characterCoords).slice(0, 26)}
-				strokeWidth={strokeWidth}
-			></Temp>
-			<Temp
-				glyphs={Object.values(characterCoords).slice(26)}
-				strokeWidth={strokeWidth}
-			></Temp>
-		</>
-	)
+		return <Temp key={lineNumber} {...{glyphs, strokeWidth}} />
+	})
 }
 
 const paths2coordinates = (
