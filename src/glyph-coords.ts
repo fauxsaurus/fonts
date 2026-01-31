@@ -4,6 +4,7 @@
 // B: ['0,0 0,4', '0,1.5, 1.25,2.75 0,4', '0,0 1.25,1.25 0,2.5'],
 //a: ['1.25,4 0,2.75 1.25,1.5, 2.5,2.75 1.25,4', '2.5,1.5 2.5,4'],
 
+export const STROKE_WIDTH = 200 // 204.8 = same the same ratio as 100 to a 1000-based grid for a new, 2048-based grid
 export const Glyph_Coords = {
 	A: [
 		[

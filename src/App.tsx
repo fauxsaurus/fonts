@@ -1,5 +1,5 @@
 import './App.css'
-import {Glyph_Coords} from './glyph-coords'
+import {Glyph_Coords, STROKE_WIDTH} from './glyph-coords'
 import {Metal} from './metal'
 
 function App() {
@@ -7,7 +7,7 @@ function App() {
 		<>
 			<h1>Runic English (Metal)</h1>
 			<Metal
-				config={{glyphCoords: Glyph_Coords, strokeWidth: 204.8}}
+				config={{glyphCoords: Glyph_Coords, strokeWidth: STROKE_WIDTH}}
 			></Metal>
 		</>
 	)
