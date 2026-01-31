@@ -4,7 +4,17 @@
 // B: ['0,0 0,4', '0,1.5, 1.25,2.75 0,4', '0,0 1.25,1.25 0,2.5'],
 //a: ['1.25,4 0,2.75 1.25,1.5, 2.5,2.75 1.25,4', '2.5,1.5 2.5,4'],
 
+// goal: extend lines upward to do this, find the upper y coord in G and note its relationship with 0.
+// then subtract 1/2 stroke width to come up with the upper bound //
+
 export const STROKE_WIDTH = 200 // 204.8 = same the same ratio as 100 to a 1000-based grid for a new, 2048-based grid
+
+const offsetWidth = STROKE_WIDTH / 2 // 90 degree triangle height used to extend points
+
+const uppperYbound = -241.4213562373095 // derived from the top of G
+
+const adjustedUpperYbound = uppperYbound + offsetWidth // for vertical lines
+
 export const Glyph_Coords = {
 	A: [
 		[
@@ -20,7 +30,7 @@ export const Glyph_Coords = {
 	],
 	B: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 			[1024, 1536],
 			[0, 1024],
@@ -56,7 +66,7 @@ export const Glyph_Coords = {
 	],
 	F: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 		],
 		[
@@ -80,11 +90,11 @@ export const Glyph_Coords = {
 	],
 	H: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 		],
 		[
-			[1024, 0],
+			[1024, adjustedUpperYbound],
 			[1024, 2048],
 		],
 		[
@@ -106,25 +116,25 @@ export const Glyph_Coords = {
 	],
 	J: [
 		[
-			[1024, 0],
+			[1024, adjustedUpperYbound],
 			[1024, 2048],
-			[0, 1536],
+			[adjustedUpperYbound, 1536],
 		],
 	],
 	K: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 		],
 		[
-			[1024, 0],
+			[1024, adjustedUpperYbound],
 			[0, 1024],
 			[1024, 2048],
 		],
 	],
 	L: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 			[1024, 1536],
 		],
@@ -160,7 +170,7 @@ export const Glyph_Coords = {
 	],
 	P: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 		],
 		[
@@ -184,7 +194,7 @@ export const Glyph_Coords = {
 	],
 	R: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 		],
 		[
@@ -215,10 +225,10 @@ export const Glyph_Coords = {
 	],
 	U: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 			[1024, 1536],
-			[1024, 0],
+			[1024, adjustedUpperYbound],
 		],
 	],
 	V: [
@@ -230,13 +240,13 @@ export const Glyph_Coords = {
 	],
 	W: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 			[1024, 1536],
-			[1024, 0],
+			[1024, adjustedUpperYbound],
 		],
 		[
-			[512, 0],
+			[512, adjustedUpperYbound],
 			[512, 1792],
 		],
 	],
@@ -282,7 +292,7 @@ export const Glyph_Coords = {
 	],
 	b: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 		],
 		[
@@ -305,7 +315,7 @@ export const Glyph_Coords = {
 			[640, 768],
 		],
 		[
-			[640, 0],
+			[640, adjustedUpperYbound],
 			[640, 2048],
 		],
 	],
@@ -345,7 +355,7 @@ export const Glyph_Coords = {
 	],
 	h: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 		],
 		[
@@ -356,8 +366,8 @@ export const Glyph_Coords = {
 	],
 	i: [
 		[
-			[0, 0],
-			[0, 512],
+			[0, adjustedUpperYbound],
+			[0, 512 - offsetWidth],
 		],
 		[
 			[0, 1024],
@@ -367,8 +377,8 @@ export const Glyph_Coords = {
 	],
 	j: [
 		[
-			[512, 0],
-			[512, 512],
+			[512, adjustedUpperYbound],
+			[512, 512 - offsetWidth],
 		],
 		[
 			[512, 1024],
@@ -378,7 +388,7 @@ export const Glyph_Coords = {
 	],
 	k: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 		],
 		[
@@ -389,7 +399,7 @@ export const Glyph_Coords = {
 	],
 	l: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 			[512, 1536],
 		],
@@ -474,7 +484,7 @@ export const Glyph_Coords = {
 	],
 	t: [
 		[
-			[0, 0],
+			[0, adjustedUpperYbound],
 			[0, 2048],
 			[512, 1536],
 		],
