@@ -11,6 +11,7 @@ function App() {
 				config={{glyphCoords: Glyph_Coords, strokeWidth: STROKE_WIDTH}}
 			></Metal>
 			<Braille>Andrew R. H. Quinn</Braille>
+			<Braille>ABCDEFGHIJKLMNOPQRSTUVWXYZ</Braille>
 		</>
 	)
 }
