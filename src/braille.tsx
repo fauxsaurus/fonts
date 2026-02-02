@@ -116,6 +116,9 @@ const GLYPH_HEIGHT = 2048
 const GLYPH_UNIT = GLYPH_HEIGHT / 2 // 1024, used to create a 2x3 matrix
 const GLYPH_WIDTH = GLYPH_UNIT + STROKE_WIDTH * 5
 
+const uniqueCharsInString = (string: string) =>
+	Array.from(new Set(string.split('')))
+
 export const Braille = ({children}: {children: string}) => {
 	const width = GLYPH_WIDTH * children.length
 	const height = GLYPH_HEIGHT
@@ -128,8 +131,49 @@ export const Braille = ({children}: {children: string}) => {
 				height: height + 1024,
 				viewBox: `-512 -512 ${width + 1024} ${height + 1024}`,
 			}}
-			style={{background: '#fff'}}
+			style={{background: 'linear-gradient(90deg, #fc0 50%, #069 50%)'}}
 		>
+			<defs>
+				{uniqueCharsInString(children).map((char) => {
+					const metadata =
+						GLYPHS[char.toLocaleUpperCase() as keyof typeof GLYPHS]
+					if (!metadata) return ''
+
+					const {dots, filled} = Object.assign({filled: ''}, metadata)
+
+					return (
+						<mask key={`mask-${char}`} id={`mask-${char}`}>
+							<rect
+								x="-256"
+								y="-256"
+								width={2048 + 512}
+								height={2048 + 1024}
+								fill="#fff"
+							/>
+							{(dots + filled).split('').map((num, i) => (
+								<circle
+									key={`dot-${i}`}
+									cx={
+										DOT_COORDS[
+											num as keyof typeof DOT_COORDS
+										][0]
+									}
+									cy={
+										DOT_COORDS[
+											num as keyof typeof DOT_COORDS
+										][1]
+									}
+									r={STROKE_WIDTH * 1.5}
+									strokeWidth={STROKE_WIDTH / 1.25}
+									{...(filled && filled.indexOf(num) === -1
+										? {stroke: 'white', fill: 'black'}
+										: {stroke: 'black', fill: 'white'})}
+								/>
+							))}
+						</mask>
+					)
+				})}
+			</defs>
 			<g
 				style={{
 					fill: 'none',
@@ -147,6 +191,7 @@ export const Braille = ({children}: {children: string}) => {
 					return (
 						<g
 							key={`glyph-${i}`}
+							mask={`url(#mask-${glyph})`}
 							transform={`translate(${GLYPH_WIDTH * i}, 0)`}
 						>
 							{metadata.lines.map((d, i) => (
@@ -174,7 +219,7 @@ export const Braille = ({children}: {children: string}) => {
 									strokeWidth={STROKE_WIDTH / 1.25}
 									{...(filled && filled.indexOf(num) === -1
 										? {stroke: 'black', fill: 'none'}
-										: {stroke: 'white', fill: 'black'})}
+										: {stroke: 'none', fill: 'black'})}
 								/>
 							))}
 						</g>
