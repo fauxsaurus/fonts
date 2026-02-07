@@ -1,7 +1,6 @@
 import './App.css'
 import {Braille} from './braille'
-import {Glyph_Coords, STROKE_WIDTH} from './glyph-coords'
-import {Metal} from './metal'
+import {Glyph_Coords, Metal, STROKE_WIDTH} from './norse-runes/'
 
 function App() {
 	return (
