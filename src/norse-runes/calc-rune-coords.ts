@@ -1,0 +1,629 @@
+// @todo Draw a red line from the upper Y coord of G under each letter throughout each line of text. Draw a similar line for the lower bound. And center. Stretch out the upper points to align with the upper bound of G (title letters first, then all).Lower the bounds of all letters. Establish lower case consistency for qp with gjy. Alter BPR point widths (using coords below). Try to adjust letter widths for more consistency.
+
+// @todo try using this B out when the upper and lower bounds are stretched to match the G outlier points (apply it ot P and R as well)
+// B: ['0,0 0,4', '0,1.5, 1.25,2.75 0,4', '0,0 1.25,1.25 0,2.5'],
+//a: ['1.25,4 0,2.75 1.25,1.5, 2.5,2.75 1.25,4', '2.5,1.5 2.5,4'],
+
+// goal: extend lines upward to do this, find the upper y coord in G and note its relationship with 0.
+// then subtract 1/2 stroke width to come up with the upper bound //
+
+export const STROKE_WIDTH = 200 // 204.8 = same the same ratio as 100 to a 1000-based grid for a new, 2048-based grid
+
+type IRadians = number
+
+/** @return number (the distance between the original centerpoint and the outer edge of the rune given the strokeWidth of the glyph) */
+const angle2offset = (angle: IRadians, strokeWidth: number) => {
+	const offsetWidth = strokeWidth / 2
+
+	return Math.abs(offsetWidth / Math.sin(angle / 2))
+}
+
+export const calcRuneCoords = (strokeWidth: number) => {
+	const offsetWidth = strokeWidth / 2 // 90 degree triangle height used to extend pts
+
+	const GOffset = angle2offset(45 * (Math.PI / 2), strokeWidth)
+
+	// @todo align tops/bottoms ABCDEFHIJKLMNOPQRSTUVWXYZabcdefgjkmnopqstuvwxyz:_
+	// @todo re-proportion a(upper pt of vertical line)n(upper diagonal)os_
+
+	// offsets used to get the corner extending from the outer most center point Y values to line up exactly with those of G (for consistent character sizing)
+	const offsetVerticalLine = GOffset
+
+	const offset90 = angle2offset(90 * (Math.PI / 2), strokeWidth) // "o" corners
+	const offset135 =
+		angle2offset(135 * (Math.PI / 2), strokeWidth) +
+		offsetWidth / 2 / Math.sqrt(2) // top and bottom of "s" whose end triangle sides are completely horizontal
+
+	return {
+		A: [
+			[
+				[0, 2048],
+				[0, 0],
+				[1024, 512],
+				[1024, 2048],
+			],
+			[
+				[0, 512],
+				[1024, 1024],
+			],
+		],
+		B: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+				[1024, 1536],
+				[0, 1024],
+				[1024, 512],
+				[0, 0],
+			],
+		],
+		C: [
+			[
+				[1024, 0],
+				[0, 1024],
+				[1024, 2048],
+			],
+		],
+		D: [
+			[
+				[0, 0],
+				[0, 2048],
+				[1024, 1024],
+				[0, 0],
+			],
+		],
+		E: [
+			[
+				[1024, 0],
+				[0, 1024],
+				[1024, 2048],
+			],
+			[
+				[0, 1024],
+				[1024, 1024],
+			],
+		],
+		F: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+			],
+			[
+				[1024, 0],
+				[0, 1024],
+			],
+			[
+				[512, 0],
+				[0, 512],
+			],
+		],
+		G: [
+			[
+				[1024, 512],
+				[1024, 0],
+				[0, 1024],
+				[1024, 2048],
+				[1024, 1024],
+				[512, 1024],
+			],
+		],
+		H: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+			],
+			[
+				[1024, offsetVerticalLine],
+				[1024, 2048],
+			],
+			[
+				[0, 512],
+				[1024, 512],
+			],
+			[
+				[0, 1024],
+				[1024, 1024],
+			],
+		],
+		I: [
+			[
+				[0, 512],
+				[512, 0],
+				[512, 2048],
+				[1024, 1536],
+			],
+		],
+		J: [
+			[
+				[1024, offsetVerticalLine],
+				[1024, 2048],
+				[offsetVerticalLine, 1536],
+			],
+		],
+		K: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+			],
+			[
+				[1024, offsetVerticalLine],
+				[0, 1024],
+				[1024, 2048],
+			],
+		],
+		L: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+				[1024, 1536],
+			],
+		],
+		M: [
+			[
+				[0, 2048],
+				[0, 0],
+				[1024, 512],
+				[1024, 2048],
+			],
+			[
+				[512, 256],
+				[512, 2048],
+			],
+		],
+		N: [
+			[
+				[0, 2048],
+				[0, 0],
+				[1024, 512],
+				[1024, 2048],
+			],
+		],
+		O: [
+			[
+				[512, 0],
+				[1024, 1024],
+				[512, 2048],
+				[0, 1024],
+				[512, 0],
+			],
+		],
+		P: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+			],
+			[
+				[0, 0],
+				[1024, 512],
+				[0, 1024],
+			],
+		],
+		Q: [
+			[
+				[512, 0],
+				[1024, 1024],
+				[512, 2048],
+				[0, 1024],
+				[512, 0],
+			],
+			[
+				[512, 1024],
+				[1024, 2048],
+			],
+		],
+		R: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+			],
+			[
+				[1024, 2048],
+				[0, 1024],
+				[1024, 512],
+				[0, 0],
+			],
+		],
+		S: [
+			[
+				[0, 2048],
+				[680.96, 1367.04],
+				[0, 680.96],
+				[680.96, 0],
+			],
+		],
+		T: [
+			[
+				[0, 512],
+				[512, 0],
+				[1024, 512],
+			],
+			[
+				[512, 0],
+				[512, 2048],
+			],
+		],
+		U: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+				[1024, 1536],
+				[1024, offsetVerticalLine],
+			],
+		],
+		V: [
+			[
+				[0, 0],
+				[512, 2048],
+				[1024, 0],
+			],
+		],
+		W: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+				[1024, 1536],
+				[1024, offsetVerticalLine],
+			],
+			[
+				[512, offsetVerticalLine],
+				[512, 1792],
+			],
+		],
+		X: [
+			[
+				[0, 0],
+				[1024, 2048],
+			],
+			[
+				[0, 2048],
+				[1024, 0],
+			],
+		],
+		Y: [
+			[
+				[0, 0],
+				[512, 512],
+				[1024, 0],
+			],
+			[
+				[512, 512],
+				[512, 2048],
+			],
+		],
+		Z: [
+			[
+				[680.96, 2048],
+				[0, 1367.04],
+				[680.96, 680.96],
+				[0, 0],
+			],
+		],
+		a: [
+			[
+				[1024, 1536 + offset90],
+				[512, 1024 + offset90],
+				[0, 1536 + offset90],
+				[512, 2048 + offset90],
+				[1024, 1536 + offset90],
+				[512, 1024 + offset90],
+			],
+			[
+				[1024 + offsetWidth / 2, 1024],
+				[1024 + offsetWidth / 2, 2048 + offsetVerticalLine],
+			],
+		],
+		b: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+			],
+			[
+				[0, 768],
+				[640, 1408],
+				[0, 2048],
+			],
+		],
+		c: [
+			[
+				[640, 2048],
+				[0, 1408],
+				[640, 768],
+			],
+		],
+		d: [
+			[
+				[640, 2048 + offsetVerticalLine],
+				[0, 1408 + offsetVerticalLine],
+				[640, 768 + offsetVerticalLine],
+			],
+			[
+				[640, -offsetVerticalLine],
+				[640, 2048 + offsetVerticalLine],
+			],
+		],
+		e: [
+			[
+				[640, 2048],
+				[0, 1408],
+				[640, 768],
+			],
+			[
+				[0, 1408],
+				[640, 1408],
+			],
+		],
+		f: [
+			[
+				[512, 512],
+				[0, 0],
+				[0, 2048],
+			],
+			[
+				[0, 1024],
+				[512, 1024],
+			],
+		],
+		g: [
+			[
+				[640, 768],
+				[640, 3072],
+				[0, 2560],
+			],
+			[
+				[640, 2048],
+				[0, 1408],
+				[640, 768],
+			],
+		],
+		h: [
+			[
+				[0, 0 - offsetVerticalLine],
+				[0, 2048 + offsetVerticalLine],
+			],
+			[
+				[0, 1024],
+				[1024, 1536],
+				[1024, 2048 + offsetVerticalLine],
+			],
+		],
+		i: [
+			[
+				[0, 512 - offsetWidth * 2],
+				[0, 512],
+			],
+			[
+				[0, 1024],
+				[0, 2048],
+				[512, 1536],
+			],
+		],
+		j: [
+			[
+				[512, offsetVerticalLine],
+				[512, 512 - offsetWidth],
+			],
+			[
+				[512, 1024],
+				[512, 3072],
+				[0, 2560],
+			],
+		],
+		k: [
+			[
+				[0, offsetVerticalLine],
+				[0, 2048],
+			],
+			[
+				[640, 2048],
+				[0, 1408],
+				[640, 768],
+			],
+		],
+		l: [
+			[
+				[0, -offsetVerticalLine],
+				[0, 2048],
+				[512, 1536],
+			],
+		],
+		m: [
+			[
+				[0, 1024],
+				[0, 2048],
+			],
+			[
+				[512, 1280],
+				[512, 2048],
+			],
+			[
+				[1024, 1536],
+				[1024, 2048],
+			],
+			[
+				[0, 1024],
+				[1024, 1536],
+			],
+		],
+		n: [
+			[
+				[0, 2048 + offsetVerticalLine],
+				[
+					0,
+					1024 +
+						angle2offset(
+							26.56505117707799 * (Math.PI / 2),
+							strokeWidth
+						),
+				],
+				[
+					1024,
+					1536 +
+						angle2offset(
+							26.56505117707799 * (Math.PI / 2),
+							strokeWidth
+						),
+				],
+				[1024, 2048 + offsetVerticalLine],
+			],
+		],
+		o: [
+			[
+				[1024, 1536 + offset90],
+				[512, 1024 + offset90],
+				[0, 1536 + offset90],
+				[512, 2048 + offset90],
+				[1024, 1536 + offset90],
+				[512, 1024 + offset90],
+			],
+		],
+		p: [
+			[
+				[0, 768],
+				[0, 3072],
+			],
+			[
+				[0, 768],
+				[640, 1408],
+				[0, 2048],
+			],
+		],
+		q: [
+			[
+				[640, 768],
+				[640, 3072],
+			],
+			[
+				[640, 2048],
+				[0, 1408],
+				[640, 768],
+			],
+		],
+		r: [
+			[
+				[0, 1024],
+				[0, 2048 + offsetVerticalLine],
+			],
+			[
+				[0, 1280 + 256],
+				[512, 1024],
+			],
+			// 	[
+			// 	[0, 768],
+			// 	[0, 2048 + offsetVerticalLine],
+			// ],
+			// [
+			// 	[0, 1280],
+			// 	[512, 768],
+			// ],
+		],
+		s: [
+			[
+				[640, 768 + offset135],
+				[0, 1408 + offset135],
+				[640, 1408 + offset135],
+				[0, 2048 + offset135],
+			],
+		],
+		t: [
+			[
+				[0, 0 - offsetVerticalLine],
+				[0, 2048],
+				[512, 1536],
+			],
+			[
+				[0, 1024],
+				[512, 1024],
+			],
+		],
+		u: [
+			[
+				[0, 1024],
+				[0, 2048],
+				[1024, 1536],
+				[1024, 1024],
+			],
+		],
+		v: [
+			[
+				[0, 1024],
+				[512, 2048],
+				[1024, 1024],
+			],
+		],
+		w: [
+			[
+				[0, 1024],
+				[0, 2048],
+				[1024, 1536],
+				[1024, 1024],
+			],
+			[
+				[512, 1792],
+				[512, 1024],
+			],
+		],
+		x: [
+			[
+				[0, 1024],
+				[1024, 2048],
+			],
+			[
+				[0, 2048],
+				[1024, 1024],
+			],
+		],
+		y: [
+			[
+				[896, 768],
+				[896, 3072],
+				[256, 2560],
+			],
+			[
+				[896, 1792],
+				[0, 896],
+			],
+		],
+		z: [
+			[
+				[0, 768],
+				[640, 1408],
+				[0, 1408],
+				[640, 2048],
+			],
+		],
+		'-': [
+			[
+				[0, 1024],
+				[1024, 1024],
+			],
+		],
+		':': [
+			[
+				[0, 128],
+				[0, 640],
+			],
+			[
+				[0, 1408],
+				[0, 1920],
+			],
+		],
+		'.': [
+			[
+				[0, 1536],
+				[0, 2048],
+			],
+		],
+		_: [
+			[
+				[0, 2048],
+				[1024, 2048],
+			],
+		],
+		' ': [
+			[
+				[0, 2048],
+				[1024, 2048],
+			],
+		],
+	}
+}

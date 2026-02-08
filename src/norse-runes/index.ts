@@ -1,2 +1,2 @@
-export * from './glyph-coords'
+export * from './calc-rune-coords'
 export * from './metal'
