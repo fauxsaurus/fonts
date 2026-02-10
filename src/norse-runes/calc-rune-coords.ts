@@ -19,6 +19,9 @@ const angle2offset = (angle: IRadians, strokeWidth: number) => {
 }
 
 export const calcRuneCoords = (strokeWidth: number) => {
+	const deg2Offset = (deg: number) =>
+		angle2offset(deg * (Math.PI / 2), strokeWidth)
+
 	const offsetWidth = strokeWidth / 2 // 90 degree triangle height used to extend pts
 
 	const GOffset = angle2offset(45 * (Math.PI / 2), strokeWidth)
@@ -33,6 +36,17 @@ export const calcRuneCoords = (strokeWidth: number) => {
 	const offset135 =
 		angle2offset(135 * (Math.PI / 2), strokeWidth) +
 		offsetWidth / 2 / Math.sqrt(2) // top and bottom of "s" whose end triangle sides are completely horizontal
+
+	console.log('a bounds:', 1024 + offsetWidth, 1048 + offsetVerticalLine)
+
+	const lineTop = -GOffset // top G
+	const lineMiddle = 1024
+	const lineBottom = 2048 + GOffset // bottom G
+
+	const lineMiddleTop = (lineTop + lineMiddle) / 2
+	const lineMiddleBottom = (lineBottom + lineMiddle) / 2
+
+	const quarters = (2048 + GOffset + GOffset) / 4
 
 	return {
 		A: [
@@ -299,16 +313,24 @@ export const calcRuneCoords = (strokeWidth: number) => {
 			],
 		],
 		a: [
+			// [
+			// 	[1024, 1536 + offset90],
+			// 	[512, 1024 + offset90],
+			// 	[0, 1536 + offset90],
+			// 	[512, 2048 + offset90],
+			// 	[1024, 1536 + offset90],
+			// 	[512, 1024 + offset90],
+			// ],
 			[
-				[1024, 1536 + offset90],
-				[512, 1024 + offset90],
-				[0, 1536 + offset90],
-				[512, 2048 + offset90],
-				[1024, 1536 + offset90],
-				[512, 1024 + offset90],
+				[1024, 1536 + deg2Offset(45)],
+				[512, 1024 + deg2Offset(45)],
+				[0, 1536 + deg2Offset(45)],
+				[512, 2048 + deg2Offset(45)],
+				[1024, 1536 + deg2Offset(45)],
+				[512, 1024 + deg2Offset(45)],
 			],
 			[
-				[1024 + offsetWidth / 2, 1024],
+				[1024 + offsetWidth / 2, 1024 + offsetWidth],
 				[1024 + offsetWidth / 2, 2048 + offsetVerticalLine],
 			],
 		],

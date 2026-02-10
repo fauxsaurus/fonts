@@ -3,6 +3,7 @@ type IY = number
 type IPt = [IX, IY]
 
 type IProps = {
+	children: string
 	config: {glyphCoords: Record<string, number[][][]>; strokeWidth: number}
 }
 
@@ -77,6 +78,8 @@ const stroke2pathPts = (strokeWidth: number, strokes: IPt[]) => {
 		const tmpPt1: IPt = [centerPt[0] + offsetWidth, centerPt[1]]
 
 		const angle = Math.atan2(v, h)
+
+		console.log(angle * (180 / Math.PI))
 
 		// +/-90 deg (aka 1/2 PI) for perpendicularity to current slope
 		const edge1 = rotatePt(centerPt, tmpPt1, angle - Math.PI / 2)
@@ -193,7 +196,7 @@ const Line = (props: {glyphs: IPt[][][]; strokeWidth: number}) => {
 		.sort((a, b) => b - a)
 
 	const maxY = ys[0]
-	const minY = ys.slice(-1)[0]
+	const minY = 0
 
 	const svgHeight = Math.ceil(maxY - minY) * 1.2
 
@@ -205,7 +208,7 @@ const Line = (props: {glyphs: IPt[][][]; strokeWidth: number}) => {
 	return (
 		<>
 			<svg
-				viewBox={`${minX} ${minY} ${svgWidth} ${maxY}`}
+				viewBox={`${minX} 0 ${svgWidth} ${2048 + 1024}`}
 				xmlns="http://www.w3.org/2000/svg"
 				width={svgWidth}
 				height={svgHeight}
@@ -233,7 +236,6 @@ const Line = (props: {glyphs: IPt[][][]; strokeWidth: number}) => {
 					))}
 				</g>
 				<g stroke="red" strokeWidth="10" opacity="0.5">
-					<path d={`M${minX},0 h${svgWidth}`} />
 					<path d={`M${minX},512 h${svgWidth}`} opacity="0.25" />
 					<path d={`M${minX},1024 h${svgWidth}`} />
 					<path
@@ -241,6 +243,10 @@ const Line = (props: {glyphs: IPt[][][]; strokeWidth: number}) => {
 						opacity="0.25"
 					/>
 					<path d={`M${minX},2048 h${svgWidth}`} />
+					<path
+						d={`M${minX},${2048 + 512} h${svgWidth}`}
+						opacity="0.25"
+					/>
 				</g>
 			</svg>
 			<br />
@@ -270,22 +276,12 @@ const extendLineWithVector = (
 	return [newX, newY]
 }
 
-export const Metal = (props: IProps) => {
+export const Metal2 = (props: IProps) => {
 	const {glyphCoords, strokeWidth} = props.config
 
 	const characterCoords = glyphCoords as Record<string, IPt[][]>
 
-	console.log(characterCoords)
-
-	const lines = `Embers of the Nephilim:
-Ghost Girl
-Ga
-and the
-Ghost Giant
-${Object.keys(characterCoords).slice(0, 26).join('')}
-${Object.keys(characterCoords).slice(26).join('')}`.split('\n')
-
-	return lines.map((line, lineNumber) => {
+	return props.children.split('\n').map((line, lineNumber) => {
 		const glyphs = line.split('').map((letter) => characterCoords[letter])
 
 		return <Line key={lineNumber} {...{glyphs, strokeWidth}} />
