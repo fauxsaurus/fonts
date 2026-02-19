@@ -97,11 +97,13 @@ const lines2cornerPt = (
 
 // const getYFromXOnLine = ([x0, y0]: IPt, m: number, x: number) =>
 // 	m * (x - x0) + y0
+// console.log(getYFromXOnLine([128, 1024], 1, 256))
 
 const translatePts = ([h, v]: IPt, ...pts: IPt[]) =>
 	pts.map<IPt>(([x, y]) => [x + h, y + v])
 
-// console.log(getYFromXOnLine([128, 1024], 1, 256))
+const mirrorPtsH = (xAxis: number, pts: IPt[]) =>
+	pts.map<IPt>(([x, y]) => [xAxis - x + xAxis, y])
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
