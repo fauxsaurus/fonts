@@ -230,6 +230,20 @@ const GLYPHS = {
 			</SVG>
 		)
 	},
+
+	p: () => {
+		const vertical = translatePts([0, 1024], ...bVertical.pts)
+		const triangle = translatePts([0, sw2], ...bTriangle.pts)
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path key="v" d={`M${pts2svg(vertical)}z`} />
+					<path key="tri" d={`M${pts2svg(triangle)}z`} />
+				</g>
+			</SVG>
+		)
+	},
 }
 
 export const SVGRunes = () => {
