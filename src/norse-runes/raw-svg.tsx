@@ -1,6 +1,6 @@
 import type {JSX} from 'react'
 
-const sw = 200 // stroke width
+const sw = 192 // stroke width
 const sw2 = sw / 2 // offset width
 
 const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
@@ -140,6 +140,44 @@ const GLYPHS = {
 					/>
 				</g>
 				<g stroke="red" stroke-width="10px" fill="none">
+					<path
+						d={`M${pts2svg(...lines2cornerPts(bottom, -1, middle, 1), ...lines2cornerPts(bottomTriTop, 1, bottomTriBottom, -1))}z`}
+					/>
+					{/* <path d="M0,1920 256,1920 256,1152 0,1024z" /> */}
+					{/* <path d="M128,1024 640,512 128,0 128,256 384,512 128,768z" /> */}
+				</g>
+			</SVG>
+		)
+	},
+	b: () => {
+		const top = [sw2, 0]
+		const topLeft = [0, sw2]
+		const topRight = [sw, sw2]
+
+		const bottom = [sw2, 2048]
+		const bottomLeft = [0, 2048 - sw2]
+		const bottomRight = [sw, 2048 - sw2]
+
+		const middle = [sw, 1024] // where the outer diagonals meet on the right side of the vertical
+
+		const topTriTop = translatePts([0, swD45], top)[0]
+		const topTriBottom = translatePts([0, -swD45], middle)[0]
+
+		const bottomTriTop = translatePts([0, swD45], middle)[0]
+		const bottomTriBottom = translatePts([0, -swD45], bottom)[0]
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path
+						d={`M${pts2svg(topLeft, top, topRight, bottomRight, bottom, bottomLeft)}z`}
+					/>
+
+					<path
+						d={`M${pts2svg(...lines2cornerPts(bottom, -1, middle, 1), ...lines2cornerPts(bottomTriTop, 1, bottomTriBottom, -1))}z`}
+					/>
+				</g>
+				<g stroke="red" stroke-width="10px" fill="none">
 					{/* <path d="M0,1920 256,1920 256,1152 0,1024z" /> */}
 					{/* <path d="M128,1024 640,512 128,0 128,256 384,512 128,768z" /> */}
 				</g>
@@ -149,7 +187,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'B'
+	return 'Bb'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
