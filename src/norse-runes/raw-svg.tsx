@@ -188,9 +188,9 @@ const GLYPHS = {
 		return (
 			<SVG width={512}>
 				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(bVertical.pts)}z`} />
-					<path d={`M${pts2svg(PTriangle.pts)}z`} />
-					<path d={`M${pts2svg(bTriangle.pts)}z`} />
+					<path key="v" d={`M${pts2svg(bVertical.pts)}z`} />
+					<path key="triU" d={`M${pts2svg(PTriangle.pts)}z`} />
+					<path key="triL" d={`M${pts2svg(bTriangle.pts)}z`} />
 				</g>
 			</SVG>
 		)
@@ -199,8 +199,8 @@ const GLYPHS = {
 		return (
 			<SVG width={512}>
 				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(bVertical.pts)}z`} />
-					<path d={`M${pts2svg(PTriangle.pts)}z`} />
+					<path key="v" d={`M${pts2svg(bVertical.pts)}z`} />
+					<path key="triU" d={`M${pts2svg(PTriangle.pts)}z`} />
 				</g>
 			</SVG>
 		)
@@ -224,8 +224,8 @@ const GLYPHS = {
 		return (
 			<SVG width={512}>
 				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(bVertical.pts)}z`} />
-					<path d={`M${pts2svg(bTriangle.pts)}z`} />
+					<path key="v" d={`M${pts2svg(bVertical.pts)}z`} />
+					<path key="triL" d={`M${pts2svg(bTriangle.pts)}z`} />
 				</g>
 			</SVG>
 		)
@@ -233,7 +233,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BPb'
+	return 'BPbp'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
