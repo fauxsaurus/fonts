@@ -254,8 +254,8 @@ const GLYPHS = {
 	},
 
 	p: () => {
-		const vertical = translatePts([0, 1024], ...bVertical.pts)
-		const triangle = translatePts([0, sw2], ...bTriangle.pts)
+		const vertical = translatePts([0, 1024 - sw2], ...bVertical.pts)
+		const triangle = translatePts([0, 0], ...bTriangle.pts)
 
 		return (
 			<SVG width={512}>
