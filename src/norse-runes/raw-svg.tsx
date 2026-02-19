@@ -79,107 +79,153 @@ const SVG = ({children, height = 2560, width = 2048}: IProps) => {
 	)
 }
 
-const lines2cornerPts = (
-	[x1, y1]: [number, number],
+type IPt = [number, number]
+
+// @todo revert to intersection (i.e., just return the new center pt)
+const lines2cornerPt = (
+	[x1, y1]: IPt,
 	m1: number,
-	[x2, y2]: [number, number],
+	[x2, y2]: IPt,
 	m2: number
-) => {
+): IPt => {
 	if (m1 === m2) throw new Error('Lines are parallel, no intersection!')
 
 	const x = (m2 * x2 - m1 * x1 + y1 - y2) / (m2 - m1)
 	const y = m1 * (x - x1) + y1
-	return [
-		[x1, y1],
-		[x, y],
-		[x2, y2],
-	]
+	return [x, y]
 }
 
-const getYFromXOnLine = ([x0, y0]: [number, number], m: number, x: number) =>
-	m * (x - x0) + y0
+// const getYFromXOnLine = ([x0, y0]: IPt, m: number, x: number) =>
+// 	m * (x - x0) + y0
 
-const translatePts = ([h, v]: number[], ...pts: number[][]) =>
-	pts.map(([x, y]) => [x + h, y + v])
+const translatePts = ([h, v]: IPt, ...pts: IPt[]) =>
+	pts.map<IPt>(([x, y]) => [x + h, y + v])
 
-console.clear()
-console.log(lines2cornerPts([256, 1024 + swD45], 1, [256, 1920 - swD45], -1))
 // console.log(getYFromXOnLine([128, 1024], 1, 256))
 
-const pts2svg = (...pts: number[][]) => pts.map((pt) => pt.join(',')).join(' ')
+const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
+
+// # STROKES
+const bVertical = (() => {
+	const top = [sw2, 0]
+	const topLeft = [0, sw2]
+	const topRight = [sw, sw2]
+
+	const bottom = [sw2, 2048]
+	const bottomLeft = [0, 2048 - sw2]
+	const bottomRight = [sw, 2048 - sw2]
+
+	return {
+		top,
+		topLeft,
+		topRight,
+		bottom,
+		bottomLeft,
+		bottomRight,
+		pts: [topLeft, top, topRight, bottomRight, bottom, bottomLeft] as IPt[],
+	}
+})()
+
+const bTriangle = (() => {
+	const center: IPt = [sw, 1024] // where the outer diagonal meets the center line of the glyph vertically
+
+	const bottomOuter: IPt = [sw2, 2048]
+
+	const topOuter = translatePts([-sw2, -sw2], center)[0]
+	const topInner = translatePts([-sw2, swD45 - sw2], center)[0]
+
+	const bottomInner = translatePts([0, -swD45], bottomOuter)[0]
+
+	const centerOuter = lines2cornerPt(bottomOuter, -1, topOuter, 1)
+
+	const centerInner = lines2cornerPt(topInner, 1, bottomInner, -1)
+
+	return {
+		topOuter,
+		centerOuter,
+		bottomOuter,
+		bottomInner,
+		centerInner,
+		topInner,
+
+		pts: [
+			topOuter,
+			centerOuter,
+			bottomOuter,
+			bottomInner,
+			centerInner,
+			topInner,
+		] as IPt[],
+	}
+})()
+
+const PTriangle = (() => {
+	const pts = translatePts([0, -bTriangle.topOuter[1]], ...bTriangle.pts)
+
+	const [
+		topOuter,
+		centerOuter,
+		bottomOuter,
+		bottomInner,
+		centerInner,
+		topInner,
+	] = pts
+
+	return {
+		topOuter,
+		centerOuter,
+		bottomOuter,
+		bottomInner,
+		centerInner,
+		topInner,
+
+		pts,
+	}
+})()
 
 const GLYPHS = {
 	B: () => {
-		const top = [sw2, 0]
-		const topLeft = [0, sw2]
-		const topRight = [sw, sw2]
-
-		const bottom = [sw2, 2048]
-		const bottomLeft = [0, 2048 - sw2]
-		const bottomRight = [sw, 2048 - sw2]
-
-		const middle = [sw, 1024] // where the outer diagonals meet on the right side of the vertical
-
-		const topTriTop = translatePts([0, swD45], top)[0]
-		const topTriBottom = translatePts([0, -swD45], middle)[0]
-
-		const bottomTriTop = translatePts([0, swD45], middle)[0]
-		const bottomTriBottom = translatePts([0, -swD45], bottom)[0]
-
 		return (
 			<SVG width={512}>
 				<g stroke="none" fill="#000">
-					<path
-						d={`M${pts2svg(topLeft, top, topRight, bottomRight, bottom, bottomLeft)}z`}
-					/>
-					<path
-						d={`M${pts2svg(...lines2cornerPts(top, 1, middle, -1), ...lines2cornerPts(topTriBottom, -1, topTriTop, 1))}z`}
-					/>
-					<path
-						d={`M${pts2svg(...lines2cornerPts(bottom, -1, middle, 1), ...lines2cornerPts(bottomTriTop, 1, bottomTriBottom, -1))}z`}
-					/>
-				</g>
-				<g stroke="red" stroke-width="10px" fill="none">
-					<path
-						d={`M${pts2svg(...lines2cornerPts(bottom, -1, middle, 1), ...lines2cornerPts(bottomTriTop, 1, bottomTriBottom, -1))}z`}
-					/>
-					{/* <path d="M0,1920 256,1920 256,1152 0,1024z" /> */}
-					{/* <path d="M128,1024 640,512 128,0 128,256 384,512 128,768z" /> */}
+					<path d={`M${pts2svg(bVertical.pts)}z`} />
+					<path d={`M${pts2svg(PTriangle.pts)}z`} />
+					<path d={`M${pts2svg(bTriangle.pts)}z`} />
 				</g>
 			</SVG>
 		)
 	},
-	b: () => {
-		const top = [sw2, 0]
-		const topLeft = [0, sw2]
-		const topRight = [sw, sw2]
-
-		const bottom = [sw2, 2048]
-		const bottomLeft = [0, 2048 - sw2]
-		const bottomRight = [sw, 2048 - sw2]
-
-		const middle = [sw, 1024] // where the outer diagonals meet on the right side of the vertical
-
-		const topTriTop = translatePts([0, swD45], top)[0]
-		const topTriBottom = translatePts([0, -swD45], middle)[0]
-
-		const bottomTriTop = translatePts([0, swD45], middle)[0]
-		const bottomTriBottom = translatePts([0, -swD45], bottom)[0]
-
+	P: () => {
 		return (
 			<SVG width={512}>
 				<g stroke="none" fill="#000">
-					<path
-						d={`M${pts2svg(topLeft, top, topRight, bottomRight, bottom, bottomLeft)}z`}
-					/>
-
-					<path
-						d={`M${pts2svg(...lines2cornerPts(bottom, -1, middle, 1), ...lines2cornerPts(bottomTriTop, 1, bottomTriBottom, -1))}z`}
-					/>
+					<path d={`M${pts2svg(bVertical.pts)}z`} />
+					<path d={`M${pts2svg(PTriangle.pts)}z`} />
 				</g>
-				<g stroke="red" stroke-width="10px" fill="none">
-					{/* <path d="M0,1920 256,1920 256,1152 0,1024z" /> */}
-					{/* <path d="M128,1024 640,512 128,0 128,256 384,512 128,768z" /> */}
+			</SVG>
+		)
+	},
+	// B: () => {
+	// 	return (
+	// 		<SVG width={512}>
+	// 			<g stroke="none" fill="#000">
+	// 				<path d={`M${pts2svg(bVertical.pts)}z`} />
+	// 				<path d={`M${pts2svg(PTriangle.pts)}z`} />
+	// 				<path d={`M${pts2svg(bTriangle.pts)}z`} />
+	// 			</g>
+	// 			<g fill="none" stroke="red" strokeWidth={10}>
+	// 				<path d={`M${pts2svg(PTriangle.pts)}z`} />
+	// 			</g>
+	// 		</SVG>
+	// 	)
+	// },
+
+	b: () => {
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path d={`M${pts2svg(bVertical.pts)}z`} />
+					<path d={`M${pts2svg(bTriangle.pts)}z`} />
 				</g>
 			</SVG>
 		)
@@ -187,7 +233,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'Bb'
+	return 'BPb'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
@@ -197,7 +243,7 @@ export const SVGRunes = () => {
 			xmlns="http://www.w3.org/2000/svg"
 			width="66305"
 			height="3976.7999999999997"
-			style="background: rgb(238, 238, 238);"
+			style={{background: 'rgb(238, 238, 238)'}}
 		>
 			<g fill="silver" stroke="none">
 				<g transform="translate(0, 0)">
