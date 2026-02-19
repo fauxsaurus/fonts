@@ -232,6 +232,26 @@ const GLYPHS = {
 			</SVG>
 		)
 	},
+	d: () => {
+		const verticalPts = translatePts(
+			[bTriangle.centerOuter[0] - sw, 0],
+			...bVertical.pts
+		)
+
+		const trianglePts = translatePts(
+			[bTriangle.centerOuter[0], 0],
+			...mirrorPtsH(0, bTriangle.pts)
+		)
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path key="v" d={`M${pts2svg(verticalPts)}z`} />
+					<path key="tri" d={`M${pts2svg(trianglePts)}z`} />
+				</g>
+			</SVG>
+		)
+	},
 
 	p: () => {
 		const vertical = translatePts([0, 1024], ...bVertical.pts)
@@ -249,7 +269,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BPbp'
+	return 'BPbdp'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
