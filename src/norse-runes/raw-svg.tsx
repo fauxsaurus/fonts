@@ -109,13 +109,13 @@ const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
 // # STROKES
 const bVertical = (() => {
-	const top = [sw2, 0]
-	const topLeft = [0, sw2]
-	const topRight = [sw, sw2]
+	const top: IPt = [sw2, 0]
+	const topLeft: IPt = [0, sw2]
+	const topRight: IPt = [sw, sw2]
 
-	const bottom = [sw2, 2048]
-	const bottomLeft = [0, 2048 - sw2]
-	const bottomRight = [sw, 2048 - sw2]
+	const bottom: IPt = [sw2, 2048]
+	const bottomLeft: IPt = [0, 2048 - sw2]
+	const bottomRight: IPt = [sw, 2048 - sw2]
 
 	return {
 		top,
