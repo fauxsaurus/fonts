@@ -266,10 +266,33 @@ const GLYPHS = {
 			</SVG>
 		)
 	},
+
+	o: () => {
+		const triLeftPts = translatePts(
+			[bTriangle.centerOuter[0], 0],
+			...mirrorPtsH(0, bTriangle.pts)
+		)
+		const triRightPts = translatePts(
+			[bTriangle.centerOuter[0] - sw, 0],
+
+			...bTriangle.pts
+		)
+
+		const width = Math.max(...triRightPts.map(([x]) => x))
+
+		return (
+			<SVG width={width}>
+				<g stroke="none" fill="#000">
+					<path key="tri-left" d={`M${pts2svg(triLeftPts)}z`} />
+					<path key="tri-right" d={`M${pts2svg(triRightPts)}z`} />
+				</g>
+			</SVG>
+		)
+	},
 }
 
 export const SVGRunes = () => {
-	return 'BPbdp'
+	return 'BPbdop'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
