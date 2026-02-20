@@ -95,6 +95,16 @@ const lines2cornerPt = (
 	return [x, y]
 }
 
+const getXFromYonLine = ([x1, y1]: IPt, m: number, y: number): number => {
+	if (m) return x1 + (y - y1) / m // rearranged point-slope formula
+
+	// prevent division by zero
+	// If the slope is 0 (horizontal line), y will always be y1. If y2 is the same as y1, any x value is valid, but we return x1 as a reference.
+	if (y === y1) return x1 // any x value is valid, but we return x1 as a reference.
+
+	throw new Error('A horizontal line with y = y1 does not pass through y2.')
+}
+
 // const getYFromXOnLine = ([x0, y0]: IPt, m: number, x: number) =>
 // 	m * (x - x0) + y0
 // console.log(getYFromXOnLine([128, 1024], 1, 256))
@@ -104,6 +114,9 @@ const translatePts = ([h, v]: IPt, ...pts: IPt[]) =>
 
 const mirrorPtsH = (xAxis: number, pts: IPt[]) =>
 	pts.map<IPt>(([x, y]) => [xAxis - x + xAxis, y])
+
+const mirrorPtsV = (yAxis: number, pts: IPt[]) =>
+	pts.map<IPt>(([x, y]) => [x, yAxis - y + yAxis])
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
@@ -232,6 +245,69 @@ const GLYPHS = {
 			</SVG>
 		)
 	},
+
+	c: () => {
+		const rotatePts2 = (degrees: number, [cx, cy]: IPt, pts: IPt[]) => {
+			const angleInRadians = (degrees * Math.PI) / 180
+			const cos = Math.cos(angleInRadians)
+			const sin = Math.sin(angleInRadians)
+
+			return pts.map<IPt>(([x, y]) => {
+				// Translate the point to the origin
+				const dx = x - cx
+				const dy = y - cy
+
+				// Apply the rotation
+				const newX = dx * cos - dy * sin
+				const newY = dx * sin + dy * cos
+
+				// Translate the point back to the original center
+				const rotatedX = newX + cx
+				const rotatedY = newY + cy
+
+				return [rotatedX, rotatedY]
+			})
+		}
+
+		const triangle = translatePts(
+			[bTriangle.centerOuter[0], 0],
+			...mirrorPtsH(0, bTriangle.pts)
+		)
+
+		const [topRight, centerOuter] = triangle
+
+		const topCornerOg: IPt[] = [
+			bVertical.topLeft,
+			bVertical.top,
+			bVertical.topRight,
+		]
+
+		const topCorner: IPt[] = translatePts(
+			[topRight[0], topRight[1] - sw2],
+			...rotatePts2(45, bVertical.topLeft, topCornerOg)
+		)
+
+		const bottomCorner: IPt[] = mirrorPtsV(
+			2048,
+			translatePts([0, 1024 + sw2], ...topCorner)
+		)
+
+		const cShape = [
+			centerOuter,
+			...topCorner,
+			translatePts([sw * Math.SQRT2, 0], centerOuter)[0],
+			...bottomCorner.slice().reverse(),
+		]
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path d={`M${pts2svg(cShape)}Z`} />
+				</g>
+			</SVG>
+		)
+	},
+
 	d: () => {
 		const verticalPts = translatePts(
 			[bTriangle.centerOuter[0] - sw, 0],
@@ -292,7 +368,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BPbdop'
+	return 'BPbcdop'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
