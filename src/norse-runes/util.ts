@@ -58,3 +58,8 @@ export const translatePts = ([h, v]: IPt, ...pts: IPt[]) =>
 
 // const getYFromXOnLine = ([x0, y0]: IPt, m: number, x: number) =>
 // 	m * (x - x0) + y0
+
+// Math.hypot(
+// 			cShape.tipTopOuter[0] - cShape.centerOuter[0],
+// 			cShape.tipTopOuter[1] - cShape.centerOuter[1]
+// 		)

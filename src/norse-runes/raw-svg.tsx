@@ -167,6 +167,61 @@ const PTriangle = (() => {
 	}
 })()
 
+const cShape = (() => {
+	const [topRight, centerOuter] = translatePts(
+		[bTriangle.centerOuter[0], 0],
+		...mirrorPtsH(0, bTriangle.pts)
+	)
+
+	const originalTip: IPt[] = [
+		bVertical.topLeft,
+		bVertical.top,
+		bVertical.topRight,
+	]
+
+	const centerInner = translatePts([sw * Math.SQRT2, 0], centerOuter)[0]
+
+	const [tipTopOuter, tipTop, tipTopInner] = translatePts(
+		[topRight[0], topRight[1] - sw2],
+		...rotatePts(45, bVertical.topLeft, originalTip)
+	)
+
+	const [tipBottomOuter, tipBottom, tipBottomInner] = mirrorPtsV(
+		2048,
+		translatePts([0, 1024 + sw2], tipTopOuter, tipTop, tipTopInner)
+	)
+
+	const pts = [
+		centerOuter,
+
+		tipTopOuter,
+		tipTop,
+		tipTopInner,
+
+		centerInner,
+
+		tipBottomInner,
+		tipBottom,
+		tipBottomOuter,
+	]
+
+	return {
+		centerOuter,
+
+		tipTopOuter,
+		tipTop,
+		tipTopInner,
+
+		centerInner,
+
+		tipBottomInner,
+		tipBottom,
+		tipBottomOuter,
+
+		pts,
+	}
+})()
+
 const GLYPHS = {
 	B: () => {
 		return (
@@ -216,40 +271,10 @@ const GLYPHS = {
 	},
 
 	c: () => {
-		const triangle = translatePts(
-			[bTriangle.centerOuter[0], 0],
-			...mirrorPtsH(0, bTriangle.pts)
-		)
-
-		const [topRight, centerOuter] = triangle
-
-		const topCornerOg: IPt[] = [
-			bVertical.topLeft,
-			bVertical.top,
-			bVertical.topRight,
-		]
-
-		const topCorner: IPt[] = translatePts(
-			[topRight[0], topRight[1] - sw2],
-			...rotatePts(45, bVertical.topLeft, topCornerOg)
-		)
-
-		const bottomCorner: IPt[] = mirrorPtsV(
-			2048,
-			translatePts([0, 1024 + sw2], ...topCorner)
-		)
-
-		const cShape = [
-			centerOuter,
-			...topCorner,
-			translatePts([sw * Math.SQRT2, 0], centerOuter)[0],
-			...bottomCorner.slice().reverse(),
-		]
-
 		return (
 			<SVG width={512}>
 				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(cShape)}Z`} />
+					<path d={`M${pts2svg(cShape.pts)}Z`} />
 				</g>
 			</SVG>
 		)
@@ -271,6 +296,42 @@ const GLYPHS = {
 				<g stroke="none" fill="#000">
 					<path key="v" d={`M${pts2svg(verticalPts)}z`} />
 					<path key="tri" d={`M${pts2svg(trianglePts)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
+	e: () => {
+		const tipLeft = cShape.centerOuter
+		const tipLeftTop = translatePts([sw2, -sw2], tipLeft)[0]
+		const tipLeftBottom = translatePts([sw2, sw2], tipLeft)[0]
+
+		const tipRightBottom = translatePts(
+			[cShape.tipTop[0] - sw, 0],
+			tipLeftBottom
+		)[0]
+		const tipRightTop = translatePts(
+			[cShape.tipTop[0] - sw, 0],
+			tipLeftTop
+		)[0]
+		const tipRight = translatePts([cShape.tipTop[0], 0], tipLeft)[0]
+
+		const _Shape: IPt[] = [
+			tipLeft,
+			tipLeftTop,
+
+			tipRightTop,
+			tipRight,
+
+			tipRightBottom,
+			tipLeftBottom,
+		]
+
+		return (
+			<SVG width={768}>
+				<g stroke="none" fill="#000">
+					<path key="c" d={`M${pts2svg(cShape.pts)}Z`} />
+					<path key="_" d={`M${pts2svg(_Shape)}`} />
 				</g>
 			</SVG>
 		)
@@ -315,7 +376,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BPbcdop'
+	return 'BPbcdeop'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
