@@ -230,11 +230,19 @@ const tipNE: IPt[] = [
 	[sw / Math.SQRT2, sw / Math.SQRT2],
 ]
 
+const tipE: IPt[] = [
+	[0, 0],
+	[sw2, sw2],
+	[0, sw],
+]
+
 const tipSE: IPt[] = [
 	[0, 0],
 	[sw / Math.SQRT2, 0],
 	[sw / Math.SQRT2, -sw / Math.SQRT2],
 ]
+
+const tipW: IPt[] = mirrorPtsH(0, tipE)
 
 const GLYPHS = {
 	B: () => {
@@ -260,6 +268,33 @@ const GLYPHS = {
 			<SVG width={1024}>
 				<g stroke="none" fill="#000">
 					<path key="<" d={`M${pts2svg(shape)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+	E: () => {
+		const shape: IPt[] = [
+			...translatePts([1024, 0], ...tipNE).reverse(),
+			[0, 1024],
+			...translatePts([1024, 2048], ...tipSE),
+			[swD45, 1024],
+		]
+
+		const _Shape = translatePts([sw2, 1024 - sw2], ...tipW)
+			.reverse()
+			.concat(
+				translatePts(
+					[1024 + sw / Math.SQRT2 - sw2, 1024 - sw2],
+					...tipE
+				)
+			)
+
+		return (
+			<SVG width={1024}>
+				<g stroke="none" fill="#000">
+					<path key="<" d={`M${pts2svg(shape)}z`} />
+
+					<path key="-" d={`M${pts2svg(_Shape)}z`} />
 				</g>
 			</SVG>
 		)
@@ -406,7 +441,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BCPbcdeop'
+	return 'BCEPbcdeop'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
