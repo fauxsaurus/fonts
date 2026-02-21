@@ -652,9 +652,13 @@ const GLYPHS = {
 }
 
 export const SVGRunes = ({children = ''}: {children: string}) => {
-	return children.split('').map((glyph) => {
-		const fn = GLYPHS?.[glyph as keyof typeof GLYPHS] || GLYPHS[' ']
+	return (
+		<div style={{display: 'flex'}}>
+			{children.split('').map((glyph) => {
+				const fn = GLYPHS?.[glyph as keyof typeof GLYPHS] || GLYPHS[' ']
 
-		return fn()
-	})
+				return fn()
+			})}
+		</div>
+	)
 }

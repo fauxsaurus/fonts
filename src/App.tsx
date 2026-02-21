@@ -9,8 +9,11 @@ function App() {
 	return (
 		<>
 			<h1>Runic English (Metal)</h1>
-			<Metal
-			<SVGRunes>BCEGPbcdefilopt </SVGRunes>
+			<SVGRunes key="all">BCEGPbcdefilopt </SVGRunes>
+			<SVGRunes key="subtitle">Embers of the Nephilim: </SVGRunes>
+			<SVGRunes key="line-1">Ghost Girl</SVGRunes>
+			<SVGRunes key="line-2">and the</SVGRunes>
+			<SVGRunes key="line-3">Ghost Giant </SVGRunes>
 			<Metal2
 				config={{
 					glyphCoords: calcRuneCoords2(STROKE_WIDTH),
@@ -18,7 +21,7 @@ function App() {
 					strokeWidth: STROKE_WIDTH,
 				}}
 			>
-				and the Ghost Girl
+				ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:
 			</Metal2>
 			{/* <Metal
 				config={{
