@@ -609,7 +609,35 @@ const GLYPHS = {
 		)
 	},
 
-	// @todo what should be done if o does not line up visually with E, G, or t's center line?
+	r: () => {
+		const verticalTipTop = translatePts([0, 1024], ...tipN)
+		const verticalTipBottom = translatePts(
+			[0, 2048 - sw2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const vertical = verticalTipTop.concat(verticalTipBottom)
+
+		const diagonal: IPts = [
+			cShape.centerOuter,
+
+			cShape.tipTopOuter,
+			cShape.tipTop,
+			cShape.tipTopInner,
+
+			translatePts([-swD45, swD45], cShape.centerInner)[0],
+		]
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path d={`M${pts2svg(vertical)}z`} />
+					<path key="c" d={`M${pts2svg(diagonal)}Z`} />
+				</g>
+			</SVG>
+		)
+	},
+
 	t: () => {
 		const verticalTipTop = translatePts([0, sw2], ...tipN)
 		const verticalTipBottom = translatePts(

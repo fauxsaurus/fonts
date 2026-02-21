@@ -9,7 +9,7 @@ function App() {
 	return (
 		<>
 			<h1>Runic English (Metal)</h1>
-			<SVGRunes key="all">BCEGPbcdefilopt </SVGRunes>
+			<SVGRunes key="all">BCEGPbcdefiloprt </SVGRunes>
 			<SVGRunes key="subtitle">Embers of the Nephilim: </SVGRunes>
 			<SVGRunes key="line-1">Ghost Girl</SVGRunes>
 			<SVGRunes key="line-2">and the</SVGRunes>
