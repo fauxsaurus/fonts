@@ -10,7 +10,7 @@ function App() {
 		<>
 			<h1>Runic English (Metal)</h1>
 			<Metal
-			<SVGRunes />
+			<SVGRunes>BCEGPbcdefilopt </SVGRunes>
 			<Metal2
 				config={{
 					glyphCoords: calcRuneCoords2(STROKE_WIDTH),

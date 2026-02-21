@@ -651,8 +651,10 @@ const GLYPHS = {
 	},
 }
 
-export const SVGRunes = () => {
-	return 'BCEGPbcdefilopt '
-		.split('')
-		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
+export const SVGRunes = ({children = ''}: {children: string}) => {
+	return children.split('').map((glyph) => {
+		const fn = GLYPHS?.[glyph as keyof typeof GLYPHS] || GLYPHS[' ']
+
+		return fn()
+	})
 }
