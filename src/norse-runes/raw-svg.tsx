@@ -5,9 +5,12 @@ import {
 	lines2intersectionPt,
 	mirrorPtsH,
 	mirrorPtsV,
+	pts2MaxX,
+	pts2MaxY,
 	rotatePts,
 	translatePts,
 	type IPt,
+	type IPts,
 } from './util'
 
 const sw = 192 // stroke width
@@ -242,6 +245,12 @@ const tipSE: IPt[] = [
 	[sw / Math.SQRT2, -sw / Math.SQRT2],
 ]
 
+const tipS: IPt[] = [
+	[0, 0],
+	[sw, 0],
+	[sw2, sw2],
+]
+
 const tipW: IPt[] = mirrorPtsH(0, tipE)
 
 const GLYPHS = {
@@ -295,6 +304,63 @@ const GLYPHS = {
 					<path key="<" d={`M${pts2svg(shape)}z`} />
 
 					<path key="-" d={`M${pts2svg(_Shape)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
+	// @todo should G's upper and lower pts be extended beyond the line? or is there a way to rebalance C and E to be more inline with a pointy version of G?
+
+	G: () => {
+		const CShape: IPts = [
+			...translatePts([1024, 0], ...tipNE).reverse(),
+			[0, 1024],
+			...translatePts([1024, 2048], ...tipSE),
+			[swD45, 1024],
+		]
+
+		const maxX = pts2MaxX(CShape)
+
+		const overHangTip = translatePts(
+			[maxX - sw, PTriangle.centerOuter[1] - sw2],
+			...tipS
+		)
+
+		const overHang: IPts = [
+			[maxX, sw / Math.SQRT2],
+			[maxX - sw, sw / Math.SQRT2],
+
+			overHangTip[0],
+			overHangTip[2],
+			overHangTip[1],
+		]
+
+		const overHangTipMaxY = pts2MaxY(overHangTip)
+
+		const tipInnerMinX = maxX - overHangTipMaxY + sw2
+		const tipInner = translatePts([tipInnerMinX, 1024 - sw2], ...tipW)
+
+		const _Shape: IPts = [
+			...tipInner,
+			[maxX, 1024 + sw2],
+			[maxX, 1024 - sw2],
+		]
+
+		const vertical: IPts = [
+			[maxX - sw, 1024],
+			[maxX, 1024],
+
+			[maxX, 2048 - sw / Math.SQRT2],
+			[maxX - sw, 2048 - sw / Math.SQRT2],
+		]
+
+		return (
+			<SVG width={1024}>
+				<g stroke="none" fill="#000">
+					<path key="<" d={`M${pts2svg(CShape)}z`} />
+					<path key="\/" d={`M${pts2svg(overHang)}z`} />
+					<path key="-" d={`M${pts2svg(_Shape)}z`} />
+					<path key="|" d={`M${pts2svg(vertical)}z`} />
 				</g>
 			</SVG>
 		)
@@ -441,7 +507,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BCEPbcdeop'
+	return 'BCEGPbcdeop'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
