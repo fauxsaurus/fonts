@@ -463,7 +463,7 @@ const GLYPHS = {
 		]
 
 		return (
-			<SVG width={768}>
+			<SVG width={512}>
 				<g stroke="none" fill="#000">
 					<path key="c" d={`M${pts2svg(cShape.pts)}Z`} />
 					<path key="_" d={`M${pts2svg(_Shape)}`} />
@@ -503,7 +503,33 @@ const GLYPHS = {
 					<path d={`M${pts2svg(dot)}z`} />
 					<path d={`M${pts2svg(vertical)}z`} />
 					<path d={`M${pts2svg(tail)}z`} />
-					<path d={`M${pts2svg(tailTip)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
+	l: () => {
+		const verticalTipTop = translatePts([0, sw2], ...tipN)
+		const verticalTipBottom = translatePts(
+			[0, 2048 - sw2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const vertical = verticalTipTop.concat(verticalTipBottom)
+
+		const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
+
+		const tail: IPts = [
+			...tailTip,
+			verticalTipBottom[0],
+			...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+		]
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path d={`M${pts2svg(vertical)}z`} />
+					<path d={`M${pts2svg(tail)}z`} />
 				</g>
 			</SVG>
 		)
@@ -548,7 +574,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BCEGPbcdeiop'
+	return 'BCEGPbcdeilop'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
