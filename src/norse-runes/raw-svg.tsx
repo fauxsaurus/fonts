@@ -315,6 +315,7 @@ const GLYPHS = {
 		)
 	},
 
+	// @todo make g horizontal the same width as the f horizontal?
 	G: () => {
 		const CShape: IPts = [
 			[1024, swD45],
@@ -472,6 +473,42 @@ const GLYPHS = {
 		)
 	},
 
+	f: () => {
+		const verticalTipTop = translatePts([0, sw2], ...tipN)
+		const verticalTipBottom = translatePts(
+			[0, 2048 - sw2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const vertical = verticalTipTop.concat(verticalTipBottom)
+
+		const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
+
+		const tail: IPts = [
+			...tailTip,
+			verticalTipBottom[0],
+			...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+		]
+
+		const horizontal = translatePts(
+			[pts2MaxX(tailTip) - sw2, 1024 - sw2],
+			...tipE
+		).concat([
+			[0, 1024 + sw2],
+			[0, 1024 - sw2],
+		])
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path key="|" d={`M${pts2svg(vertical)}z`} />
+					<path key="/" d={`M${pts2svg(mirrorPtsV(1024, tail))}z`} />
+					<path key="-" d={`M${pts2svg(horizontal)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
 	i: () => {
 		const verticalTipTop = translatePts([0, 1024], ...tipN)
 		const verticalTipBottom = translatePts(
@@ -611,7 +648,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BCEGPbcdeilop'
+	return 'BCEGPbcdefilopt'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
