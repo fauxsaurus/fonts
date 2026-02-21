@@ -1,5 +1,6 @@
 // # Math
 export type IPt = [number, number]
+export type IPts = IPt[]
 
 export const lines2intersectionPt = (
 	[x1, y1]: IPt,
@@ -15,13 +16,13 @@ export const lines2intersectionPt = (
 	return [x, y]
 }
 
-export const mirrorPtsH = (xAxis: number, pts: IPt[]) =>
+export const mirrorPtsH = (xAxis: number, pts: IPts) =>
 	pts.map<IPt>(([x, y]) => [xAxis - x + xAxis, y])
 
-export const mirrorPtsV = (yAxis: number, pts: IPt[]) =>
+export const mirrorPtsV = (yAxis: number, pts: IPts) =>
 	pts.map<IPt>(([x, y]) => [x, yAxis - y + yAxis])
 
-export const rotatePts = (degrees: number, [cx, cy]: IPt, pts: IPt[]) => {
+export const rotatePts = (degrees: number, [cx, cy]: IPt, pts: IPts) => {
 	const angleInRadians = (degrees * Math.PI) / 180
 	const cos = Math.cos(angleInRadians)
 	const sin = Math.sin(angleInRadians)
@@ -43,7 +44,7 @@ export const rotatePts = (degrees: number, [cx, cy]: IPt, pts: IPt[]) => {
 	})
 }
 
-export const translatePts = ([h, v]: IPt, ...pts: IPt[]) =>
+export const translatePts = ([h, v]: IPt, ...pts: IPts) =>
 	pts.map<IPt>(([x, y]) => [x + h, y + v])
 
 // const getXFromYonLine = ([x1, y1]: IPt, m: number, y: number): number => {
