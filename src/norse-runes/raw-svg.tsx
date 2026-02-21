@@ -395,6 +395,41 @@ const GLYPHS = {
 	// 	)
 	// },
 
+	a: () => {
+		const triLeftPts = translatePts(
+			[bTriangle.centerOuter[0], 0],
+			...mirrorPtsH(0, bTriangle.pts)
+		)
+		const triRightPts = translatePts(
+			[bTriangle.centerOuter[0] - sw, 0],
+
+			...bTriangle.pts
+		)
+
+		const width = Math.max(...triRightPts.map(([x]) => x))
+
+		const verticalTipTop = translatePts([0, 1024], ...tipN)
+		const verticalTipBottom = translatePts(
+			[0, 2048 - sw2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const vertical = translatePts(
+			[width - sw, 0],
+			...verticalTipTop.concat(verticalTipBottom)
+		)
+
+		return (
+			<SVG width={width}>
+				<g stroke="none" fill="#000">
+					<path key="tri-left" d={`M${pts2svg(triLeftPts)}z`} />
+					<path key="tri-right" d={`M${pts2svg(triRightPts)}z`} />
+					<path key="|" d={`M${pts2svg(vertical)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
 	b: () => {
 		return (
 			<SVG width={512}>
