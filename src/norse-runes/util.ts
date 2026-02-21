@@ -44,6 +44,12 @@ export const rotatePts = (degrees: number, [cx, cy]: IPt, pts: IPts) => {
 	})
 }
 
+export const pts2MaxX = (pts: IPts) => Math.max(...pts.map(([x]) => x))
+export const pts2MaxY = (pts: IPts) => Math.max(...pts.map(([_, y]) => y))
+
+export const pts2MinX = (pts: IPts) => Math.min(...pts.map(([x]) => x))
+export const pts2MinY = (pts: IPts) => Math.min(...pts.map(([_, y]) => y))
+
 export const translatePts = ([h, v]: IPt, ...pts: IPts) =>
 	pts.map<IPt>(([x, y]) => [x + h, y + v])
 
