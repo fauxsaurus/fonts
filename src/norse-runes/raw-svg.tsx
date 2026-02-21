@@ -309,35 +309,33 @@ const GLYPHS = {
 		)
 	},
 
-	// @todo should G's upper and lower pts be extended beyond the line? or is there a way to rebalance C and E to be more inline with a pointy version of G?
-
 	G: () => {
 		const CShape: IPts = [
-			...translatePts([1024, 0], ...tipNE).reverse(),
+			[1024, swD45],
+			[1024, 0],
+
 			[0, 1024],
-			...translatePts([1024, 2048], ...tipSE),
+
+			[1024, 2048],
+			[1024, 2048 - swD45],
+
 			[swD45, 1024],
 		]
 
-		const maxX = pts2MaxX(CShape)
+		const maxX = 1024
 
-		const overHangTip = translatePts(
-			[maxX - sw, PTriangle.centerOuter[1] - sw2],
-			...tipS
-		)
+		const overHangTip = translatePts([maxX - sw, 1024 - sw * 2], ...tipS)
 
 		const overHang: IPts = [
-			[maxX, sw / Math.SQRT2],
-			[maxX - sw, sw / Math.SQRT2],
+			[maxX, sw],
+			[maxX - sw, sw],
 
 			overHangTip[0],
 			overHangTip[2],
 			overHangTip[1],
 		]
 
-		const overHangTipMaxY = pts2MaxY(overHangTip)
-
-		const tipInnerMinX = maxX - overHangTipMaxY + sw2
+		const tipInnerMinX = swD45 + sw2 * 3
 		const tipInner = translatePts([tipInnerMinX, 1024 - sw2], ...tipW)
 
 		const _Shape: IPts = [
@@ -350,8 +348,8 @@ const GLYPHS = {
 			[maxX - sw, 1024],
 			[maxX, 1024],
 
-			[maxX, 2048 - sw / Math.SQRT2],
-			[maxX - sw, 2048 - sw / Math.SQRT2],
+			[maxX, 2048 - sw],
+			[maxX - sw, 2048 - sw],
 		]
 
 		return (
