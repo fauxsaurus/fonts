@@ -222,6 +222,20 @@ const cShape = (() => {
 	}
 })()
 
+// tips named after the cardinal directions in which they point
+
+const tipNE: IPt[] = [
+	[0, 0],
+	[sw / Math.SQRT2, 0],
+	[sw / Math.SQRT2, sw / Math.SQRT2],
+]
+
+const tipSE: IPt[] = [
+	[0, 0],
+	[sw / Math.SQRT2, 0],
+	[sw / Math.SQRT2, -sw / Math.SQRT2],
+]
+
 const GLYPHS = {
 	B: () => {
 		return (
@@ -230,6 +244,22 @@ const GLYPHS = {
 					<path key="v" d={`M${pts2svg(bVertical.pts)}z`} />
 					<path key="triU" d={`M${pts2svg(PTriangle.pts)}z`} />
 					<path key="triL" d={`M${pts2svg(bTriangle.pts)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+	C: () => {
+		const shape: IPt[] = [
+			...translatePts([1024, 0], ...tipNE).reverse(),
+			[0, 1024],
+			...translatePts([1024, 2048], ...tipSE),
+			[swD45, 1024],
+		]
+
+		return (
+			<SVG width={1024}>
+				<g stroke="none" fill="#000">
+					<path key="<" d={`M${pts2svg(shape)}z`} />
 				</g>
 			</SVG>
 		)
@@ -376,7 +406,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BPbcdeop'
+	return 'BCPbcdeop'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
