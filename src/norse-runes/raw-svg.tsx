@@ -709,6 +709,28 @@ const GLYPHS = {
 		)
 	},
 
+	':': () => {
+		const dotTop = translatePts([0, 1024 - sw * 3], ...tipN)
+		const dotBottom = translatePts(
+			[0, 1024 - sw * 2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const dot = dotTop.concat(dotBottom)
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path key="dot-top" d={`M${pts2svg(dot)}z`} />
+					<path
+						key="dot-top"
+						d={`M${pts2svg(mirrorPtsV(1024, dot))}z`}
+					/>
+				</g>
+			</SVG>
+		)
+	},
+
 	' ': () => {
 		return <SVG width={512}>{[]}</SVG>
 	},
