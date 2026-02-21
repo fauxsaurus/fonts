@@ -227,6 +227,12 @@ const cShape = (() => {
 
 // tips named after the cardinal directions in which they point
 
+const tipN: IPts = [
+	[0, 0],
+	[sw2, -sw2],
+	[sw, 0],
+]
+
 const tipNE: IPt[] = [
 	[0, 0],
 	[sw / Math.SQRT2, 0],
@@ -466,6 +472,43 @@ const GLYPHS = {
 		)
 	},
 
+	i: () => {
+		const verticalTipTop = translatePts([0, 1024], ...tipN)
+		const verticalTipBottom = translatePts(
+			[0, 2048 - sw2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const vertical = verticalTipTop.concat(verticalTipBottom)
+
+		const dotTop = translatePts([0, 1024 - sw * 3], ...tipN)
+		const dotBottom = translatePts(
+			[0, 1024 - sw * 2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const dot = dotTop.concat(dotBottom)
+
+		const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
+
+		const tail: IPts = [
+			...tailTip,
+			verticalTipBottom[0],
+			...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+		]
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path d={`M${pts2svg(dot)}z`} />
+					<path d={`M${pts2svg(vertical)}z`} />
+					<path d={`M${pts2svg(tail)}z`} />
+					<path d={`M${pts2svg(tailTip)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
 	p: () => {
 		const vertical = translatePts([0, 1024 - sw2], ...bVertical.pts)
 		const triangle = translatePts([0, 0], ...bTriangle.pts)
@@ -505,7 +548,7 @@ const GLYPHS = {
 }
 
 export const SVGRunes = () => {
-	return 'BCEGPbcdeop'
+	return 'BCEGPbcdeiop'
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 
