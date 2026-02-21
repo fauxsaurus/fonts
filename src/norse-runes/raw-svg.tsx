@@ -645,10 +645,14 @@ const GLYPHS = {
 			</SVG>
 		)
 	},
+
+	' ': () => {
+		return <SVG width={512}>{[]}</SVG>
+	},
 }
 
 export const SVGRunes = () => {
-	return 'BCEGPbcdefilopt'
+	return 'BCEGPbcdefilopt '
 		.split('')
 		.map((glyph) => GLYPHS?.[glyph as keyof typeof GLYPHS]())
 }
