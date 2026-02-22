@@ -19,6 +19,23 @@ const sw2 = sw / 2 // offset width
 
 const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
+// type IRadians = number
+
+// /** @return number (the distance between the original centerpoint and the outer edge of the rune given the strokeWidth of the glyph) */
+// const angle2offset = (angle: IRadians, strokeWidth: number) => {
+// 	const offsetWidth = strokeWidth / 2
+
+// 	return Math.abs(offsetWidth / Math.sin(angle / 2))
+// }
+
+// export const calcRuneCoords = (strokeWidth: number) => {
+// 	const deg2Offset = (deg: number) =>
+// 		angle2offset(deg * (Math.PI / 2), strokeWidth)
+
+// 	const offsetWidth = strokeWidth / 2 // 90 degree triangle height used to extend pts
+
+// 	const GOffset = angle2offset(45 * (Math.PI / 2), strokeWidth)
+
 type IProps = {
 	children: JSX.Element | JSX.Element[]
 	width?: number
@@ -540,6 +557,78 @@ const GLYPHS = {
 					<path key="|" d={`M${pts2svg(vertical)}z`} />
 					<path key="/" d={`M${pts2svg(mirrorPtsV(1024, tail))}z`} />
 					<path key="-" d={`M${pts2svg(horizontal)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
+	h: () => {
+		const triRightPts = translatePts(
+			[bTriangle.centerOuter[0] - sw, 0],
+
+			...bTriangle.pts
+		)
+
+		const width = Math.max(...triRightPts.map(([x]) => x))
+
+		const verticalTipBottom = translatePts(
+			[0, 2048 - sw2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const vertical = translatePts([width - sw, 0], ...verticalTipBottom)
+
+		const diagonalLOuter: IPt = [0, 1024 - sw2]
+		const diagonalROuter: IPt = [1024, bTriangle.centerOuter[1]]
+
+		const diagonalAngle =
+			(Math.atan2(
+				diagonalROuter[0] - diagonalLOuter[0],
+				diagonalROuter[1] - diagonalLOuter[1]
+			) *
+				180) /
+			Math.PI
+
+		const w = distanceBetweenPts(diagonalLOuter, [
+			1024,
+			bTriangle.centerOuter[1],
+		])
+
+		// @todo Fix this horrendous math!
+		const diagonal: IPts = rotatePts(
+			diagonalAngle - 32.72,
+			diagonalLOuter,
+			[
+				diagonalLOuter,
+				[w, diagonalLOuter[1]],
+				[w, diagonalLOuter[1] + sw],
+				[diagonalLOuter[0] + sw, diagonalLOuter[1] + sw],
+			]
+		)
+
+		const lTip = translatePts([0, 2048 - sw2], ...tipS)
+
+		const left: IPts = [
+			[0, 1024 - sw2],
+			lTip[0],
+			lTip[2],
+			lTip[1],
+			[sw, 1024 + sw2],
+		]
+
+		const right: IPts = [
+			[1024, bTriangle.centerOuter[1]],
+			...translatePts([1024 - sw, 0], ...verticalTipBottom),
+			[1024 - sw, bTriangle.centerOuter[1]],
+		]
+
+		return (
+			<SVG width={1024}>
+				<g stroke="none" fill="#000">
+					<path key="|" d={`M${pts2svg(bVertical.pts)}`} />
+					<path key="l" d={`M${pts2svg(left)}`} />
+					<path key="r" d={`M${pts2svg(right)}`} />
+					<path key="diagonal" d={`M${pts2svg(diagonal)}`} />
 				</g>
 			</SVG>
 		)
