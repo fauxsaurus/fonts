@@ -2,6 +2,9 @@
 export type IPt = [number, number]
 export type IPts = IPt[]
 
+export const distanceBetweenPts = (a: IPt, b: IPt) =>
+	Math.hypot(b[0] - a[0], b[1] - a[1])
+
 export const lines2intersectionPt = (
 	[x1, y1]: IPt,
 	m1: number,
@@ -65,8 +68,3 @@ export const translatePts = ([h, v]: IPt, ...pts: IPts) =>
 
 // const getYFromXOnLine = ([x0, y0]: IPt, m: number, x: number) =>
 // 	m * (x - x0) + y0
-
-// Math.hypot(
-// 			cShape.tipTopOuter[0] - cShape.centerOuter[0],
-// 			cShape.tipTopOuter[1] - cShape.centerOuter[1]
-// 		)

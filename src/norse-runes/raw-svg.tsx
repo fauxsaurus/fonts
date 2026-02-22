@@ -2,6 +2,7 @@ import type {JSX} from 'react'
 
 import React, {useRef, useState} from 'react'
 import {
+	distanceBetweenPts,
 	lines2intersectionPt,
 	mirrorPtsH,
 	mirrorPtsV,
@@ -616,6 +617,67 @@ const GLYPHS = {
 				<g stroke="none" fill="#000">
 					<path key="v" d={`M${pts2svg(vertical)}z`} />
 					<path key="tri" d={`M${pts2svg(triangle)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
+	n: () => {
+		const verticalTipBottom = translatePts(
+			[0, 2048 - sw2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const diagonalLOuter: IPt = [0, 1024 - sw2]
+		const diagonalROuter: IPt = [1024, bTriangle.centerOuter[1]]
+
+		const diagonalAngle =
+			(Math.atan2(
+				diagonalROuter[0] - diagonalLOuter[0],
+				diagonalROuter[1] - diagonalLOuter[1]
+			) *
+				180) /
+			Math.PI
+
+		const w = distanceBetweenPts(diagonalLOuter, [
+			1024,
+			bTriangle.centerOuter[1],
+		])
+
+		// @todo Fix this horrendous math!
+		const diagonal: IPts = rotatePts(
+			diagonalAngle - 32.72,
+			diagonalLOuter,
+			[
+				diagonalLOuter,
+				[w, diagonalLOuter[1]],
+				[w, diagonalLOuter[1] + sw],
+				[diagonalLOuter[0] + sw, diagonalLOuter[1] + sw],
+			]
+		)
+
+		const lTip = translatePts([0, 2048 - sw2], ...tipS)
+
+		const left: IPts = [
+			[0, 1024 - sw2],
+			lTip[0],
+			lTip[2],
+			lTip[1],
+			[sw, 1024 + sw2],
+		]
+
+		const right: IPts = [
+			[1024, bTriangle.centerOuter[1]],
+			...translatePts([1024 - sw, 0], ...verticalTipBottom),
+			[1024 - sw, bTriangle.centerOuter[1]],
+		]
+
+		return (
+			<SVG width={1024}>
+				<g stroke="none" fill="#000">
+					<path key="l" d={`M${pts2svg(left)}`} />
+					<path key="r" d={`M${pts2svg(right)}`} />
+					<path key="diagonal" d={`M${pts2svg(diagonal)}`} />
 				</g>
 			</SVG>
 		)
