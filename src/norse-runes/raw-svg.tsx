@@ -464,6 +464,32 @@ const GLYPHS = {
 			</SVG>
 		)
 	},
+	N: () => {
+		const newPts: IPts = [
+			...translatePts(
+				[0, -nShape.pts[0][1]],
+				nShape.pts[0],
+				nShape.pts[1]
+			),
+			...nShape.pts.slice(2, 5),
+
+			...translatePts(
+				[0, -nShape.pts[0][1]],
+				nShape.pts[5],
+				nShape.pts[6]
+			),
+
+			...nShape.pts.slice(6),
+		]
+
+		return (
+			<SVG width={1024}>
+				<g stroke="none" fill="#000">
+					<path d={`M${pts2svg(newPts)}z`} />
+				</g>
+			</SVG>
+		)
+	},
 	// B: () => {
 	// 	return (
 	// 		<SVG width={512}>
