@@ -800,6 +800,52 @@ const GLYPHS = {
 		)
 	},
 
+	s: () => {
+		const tipLeft = cShape.centerOuter
+		const tipLeftTop = translatePts([sw2, -sw2], tipLeft)[0]
+		const tipLeftBottom = translatePts([sw2, sw2], tipLeft)[0]
+
+		const tipRightBottom = translatePts(
+			[cShape.tipTop[0] - sw, 0],
+			tipLeftBottom
+		)[0]
+		const tipRightTop = translatePts(
+			[cShape.tipTop[0] - sw, 0],
+			tipLeftTop
+		)[0]
+		const tipRight = translatePts([cShape.tipTop[0], 0], tipLeft)[0]
+
+		const _Shape: IPt[] = [
+			tipLeft,
+			tipLeftTop,
+
+			tipRightTop,
+			tipRight,
+
+			tipRightBottom,
+			tipLeftBottom,
+		]
+
+		const diagonalUpper = cShape.pts.slice(0, -3)
+		const diagonalLower = translatePts(
+			[diagonalUpper[2][0], 0],
+			...mirrorPtsH(
+				0,
+				mirrorPtsV(diagonalUpper.slice(-1)[0][1], diagonalUpper)
+			)
+		)
+
+		return (
+			<SVG width={512}>
+				<g stroke="none" fill="#000">
+					<path key="_" d={`M${pts2svg(_Shape)}`} />
+					<path d={`M${pts2svg(diagonalUpper)}z`} />
+					<path d={`M${pts2svg(diagonalLower)}z`} />
+				</g>
+			</SVG>
+		)
+	},
+
 	t: () => {
 		const verticalTipTop = translatePts([0, sw2], ...tipN)
 		const verticalTipBottom = translatePts(
