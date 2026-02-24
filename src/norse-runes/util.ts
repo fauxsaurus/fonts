@@ -66,5 +66,45 @@ export const translatePts = ([h, v]: IPt, ...pts: IPts) =>
 // 	throw new Error('A horizontal line with y = y1 does not pass through y2.')
 // }
 
-// const getYFromXOnLine = ([x0, y0]: IPt, m: number, x: number) =>
-// 	m * (x - x0) + y0
+export const getYFromXOnLine = ([x0, y0]: IPt, m: number, x: number) =>
+	m * (x - x0) + y0
+
+// @note used to get the coordinates of an interior angle at a non 90 or 45 degree angle
+export const getBisectorYAtX = (
+	[ax, ay]: IPt,
+	[bx, by]: IPt,
+	[cx, cy]: IPt,
+	x: number
+) => {
+	// Vector BA
+	let vBAx = ax - bx
+	let vBAy = ay - by
+
+	// Vector BC
+	let vBCx = cx - bx
+	let vBCy = cy - by
+
+	// Normalize BA
+	const magBA = Math.hypot(vBAx, vBAy)
+	vBAx /= magBA
+	vBAy /= magBA
+
+	// Normalize BC
+	const magBC = Math.hypot(vBCx, vBCy)
+	vBCx /= magBC
+	vBCy /= magBC
+
+	// Add the normalized vectors (angle bisector direction)
+	let bisectorX = vBAx + vBCx
+	let bisectorY = vBAy + vBCy
+
+	// Normalize the bisector
+	const magBisector = Math.hypot(bisectorX, bisectorY)
+	if (magBisector === 0)
+		throw new Error('Points are collinear; angle bisector undefined.')
+
+	bisectorX /= magBisector
+	bisectorY /= magBisector
+
+	return getYFromXOnLine([bx, by], bisectorY / bisectorX, x)
+}
