@@ -692,13 +692,13 @@ const GlyphStrokes = {
 	s,
 	t,
 	':': (sw: number): IPts[] => {
-		const dotTop = translatePts([0, 1024 - sw * 3], ...tipN)
-		const dotBottom = translatePts(
+		const topDotUpperTip = translatePts([0, 1024 - sw * 3], ...tipN)
+		const topDotLowerTip = translatePts(
 			[0, 1024 - sw * 2],
 			...mirrorPtsV(0, tipN)
 		).reverse()
 
-		const dot = dotTop.concat(dotBottom)
+		const dot = topDotUpperTip.concat(topDotLowerTip)
 
 		return [dot, mirrorPtsV(1024, dot)]
 	},
