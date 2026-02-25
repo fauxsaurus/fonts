@@ -1,3 +1,4 @@
+import {verticalAscender2Base} from './stroke-components'
 import {
 	distanceBetweenPts,
 	getBisectorYAtX,
@@ -287,7 +288,7 @@ const N = (sw: number): IPts[] => {
 }
 
 const b = (sw: number): IPts[] => {
-	return [bVertical.pts, bTriangle.pts]
+	return [verticalAscender2Base(sw), bTriangle.pts]
 }
 
 const c = (sw: number): IPts[] => {
@@ -320,14 +321,11 @@ const e = (sw: number): IPts[] => {
 	return [cShape.pts, _Shape]
 }
 
-const f = () => {
-	const verticalTipTop = translatePts([0, sw2], ...tipN)
+const f = (sw: number): IPts[] => {
 	const verticalTipBottom = translatePts(
 		[0, 2048 - sw2],
 		...mirrorPtsV(0, tipN)
 	).reverse()
-
-	const vertical = verticalTipTop.concat(verticalTipBottom)
 
 	const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
 
@@ -345,11 +343,11 @@ const f = () => {
 		[0, 1024 - sw2],
 	])
 
-	return [vertical, mirrorPtsV(1024, tail), horizontal]
+	return [verticalAscender2Base(sw), mirrorPtsV(1024, tail), horizontal]
 }
 
 const h = (sw: number): IPts[] => {
-	return [bVertical.pts, nShape.pts]
+	return [verticalAscender2Base(sw), nShape.pts]
 }
 
 const m = (sw: number): IPts[] => {
@@ -481,13 +479,10 @@ const i = (sw: number): IPts[] => {
 }
 
 const l = (sw: number): IPts[] => {
-	const verticalTipTop = translatePts([0, sw2], ...tipN)
 	const verticalTipBottom = translatePts(
 		[0, 2048 - sw2],
 		...mirrorPtsV(0, tipN)
 	).reverse()
-
-	const vertical = verticalTipTop.concat(verticalTipBottom)
 
 	const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
 
@@ -496,7 +491,7 @@ const l = (sw: number): IPts[] => {
 		verticalTipBottom[0],
 		...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
 	]
-	return [vertical, tail]
+	return [verticalAscender2Base(sw), tail]
 }
 
 const r = (sw: number): IPts[] => {
@@ -557,13 +552,10 @@ const s = (sw: number): IPts[] => {
 }
 
 const t = (sw: number): IPts[] => {
-	const verticalTipTop = translatePts([0, sw2], ...tipN)
 	const verticalTipBottom = translatePts(
 		[0, 2048 - sw2],
 		...mirrorPtsV(0, tipN)
 	).reverse()
-
-	const vertical = verticalTipTop.concat(verticalTipBottom)
 
 	const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
 
@@ -580,7 +572,7 @@ const t = (sw: number): IPts[] => {
 		[0, 1024 + sw2],
 		[0, 1024 - sw2],
 	])
-	return [vertical, tail, horizontal]
+	return [verticalAscender2Base(sw), tail, horizontal]
 }
 
 const G = (sw: number): IPts[] => {
