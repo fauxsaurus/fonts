@@ -252,6 +252,10 @@ const nShape = (() => {
 	return {pts}
 })()
 
+const B = (sw: number): IPts[] => {
+	return [verticalAscender2Base(sw), bTriangle.pts, PTriangle.pts]
+}
+
 const C = (sw: number): IPts[] => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
@@ -676,6 +680,7 @@ const d = (sw: number): IPts[] => {
 }
 
 const GlyphStrokes = {
+	B,
 	C,
 	E,
 	G,
@@ -719,6 +724,7 @@ const GlyphStrokes = {
 const sw4 = sw / 4
 
 const CUSTOM_SPACING = {
+	BC: -sw,
 	be: sw4,
 	he: sw4,
 	ia: sw4,
