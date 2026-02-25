@@ -779,7 +779,7 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 	)
 }
 
-export const SVGRunes = ({children = ''}: {children: string}) => {
+export const NorseRunes = ({children = ''}: {children: string}) => {
 	return (
 		<div style={{display: 'flex'}}>
 			<Line kerning={512}>{children}</Line>
