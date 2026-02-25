@@ -53,7 +53,11 @@ export const pts2MaxY = (pts: IPts) => Math.max(...pts.map(([_, y]) => y))
 export const pts2MinX = (pts: IPts) => Math.min(...pts.map(([x]) => x))
 export const pts2MinY = (pts: IPts) => Math.min(...pts.map(([_, y]) => y))
 
-export const translatePts = ([h, v]: IPt, ...pts: IPts) =>
+export const translatePts = ([h, v]: IPt, pts: IPts) =>
+	pts.map<IPt>(([x, y]) => [x + h, y + v])
+
+/** @deprecated (Use `translatePts()`--without the rest params--instead.) */
+export const translatePtsOld = ([h, v]: IPt, ...pts: IPts) =>
 	pts.map<IPt>(([x, y]) => [x + h, y + v])
 
 // const getXFromYonLine = ([x1, y1]: IPt, m: number, y: number): number => {
