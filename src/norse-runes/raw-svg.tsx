@@ -1,6 +1,3 @@
-import type {JSX} from 'react'
-
-import React, {useRef, useState} from 'react'
 import {
 	distanceBetweenPts,
 	getBisectorYAtX,
@@ -20,95 +17,6 @@ const sw = 192 // stroke width
 const sw2 = sw / 2 // offset width
 
 const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
-
-// type IRadians = number
-
-// /** @return number (the distance between the original centerpoint and the outer edge of the rune given the strokeWidth of the glyph) */
-// const angle2offset = (angle: IRadians, strokeWidth: number) => {
-// 	const offsetWidth = strokeWidth / 2
-
-// 	return Math.abs(offsetWidth / Math.sin(angle / 2))
-// }
-
-// export const calcRuneCoords = (strokeWidth: number) => {
-// 	const deg2Offset = (deg: number) =>
-// 		angle2offset(deg * (Math.PI / 2), strokeWidth)
-
-// 	const offsetWidth = strokeWidth / 2 // 90 degree triangle height used to extend pts
-
-// 	const GOffset = angle2offset(45 * (Math.PI / 2), strokeWidth)
-
-type IProps = {
-	children: JSX.Element | JSX.Element[]
-	width?: number
-	height?: number
-}
-
-// Define the shape of our coordinate point
-interface Point {
-	x: number
-	y: number
-}
-
-const SVG = ({children, height = 2560, width = 2048}: IProps) => {
-	const svgRef = useRef<SVGSVGElement>(null)
-	const [svgCoords, setSvgCoords] = useState<Point>({x: 0, y: 0})
-
-	const handleMouseMove = (event: React.PointerEvent<SVGSVGElement>) => {
-		const svgElement = svgRef.current
-		if (!svgElement) return
-
-		// 1. Create a DOMPoint from the event coordinates
-		// We use clientX/Y which are relative to the viewport
-		const point = new DOMPoint(event.clientX, event.clientY)
-
-		// 2. Get the Current Transformation Matrix (CTM) of the SVG
-		// This matrix maps SVG units to Screen units.
-		const screenCTM = svgElement.getScreenCTM()
-
-		if (!screenCTM) return
-
-		// 3. Invert the matrix to map Screen units -> SVG units
-		const invertedMatrix = screenCTM.inverse()
-
-		// 4. Apply the inverted matrix to our point
-		const transformedPoint = point.matrixTransform(invertedMatrix)
-
-		// Update state
-		setSvgCoords({
-			x: transformedPoint.x,
-			y: transformedPoint.y,
-		})
-	}
-
-	return (
-		<div style={{display: 'inline-block', float: 'left'}}>
-			<div
-				style={{fontSize: '.3rem'}}
-			>{`${svgCoords.x.toFixed(3)},${svgCoords.y.toFixed(3)}`}</div>
-
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				viewBox={`-256 -256 ${width + 512} ${height + 512}`}
-				width={width}
-				height={height}
-				style={{background: 'white'}}
-				ref={svgRef}
-				onPointerMove={handleMouseMove}
-			>
-				{children}
-				<g stroke="red" stroke-width="10" opacity="0.5">
-					<path d="M0,0 h2048"></path>
-					<path d="M0,512 h2048" opacity="0.25"></path>
-					<path d="M0,1024 h2048"></path>
-					<path d="M0,1536 h2048" opacity="0.25"></path>
-					<path d="M0,2048 h2048"></path>
-					<path d="M0,2560 h2048" opacity="0.25"></path>
-				</g>
-			</svg>
-		</div>
-	)
-}
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
@@ -343,606 +251,530 @@ const nShape = (() => {
 	return {pts}
 })()
 
-const GLYPHS = {
-	B: () => {
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="v" d={`M${pts2svg(bVertical.pts)}z`} />
-					<path key="triU" d={`M${pts2svg(PTriangle.pts)}z`} />
-					<path key="triL" d={`M${pts2svg(bTriangle.pts)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-	C: () => {
-		const shape: IPt[] = [
+const C = (sw: number): IPts[] => {
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
+	return [
+		[
 			...translatePts([1024, 0], ...tipNE).reverse(),
 			[0, 1024],
 			...translatePts([1024, 2048], ...tipSE),
 			[swD45, 1024],
-		]
+		],
+	]
+}
 
-		return (
-			<SVG width={1024}>
-				<g stroke="none" fill="#000">
-					<path key="<" d={`M${pts2svg(shape)}z`} />
-				</g>
-			</SVG>
+const EDash = (sw: number): IPts =>
+	translatePts([sw2, 1024 - sw2], ...tipW)
+		.reverse()
+		.concat(
+			translatePts([1024 + sw / Math.SQRT2 - sw2, 1024 - sw2], ...tipE)
 		)
-	},
-	E: () => {
-		const shape: IPt[] = [
-			...translatePts([1024, 0], ...tipNE).reverse(),
-			[0, 1024],
-			...translatePts([1024, 2048], ...tipSE),
-			[swD45, 1024],
-		]
 
-		const _Shape = translatePts([sw2, 1024 - sw2], ...tipW)
-			.reverse()
-			.concat(
-				translatePts(
-					[1024 + sw / Math.SQRT2 - sw2, 1024 - sw2],
-					...tipE
-				)
-			)
+const E = (sw: number): IPts[] => [C(sw)[0], EDash(sw)]
 
-		return (
-			<SVG width={1024}>
-				<g stroke="none" fill="#000">
-					<path key="<" d={`M${pts2svg(shape)}z`} />
+const N = (sw: number): IPts[] => {
+	const newPts: IPts = [
+		...translatePts([0, -nShape.pts[0][1]], nShape.pts[0], nShape.pts[1]),
+		...nShape.pts.slice(2, 5),
 
-					<path key="-" d={`M${pts2svg(_Shape)}z`} />
-				</g>
-			</SVG>
+		...translatePts([0, -nShape.pts[0][1]], nShape.pts[5], nShape.pts[6]),
+
+		...nShape.pts.slice(6),
+	]
+
+	return [newPts]
+}
+
+const b = (sw: number): IPts[] => {
+	return [bVertical.pts, bTriangle.pts]
+}
+
+const c = (sw: number): IPts[] => {
+	return [cShape.pts]
+}
+
+const e = (sw: number): IPts[] => {
+	const tipLeft = cShape.centerOuter
+	const tipLeftTop = translatePts([sw2, -sw2], tipLeft)[0]
+	const tipLeftBottom = translatePts([sw2, sw2], tipLeft)[0]
+
+	const tipRightBottom = translatePts(
+		[cShape.tipTop[0] - sw, 0],
+		tipLeftBottom
+	)[0]
+	const tipRightTop = translatePts([cShape.tipTop[0] - sw, 0], tipLeftTop)[0]
+	const tipRight = translatePts([cShape.tipTop[0], 0], tipLeft)[0]
+
+	const _Shape: IPt[] = [
+		tipLeft,
+		tipLeftTop,
+
+		tipRightTop,
+		tipRight,
+
+		tipRightBottom,
+		tipLeftBottom,
+	]
+
+	return [cShape.pts, _Shape]
+}
+
+const f = () => {
+	const verticalTipTop = translatePts([0, sw2], ...tipN)
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		...mirrorPtsV(0, tipN)
+	).reverse()
+
+	const vertical = verticalTipTop.concat(verticalTipBottom)
+
+	const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
+
+	const tail: IPts = [
+		...tailTip,
+		verticalTipBottom[0],
+		...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+	]
+
+	const horizontal = translatePts(
+		[pts2MaxX(tailTip) - sw2, 1024 - sw2],
+		...tipE
+	).concat([
+		[0, 1024 + sw2],
+		[0, 1024 - sw2],
+	])
+
+	return [vertical, mirrorPtsV(1024, tail), horizontal]
+}
+
+const h = (sw: number): IPts[] => {
+	return [bVertical.pts, nShape.pts]
+}
+
+const m = (sw: number): IPts[] => {
+	const centerTip = translatePts([512 - sw2, 2048 - sw2], ...tipS)
+
+	const center: IPts = [
+		[512 - sw2, 1024 + 256],
+		[512 + sw2, 1024 + 256],
+
+		centerTip[1],
+		centerTip[2],
+		centerTip[0],
+	]
+
+	return [n(sw)[0], center]
+}
+
+const n = (sw: number): IPts[] => {
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		...mirrorPtsV(0, tipN)
+	).reverse()
+
+	const diagonalLOuter: IPt = [0, 1024 - sw2]
+	const diagonalROuter: IPt = [1024, bTriangle.centerOuter[1]]
+
+	const run = diagonalROuter[0] - diagonalLOuter[0]
+	const rise = diagonalROuter[1] - diagonalLOuter[1]
+
+	const diagonalAngle = (Math.atan2(run, rise) * 180) / Math.PI
+
+	const w = distanceBetweenPts(diagonalLOuter, [
+		1024,
+		bTriangle.centerOuter[1],
+	])
+
+	// @todo Fix this horrendous math!
+	const diagonal: IPts = rotatePts(diagonalAngle - 32.72, diagonalLOuter, [
+		diagonalLOuter,
+		[w, diagonalLOuter[1]],
+		[w, diagonalLOuter[1] + sw],
+		[diagonalLOuter[0] + sw, diagonalLOuter[1] + sw],
+	])
+
+	const lTip = translatePts([0, 2048 - sw2], ...tipS)
+
+	const left: IPts = [
+		[0, 1024 - sw2],
+		lTip[0],
+		lTip[2],
+		lTip[1],
+		[sw, 1024 + sw2],
+	]
+
+	const right: IPts = [
+		[1024, bTriangle.centerOuter[1]],
+		...translatePts([1024 - sw, 0], ...verticalTipBottom),
+		[1024 - sw, bTriangle.centerOuter[1]],
+	]
+
+	const pts: IPts = [
+		diagonal[0],
+		diagonal[1],
+		right[1],
+		right[2],
+		right[3],
+
+		[
+			1024 - sw,
+			getBisectorYAtX(diagonal[0], diagonal[1], right[1], 1024 - sw),
+		],
+		[sw, getBisectorYAtX(left[1], diagonal[0], diagonal[1], sw)],
+
+		left[3],
+		left[2],
+		left[1],
+	]
+
+	return [pts]
+}
+
+const o = (sw: number): IPts[] => {
+	const triLeftPts = translatePts(
+		[bTriangle.centerOuter[0], 0],
+		...mirrorPtsH(0, bTriangle.pts)
+	)
+	const triRightPts = translatePts(
+		[bTriangle.centerOuter[0] - sw, 0],
+
+		...bTriangle.pts
+	)
+
+	return [triLeftPts, triRightPts]
+}
+
+const p = (sw: number): IPts[] => {
+	const vertical = translatePts([0, 1024 - sw2], ...bVertical.pts)
+	const triangle = translatePts([0, 0], ...bTriangle.pts)
+
+	return [vertical, triangle]
+}
+
+const i = (sw: number): IPts[] => {
+	const verticalTipTop = translatePts([0, 1024], ...tipN)
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		...mirrorPtsV(0, tipN)
+	).reverse()
+
+	const vertical = verticalTipTop.concat(verticalTipBottom)
+
+	const dotTop = translatePts([0, 1024 - sw * 3], ...tipN)
+	const dotBottom = translatePts(
+		[0, 1024 - sw * 2],
+		...mirrorPtsV(0, tipN)
+	).reverse()
+
+	const dot = dotTop.concat(dotBottom)
+
+	const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
+
+	const tail: IPts = [
+		...tailTip,
+		verticalTipBottom[0],
+		...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+	]
+
+	return [dot, vertical, tail]
+}
+
+const l = (sw: number): IPts[] => {
+	const verticalTipTop = translatePts([0, sw2], ...tipN)
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		...mirrorPtsV(0, tipN)
+	).reverse()
+
+	const vertical = verticalTipTop.concat(verticalTipBottom)
+
+	const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
+
+	const tail: IPts = [
+		...tailTip,
+		verticalTipBottom[0],
+		...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+	]
+	return [vertical, tail]
+}
+
+const r = (sw: number): IPts[] => {
+	const verticalTipTop = translatePts([0, 1024], ...tipN)
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		...mirrorPtsV(0, tipN)
+	).reverse()
+
+	const vertical = verticalTipTop.concat(verticalTipBottom)
+
+	const diagonal: IPts = [
+		cShape.centerOuter,
+
+		cShape.tipTopOuter,
+		cShape.tipTop,
+		cShape.tipTopInner,
+
+		translatePts([-swD45, swD45], cShape.centerInner)[0],
+	]
+
+	return [vertical, diagonal]
+}
+
+const s = (sw: number): IPts[] => {
+	const tipLeft = cShape.centerOuter
+	const tipLeftTop = translatePts([sw2, -sw2], tipLeft)[0]
+	const tipLeftBottom = translatePts([sw2, sw2], tipLeft)[0]
+
+	const tipRightBottom = translatePts(
+		[cShape.tipTop[0] - sw, 0],
+		tipLeftBottom
+	)[0]
+	const tipRightTop = translatePts([cShape.tipTop[0] - sw, 0], tipLeftTop)[0]
+	const tipRight = translatePts([cShape.tipTop[0], 0], tipLeft)[0]
+
+	const _Shape: IPt[] = [
+		tipLeft,
+		tipLeftTop,
+
+		tipRightTop,
+		tipRight,
+
+		tipRightBottom,
+		tipLeftBottom,
+	]
+
+	const diagonalUpper = cShape.pts.slice(0, -3)
+	const diagonalLower = translatePts(
+		[diagonalUpper[2][0], 0],
+		...mirrorPtsH(
+			0,
+			mirrorPtsV(diagonalUpper.slice(-1)[0][1], diagonalUpper)
 		)
-	},
+	)
 
-	// @todo make g horizontal the same width as the f horizontal?
-	G: () => {
-		const CShape: IPts = [
-			[1024, swD45],
+	return [diagonalUpper, _Shape, diagonalLower]
+}
+
+const t = (sw: number): IPts[] => {
+	const verticalTipTop = translatePts([0, sw2], ...tipN)
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		...mirrorPtsV(0, tipN)
+	).reverse()
+
+	const vertical = verticalTipTop.concat(verticalTipBottom)
+
+	const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
+
+	const tail: IPts = [
+		...tailTip,
+		verticalTipBottom[0],
+		...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+	]
+
+	const horizontal = translatePts(
+		[pts2MaxX(tailTip) - sw2, 1024 - sw2],
+		...tipE
+	).concat([
+		[0, 1024 + sw2],
+		[0, 1024 - sw2],
+	])
+	return [vertical, tail, horizontal]
+}
+
+const G = (sw: number): IPts[] => {
+	const CShape: IPts = [
+		[1024, swD45],
+		[1024, 0],
+
+		[0, 1024],
+
+		[1024, 2048],
+		[1024, 2048 - swD45],
+
+		[swD45, 1024],
+	]
+
+	const maxX = 1024
+
+	const overHangTip = translatePts([maxX - sw, 1024 - sw * 2], ...tipS)
+
+	const overHang: IPts = [
+		[maxX, sw],
+		[maxX - sw, sw],
+
+		overHangTip[0],
+		overHangTip[2],
+		overHangTip[1],
+	]
+
+	const tipInnerMinX = swD45 + sw2 * 3
+	const tipInner = translatePts([tipInnerMinX, 1024 - sw2], ...tipW)
+
+	const _Shape: IPts = [...tipInner, [maxX, 1024 + sw2], [maxX, 1024 - sw2]]
+
+	const vertical: IPts = [
+		[maxX - sw, 1024],
+		[maxX, 1024],
+
+		[maxX, 2048 - sw],
+		[maxX - sw, 2048 - sw],
+	]
+
+	return [CShape, overHang, _Shape, vertical]
+}
+const P = (sw: number): IPts[] => {
+	return [bVertical.pts, PTriangle.pts]
+}
+
+const a = (sw: number): IPts[] => {
+	const triLeftPts = translatePts(
+		[bTriangle.centerOuter[0], 0],
+		...mirrorPtsH(0, bTriangle.pts)
+	)
+	const triRightPts = translatePts(
+		[bTriangle.centerOuter[0] - sw, 0],
+
+		...bTriangle.pts
+	)
+
+	const width = Math.max(...triRightPts.map(([x]) => x))
+
+	const verticalTipTop = translatePts([0, 1024], ...tipN)
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		...mirrorPtsV(0, tipN)
+	).reverse()
+
+	const vertical = translatePts(
+		[width - sw, 0],
+		...verticalTipTop.concat(verticalTipBottom)
+	)
+
+	return [triLeftPts, triRightPts, vertical]
+}
+
+const d = (sw: number): IPts[] => {
+	const verticalPts = translatePts(
+		[bTriangle.centerOuter[0] - sw, 0],
+		...bVertical.pts
+	)
+
+	const trianglePts = translatePts(
+		[bTriangle.centerOuter[0], 0],
+		...mirrorPtsH(0, bTriangle.pts)
+	)
+
+	return [verticalPts, trianglePts]
+}
+
+const GlyphStrokes = {
+	C,
+	E,
+	G,
+	N,
+	P,
+	a,
+	b,
+	c,
+	d,
+	e,
+	f,
+	h,
+	i,
+	l,
+	m,
+	n,
+	o,
+	p,
+	r,
+	s,
+	t,
+	':': (sw: number): IPts[] => {
+		const dotTop = translatePts([0, 1024 - sw * 3], ...tipN)
+		const dotBottom = translatePts(
+			[0, 1024 - sw * 2],
+			...mirrorPtsV(0, tipN)
+		).reverse()
+
+		const dot = dotTop.concat(dotBottom)
+
+		return [dot, mirrorPtsV(1024, dot)]
+	},
+	' ': (sw: number) => [
+		[
 			[1024, 0],
-
-			[0, 1024],
-
-			[1024, 2048],
-			[1024, 2048 - swD45],
-
-			[swD45, 1024],
-		]
-
-		const maxX = 1024
-
-		const overHangTip = translatePts([maxX - sw, 1024 - sw * 2], ...tipS)
-
-		const overHang: IPts = [
-			[maxX, sw],
-			[maxX - sw, sw],
-
-			overHangTip[0],
-			overHangTip[2],
-			overHangTip[1],
-		]
-
-		const tipInnerMinX = swD45 + sw2 * 3
-		const tipInner = translatePts([tipInnerMinX, 1024 - sw2], ...tipW)
-
-		const _Shape: IPts = [
-			...tipInner,
-			[maxX, 1024 + sw2],
-			[maxX, 1024 - sw2],
-		]
-
-		const vertical: IPts = [
-			[maxX - sw, 1024],
-			[maxX, 1024],
-
-			[maxX, 2048 - sw],
-			[maxX - sw, 2048 - sw],
-		]
-
-		return (
-			<SVG width={1024}>
-				<g stroke="none" fill="#000">
-					<path key="<" d={`M${pts2svg(CShape)}z`} />
-					<path key="\/" d={`M${pts2svg(overHang)}z`} />
-					<path key="-" d={`M${pts2svg(_Shape)}z`} />
-					<path key="|" d={`M${pts2svg(vertical)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-	P: () => {
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="v" d={`M${pts2svg(bVertical.pts)}z`} />
-					<path key="triU" d={`M${pts2svg(PTriangle.pts)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-	N: () => {
-		const newPts: IPts = [
-			...translatePts(
-				[0, -nShape.pts[0][1]],
-				nShape.pts[0],
-				nShape.pts[1]
-			),
-			...nShape.pts.slice(2, 5),
-
-			...translatePts(
-				[0, -nShape.pts[0][1]],
-				nShape.pts[5],
-				nShape.pts[6]
-			),
-
-			...nShape.pts.slice(6),
-		]
-
-		return (
-			<SVG width={1024}>
-				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(newPts)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-	// B: () => {
-	// 	return (
-	// 		<SVG width={512}>
-	// 			<g stroke="none" fill="#000">
-	// 				<path d={`M${pts2svg(bVertical.pts)}z`} />
-	// 				<path d={`M${pts2svg(PTriangle.pts)}z`} />
-	// 				<path d={`M${pts2svg(bTriangle.pts)}z`} />
-	// 			</g>
-	// 			<g fill="none" stroke="red" strokeWidth={10}>
-	// 				<path d={`M${pts2svg(PTriangle.pts)}z`} />
-	// 			</g>
-	// 		</SVG>
-	// 	)
-	// },
-
-	a: () => {
-		const triLeftPts = translatePts(
-			[bTriangle.centerOuter[0], 0],
-			...mirrorPtsH(0, bTriangle.pts)
-		)
-		const triRightPts = translatePts(
-			[bTriangle.centerOuter[0] - sw, 0],
-
-			...bTriangle.pts
-		)
-
-		const width = Math.max(...triRightPts.map(([x]) => x))
-
-		const verticalTipTop = translatePts([0, 1024], ...tipN)
-		const verticalTipBottom = translatePts(
-			[0, 2048 - sw2],
-			...mirrorPtsV(0, tipN)
-		).reverse()
-
-		const vertical = translatePts(
-			[width - sw, 0],
-			...verticalTipTop.concat(verticalTipBottom)
-		)
-
-		return (
-			<SVG width={width}>
-				<g stroke="none" fill="#000">
-					<path key="tri-left" d={`M${pts2svg(triLeftPts)}z`} />
-					<path key="tri-right" d={`M${pts2svg(triRightPts)}z`} />
-					<path key="|" d={`M${pts2svg(vertical)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	b: () => {
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="v" d={`M${pts2svg(bVertical.pts)}z`} />
-					<path key="triL" d={`M${pts2svg(bTriangle.pts)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	c: () => {
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(cShape.pts)}Z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	d: () => {
-		const verticalPts = translatePts(
-			[bTriangle.centerOuter[0] - sw, 0],
-			...bVertical.pts
-		)
-
-		const trianglePts = translatePts(
-			[bTriangle.centerOuter[0], 0],
-			...mirrorPtsH(0, bTriangle.pts)
-		)
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="v" d={`M${pts2svg(verticalPts)}z`} />
-					<path key="tri" d={`M${pts2svg(trianglePts)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	e: () => {
-		const tipLeft = cShape.centerOuter
-		const tipLeftTop = translatePts([sw2, -sw2], tipLeft)[0]
-		const tipLeftBottom = translatePts([sw2, sw2], tipLeft)[0]
-
-		const tipRightBottom = translatePts(
-			[cShape.tipTop[0] - sw, 0],
-			tipLeftBottom
-		)[0]
-		const tipRightTop = translatePts(
-			[cShape.tipTop[0] - sw, 0],
-			tipLeftTop
-		)[0]
-		const tipRight = translatePts([cShape.tipTop[0], 0], tipLeft)[0]
-
-		const _Shape: IPt[] = [
-			tipLeft,
-			tipLeftTop,
-
-			tipRightTop,
-			tipRight,
-
-			tipRightBottom,
-			tipLeftBottom,
-		]
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="c" d={`M${pts2svg(cShape.pts)}Z`} />
-					<path key="_" d={`M${pts2svg(_Shape)}`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	f: () => {
-		const verticalTipTop = translatePts([0, sw2], ...tipN)
-		const verticalTipBottom = translatePts(
-			[0, 2048 - sw2],
-			...mirrorPtsV(0, tipN)
-		).reverse()
-
-		const vertical = verticalTipTop.concat(verticalTipBottom)
-
-		const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
-
-		const tail: IPts = [
-			...tailTip,
-			verticalTipBottom[0],
-			...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
-		]
-
-		const horizontal = translatePts(
-			[pts2MaxX(tailTip) - sw2, 1024 - sw2],
-			...tipE
-		).concat([
-			[0, 1024 + sw2],
-			[0, 1024 - sw2],
-		])
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="|" d={`M${pts2svg(vertical)}z`} />
-					<path key="/" d={`M${pts2svg(mirrorPtsV(1024, tail))}z`} />
-					<path key="-" d={`M${pts2svg(horizontal)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	h: () => {
-		return (
-			<SVG width={1024}>
-				<g stroke="none" fill="#000">
-					<path key="|" d={`M${pts2svg(bVertical.pts)}`} />
-					<path key="n" d={`M${pts2svg(nShape.pts)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	i: () => {
-		const verticalTipTop = translatePts([0, 1024], ...tipN)
-		const verticalTipBottom = translatePts(
-			[0, 2048 - sw2],
-			...mirrorPtsV(0, tipN)
-		).reverse()
-
-		const vertical = verticalTipTop.concat(verticalTipBottom)
-
-		const dotTop = translatePts([0, 1024 - sw * 3], ...tipN)
-		const dotBottom = translatePts(
-			[0, 1024 - sw * 2],
-			...mirrorPtsV(0, tipN)
-		).reverse()
-
-		const dot = dotTop.concat(dotBottom)
-
-		const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
-
-		const tail: IPts = [
-			...tailTip,
-			verticalTipBottom[0],
-			...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
-		]
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(dot)}z`} />
-					<path d={`M${pts2svg(vertical)}z`} />
-					<path d={`M${pts2svg(tail)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	l: () => {
-		const verticalTipTop = translatePts([0, sw2], ...tipN)
-		const verticalTipBottom = translatePts(
-			[0, 2048 - sw2],
-			...mirrorPtsV(0, tipN)
-		).reverse()
-
-		const vertical = verticalTipTop.concat(verticalTipBottom)
-
-		const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
-
-		const tail: IPts = [
-			...tailTip,
-			verticalTipBottom[0],
-			...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
-		]
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(vertical)}z`} />
-					<path d={`M${pts2svg(tail)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	p: () => {
-		const vertical = translatePts([0, 1024 - sw2], ...bVertical.pts)
-		const triangle = translatePts([0, 0], ...bTriangle.pts)
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="v" d={`M${pts2svg(vertical)}z`} />
-					<path key="tri" d={`M${pts2svg(triangle)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	m: () => {
-		const centerTip = translatePts([512 - sw2, 2048 - sw2], ...tipS)
-
-		const center: IPts = [
-			[512 - sw2, 1024 + 256],
-			[512 + sw2, 1024 + 256],
-
-			centerTip[1],
-			centerTip[2],
-			centerTip[0],
-		]
-
-		return (
-			<SVG width={1024}>
-				<g stroke="none" fill="#000">
-					<path key="n" d={`M${pts2svg(nShape.pts)}`} />
-					<path key="c" d={`M${pts2svg(center)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	n: () => {
-		return (
-			<SVG width={1024}>
-				<g stroke="none" fill="#000">
-					<path key="n" d={`M${pts2svg(nShape.pts)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	o: () => {
-		const triLeftPts = translatePts(
-			[bTriangle.centerOuter[0], 0],
-			...mirrorPtsH(0, bTriangle.pts)
-		)
-		const triRightPts = translatePts(
-			[bTriangle.centerOuter[0] - sw, 0],
-
-			...bTriangle.pts
-		)
-
-		const width = Math.max(...triRightPts.map(([x]) => x))
-
-		return (
-			<SVG width={width}>
-				<g stroke="none" fill="#000">
-					<path key="tri-left" d={`M${pts2svg(triLeftPts)}z`} />
-					<path key="tri-right" d={`M${pts2svg(triRightPts)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	r: () => {
-		const verticalTipTop = translatePts([0, 1024], ...tipN)
-		const verticalTipBottom = translatePts(
-			[0, 2048 - sw2],
-			...mirrorPtsV(0, tipN)
-		).reverse()
-
-		const vertical = verticalTipTop.concat(verticalTipBottom)
-
-		const diagonal: IPts = [
-			cShape.centerOuter,
-
-			cShape.tipTopOuter,
-			cShape.tipTop,
-			cShape.tipTopInner,
-
-			translatePts([-swD45, swD45], cShape.centerInner)[0],
-		]
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path d={`M${pts2svg(vertical)}z`} />
-					<path key="c" d={`M${pts2svg(diagonal)}Z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	s: () => {
-		const tipLeft = cShape.centerOuter
-		const tipLeftTop = translatePts([sw2, -sw2], tipLeft)[0]
-		const tipLeftBottom = translatePts([sw2, sw2], tipLeft)[0]
-
-		const tipRightBottom = translatePts(
-			[cShape.tipTop[0] - sw, 0],
-			tipLeftBottom
-		)[0]
-		const tipRightTop = translatePts(
-			[cShape.tipTop[0] - sw, 0],
-			tipLeftTop
-		)[0]
-		const tipRight = translatePts([cShape.tipTop[0], 0], tipLeft)[0]
-
-		const _Shape: IPt[] = [
-			tipLeft,
-			tipLeftTop,
-
-			tipRightTop,
-			tipRight,
-
-			tipRightBottom,
-			tipLeftBottom,
-		]
-
-		const diagonalUpper = cShape.pts.slice(0, -3)
-		const diagonalLower = translatePts(
-			[diagonalUpper[2][0], 0],
-			...mirrorPtsH(
-				0,
-				mirrorPtsV(diagonalUpper.slice(-1)[0][1], diagonalUpper)
-			)
-		)
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="_" d={`M${pts2svg(_Shape)}`} />
-					<path d={`M${pts2svg(diagonalUpper)}z`} />
-					<path d={`M${pts2svg(diagonalLower)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	t: () => {
-		const verticalTipTop = translatePts([0, sw2], ...tipN)
-		const verticalTipBottom = translatePts(
-			[0, 2048 - sw2],
-			...mirrorPtsV(0, tipN)
-		).reverse()
-
-		const vertical = verticalTipTop.concat(verticalTipBottom)
-
-		const tailTip = translatePts(bTriangle.centerInner, ...tipNE)
-
-		const tail: IPts = [
-			...tailTip,
-			verticalTipBottom[0],
-			...translatePts([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
-		]
-
-		const horizontal = translatePts(
-			[pts2MaxX(tailTip) - sw2, 1024 - sw2],
-			...tipE
-		).concat([
-			[0, 1024 + sw2],
-			[0, 1024 - sw2],
-		])
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="|" d={`M${pts2svg(vertical)}z`} />
-					<path key="/" d={`M${pts2svg(tail)}z`} />
-					<path key="-" d={`M${pts2svg(horizontal)}z`} />
-				</g>
-			</SVG>
-		)
-	},
-
-	':': () => {
-		const dotTop = translatePts([0, 1024 - sw * 3], ...tipN)
-		const dotBottom = translatePts(
-			[0, 1024 - sw * 2],
-			...mirrorPtsV(0, tipN)
-		).reverse()
-
-		const dot = dotTop.concat(dotBottom)
-
-		return (
-			<SVG width={512}>
-				<g stroke="none" fill="#000">
-					<path key="dot-top" d={`M${pts2svg(dot)}z`} />
-					<path
-						key="dot-top"
-						d={`M${pts2svg(mirrorPtsV(1024, dot))}z`}
-					/>
-				</g>
-			</SVG>
-		)
-	},
-
-	' ': () => {
-		return <SVG width={512}>{[]}</SVG>
-	},
+			[1024, 0],
+		],
+	],
+}
+
+const CUSTOM_SPACING = {
+	be: 0,
+}
+
+const Line = ({children, kerning}: {children: string; kerning: number}) => {
+	const height = 2048 * 1.5
+
+	const sum = (numbers: number[]) => numbers.reduce((a, b) => a + b, 0)
+
+	const glyphWidths = children.split('').map((glyph) => {
+		const strokeFn = GlyphStrokes?.[glyph]
+		if (!strokeFn) return kerning
+
+		return pts2MaxX(strokeFn(sw).flat())
+	})
+
+	const spacings = children.split('').flatMap((glyph, i, glyphs) => {
+		return [sw]
+
+		if (!i) return []
+
+		return [CUSTOM_SPACING[glyphs[i - 1] + glyph] ?? sw]
+	})
+
+	const width = sum(glyphWidths) + sum(spacings)
+
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox={`0 0 ${width} ${height}`}
+			{...{width, height}}
+			style={{background: 'white'}}
+		>
+			<g stroke="none" fill="#000">
+				{children.split('').map((glyph, i) => {
+					const strokeFn = GlyphStrokes?.[glyph]
+					if (!strokeFn) return <></>
+
+					const spacingI = i ? spacings[i - 1] : 0
+
+					const x = sum(glyphWidths.slice(0, i)) + i * sw
+					//sum(spacings.slice(0, spacingI + 1))
+
+					return (
+						<g transform={`translate(${x}, 0)`}>
+							{strokeFn(sw).map((pts, i) => {
+								return (
+									<path
+										key={`${glyph}-stroke-${i}`}
+										d={`M${pts2svg(pts)}z`}
+									/>
+								)
+							})}
+						</g>
+					)
+				})}
+			</g>
+		</svg>
+	)
 }
 
 export const SVGRunes = ({children = ''}: {children: string}) => {
 	return (
 		<div style={{display: 'flex'}}>
-			{children.split('').map((glyph) => {
-				const fn = GLYPHS?.[glyph as keyof typeof GLYPHS] || GLYPHS[' ']
-
-				return fn()
-			})}
+			<Line kerning={512}>{children}</Line>
 		</div>
 	)
 }
