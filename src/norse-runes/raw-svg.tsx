@@ -710,8 +710,16 @@ const GlyphStrokes = {
 	],
 }
 
+const sw4 = sw / 4
+
 const CUSTOM_SPACING = {
-	be: 0,
+	be: sw4,
+	he: sw4,
+	ia: sw4,
+	ho: sw4,
+	os: sw4,
+	nd: sw4,
+	rs: -sw / 2,
 }
 
 const Line = ({children, kerning}: {children: string; kerning: number}) => {
@@ -726,15 +734,16 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 		return pts2MaxX(strokeFn(sw).flat())
 	})
 
-	const spacings = children.split('').flatMap((glyph, i, glyphs) => {
-		return [sw]
+	const glyphGaps = children.split('').map((currentGlyph, i, glyphs) => {
+		if (!i) return 0 // no prior glyph, zero additional spacing
 
-		if (!i) return []
+		const prevGlyph = glyphs[i - 1]
+		const glyphPair = prevGlyph + currentGlyph
 
-		return [CUSTOM_SPACING[glyphs[i - 1] + glyph] ?? sw]
+		return CUSTOM_SPACING[glyphPair] ?? sw / 2
 	})
 
-	const width = sum(glyphWidths) + sum(spacings)
+	const width = sum(glyphWidths) + sum(glyphGaps)
 
 	return (
 		<svg
@@ -748,10 +757,9 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 					const strokeFn = GlyphStrokes?.[glyph]
 					if (!strokeFn) return <></>
 
-					const spacingI = i ? spacings[i - 1] : 0
-
-					const x = sum(glyphWidths.slice(0, i)) + i * sw
-					//sum(spacings.slice(0, spacingI + 1))
+					const x =
+						sum(glyphWidths.slice(0, i)) +
+						sum(glyphGaps.slice(0, i + 1))
 
 					return (
 						<g transform={`translate(${x}, 0)`}>
