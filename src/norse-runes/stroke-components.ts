@@ -1,4 +1,12 @@
-import {lines2intersectionPt, mirrorPtsV, pt, type IPts} from './util'
+import {
+	lines2intersectionPt,
+	mirrorPtsH,
+	mirrorPtsV,
+	pt,
+	pts2MaxX,
+	translatePtsX,
+	type IPts,
+} from './util'
 
 /** @note LINES
  * ASCENDER LINE (top, Cap Height)
@@ -29,6 +37,14 @@ export const gt = (sw: number): IPts => {
 		centerInner,
 		topInner,
 	]
+}
+
+/** @note "<" shape */
+export const lt = (sw: number): IPts => {
+	const lobe = gt(sw)
+	const maxX = pts2MaxX(lobe)
+
+	return translatePtsX(maxX, mirrorPtsH(0, lobe))
 }
 
 export const tip = (sw: number): IPts => {
