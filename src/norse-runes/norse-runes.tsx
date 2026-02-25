@@ -1,4 +1,4 @@
-import {verticalAscender2Base} from './stroke-components'
+import {gt, lt, tip, verticalAscender2Base} from './stroke-components'
 import {
 	distanceBetweenPts,
 	getBisectorYAtX,
@@ -6,10 +6,16 @@ import {
 	lines2intersectionPt,
 	mirrorPtsH,
 	mirrorPtsV,
+	pt,
 	pts2MaxX,
 	pts2MaxY,
+	pts2MinY,
 	rotatePts,
+	translatePt,
+	translatePts,
 	translatePtsOld,
+	translatePtsX,
+	translatePtsY,
 	type IPt,
 	type IPts,
 } from './util'
@@ -21,27 +27,12 @@ const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
+const areStrokesEqual = (pts1: IPts, pts2: IPts) =>
+	console.log(pts2svg(pts1) === pts2svg(pts2))
+
 // # STROKES
-const bVertical = (() => {
-	const top: IPt = [sw2, 0]
-	const topLeft: IPt = [0, sw2]
-	const topRight: IPt = [sw, sw2]
 
-	const bottom: IPt = [sw2, 2048]
-	const bottomLeft: IPt = [0, 2048 - sw2]
-	const bottomRight: IPt = [sw, 2048 - sw2]
-
-	return {
-		top,
-		topLeft,
-		topRight,
-		bottom,
-		bottomLeft,
-		bottomRight,
-		pts: [topLeft, top, topRight, bottomRight, bottom, bottomLeft] as IPt[],
-	}
-})()
-
+/** @deprecated (use `gt(sw)` instead) */
 const bTriangle = (() => {
 	const center: IPt = [sw, 1024] // where the outer diagonal meets the center line of the glyph vertically
 
@@ -105,17 +96,13 @@ const cShape = (() => {
 		...mirrorPtsH(0, bTriangle.pts)
 	)
 
-	const originalTip: IPt[] = [
-		bVertical.topLeft,
-		bVertical.top,
-		bVertical.topRight,
-	]
+	const originalTip: IPt[] = tip(sw)
 
 	const centerInner = translatePtsOld([sw * Math.SQRT2, 0], centerOuter)[0]
 
 	const [tipTopOuter, tipTop, tipTopInner] = translatePtsOld(
 		[topRight[0], topRight[1] - sw2],
-		...rotatePts(45, bVertical.topLeft, originalTip)
+		...rotatePts(45, originalTip[0], originalTip)
 	)
 
 	const [tipBottomOuter, tipBottom, tipBottomInner] = mirrorPtsV(
@@ -253,7 +240,12 @@ const nShape = (() => {
 })()
 
 const B = (sw: number): IPts[] => {
-	return [verticalAscender2Base(sw), bTriangle.pts, PTriangle.pts]
+	const lobeLower = translatePtsX(sw / 2, gt(sw))
+
+	const minY = pts2MinY(lobeLower)
+	const lobeUpper = translatePtsY(-minY, lobeLower)
+
+	return [verticalAscender2Base(sw), lobeLower, lobeUpper]
 }
 
 const C = (sw: number): IPts[] => {
@@ -299,9 +291,10 @@ const N = (sw: number): IPts[] => {
 	return [newPts]
 }
 
-const b = (sw: number): IPts[] => {
-	return [verticalAscender2Base(sw), bTriangle.pts]
-}
+const b = (sw: number): IPts[] => [
+	verticalAscender2Base(sw),
+	translatePtsX(sw / 2, gt(sw)),
+]
 
 const c = (sw: number): IPts[] => {
 	return [cShape.pts]
@@ -459,7 +452,7 @@ const o = (sw: number): IPts[] => {
 }
 
 const p = (sw: number): IPts[] => {
-	const vertical = translatePtsOld([0, 1024 - sw2], ...bVertical.pts)
+	const vertical = translatePts([0, 1024 - sw2], verticalAscender2Base(sw))
 	const triangle = translatePtsOld([0, 0], ...bTriangle.pts)
 
 	return [vertical, triangle]
@@ -635,7 +628,7 @@ const G = (sw: number): IPts[] => {
 	return [CShape, overHang, _Shape, vertical]
 }
 const P = (sw: number): IPts[] => {
-	return [bVertical.pts, PTriangle.pts]
+	return [verticalAscender2Base(sw), PTriangle.pts]
 }
 
 const a = (sw: number): IPts[] => {
@@ -666,9 +659,9 @@ const a = (sw: number): IPts[] => {
 }
 
 const d = (sw: number): IPts[] => {
-	const verticalPts = translatePtsOld(
+	const verticalPts = translatePts(
 		[bTriangle.centerOuter[0] - sw, 0],
-		...bVertical.pts
+		verticalAscender2Base(sw)
 	)
 
 	const trianglePts = translatePtsOld(
