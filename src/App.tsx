@@ -1,6 +1,6 @@
 import './App.css'
 import {Braille} from './braille'
-import {SVGRunes} from './norse-runes/raw-svg'
+import {SVGRunes} from './norse-runes'
 
 function App() {
 	return (
