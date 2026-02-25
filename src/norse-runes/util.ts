@@ -47,6 +47,8 @@ export const rotatePts = (degrees: number, [cx, cy]: IPt, pts: IPts) => {
 	})
 }
 
+export const pt = (x: number, y: number): IPt => [x, y]
+
 export const pts2MaxX = (pts: IPts) => Math.max(...pts.map(([x]) => x))
 export const pts2MaxY = (pts: IPts) => Math.max(...pts.map(([_, y]) => y))
 
@@ -55,6 +57,12 @@ export const pts2MinY = (pts: IPts) => Math.min(...pts.map(([_, y]) => y))
 
 export const translatePts = ([h, v]: IPt, pts: IPts) =>
 	pts.map<IPt>(([x, y]) => [x + h, y + v])
+
+export const translatePt = ([h, v]: IPt, pt: IPt) =>
+	translatePts([h, v], [pt])[0]
+
+export const translatePtsX = (h: number, pts: IPts) => translatePts([h, 0], pts)
+export const translatePtsY = (v: number, pts: IPts) => translatePts([0, v], pts)
 
 /** @deprecated (Use `translatePts()`--without the rest params--instead.) */
 export const translatePtsOld = ([h, v]: IPt, ...pts: IPts) =>
