@@ -614,7 +614,10 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 						sum(glyphGaps.slice(0, i + 1))
 
 					return (
-						<g transform={`translate(${x}, 0)`}>
+						<g
+							transform={`translate(${x}, 0)`}
+							key={`${glyph}-${i}`}
+						>
 							{strokeFn(sw).map((pts, i) => {
 								return (
 									<path
