@@ -495,6 +495,19 @@ const i = (sw: number): IPts[] => {
 	return [dot, vertical, tail]
 }
 
+const k = (sw: number): IPts[] => {
+	/** @todo simplify vertical by creating a vertical creator fn with min/max ys and center x? */
+	const verticalTipTop = translatePts([0, 1024], tipN)
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		mirrorPtsV(0, tipN)
+	).reverse()
+
+	const vertical = verticalTipTop.concat(verticalTipBottom)
+
+	return [vertical, c(sw)[0]]
+}
+
 const l = (sw: number): IPts[] => {
 	const verticalTipBottom = translatePts(
 		[0, 2048 - sw2],
@@ -692,6 +705,7 @@ const GlyphStrokes = {
 	f,
 	h,
 	i,
+	k,
 	l,
 	m,
 	n,
