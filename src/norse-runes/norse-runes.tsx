@@ -82,6 +82,38 @@ const tail = (sw: number): IPts => {
 	]
 }
 
+/** @todo drop tipE/W references and spinoff */
+const horizontal = (sw: number, w: number): IPts => {
+	const sw2 = sw / 2
+	const minY = 1024 - sw2
+
+	const left = translatePts([sw2, minY], tipW)
+	const right = translatePts([w - sw2, minY], tipE)
+
+	return left.concat(right.reverse())
+}
+
+// @todo use this in `gt()` to simplify calculations?
+const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
+
+/** @note remember, pt order can flip from left-to-right (ltr) to rtl (depending on degrees). */
+const tipNew = (sw: number, degrees = 0): IPts => {
+	const sw2 = sw / 2
+
+	const pts: IPts = [[0, sw2], [sw2, 0], [sw, sw2]] // prettier-ignore
+
+	if (!degrees) return pts
+
+	const rotatedPts = rotatePts(degrees, [0, 0], pts)
+
+	const minX = pts2MinX(rotatedPts)
+	const minY = pts2MinY(rotatedPts)
+
+	return translatePts([0 - minX, 0 - minY], rotatedPts)
+
+	// @todo fix floating pt errors?
+}
+
 // tips named after the cardinal directions in which they point
 
 const tipN: IPts = [
@@ -116,70 +148,6 @@ const tipS: IPt[] = [
 
 const tipW: IPt[] = mirrorPtsH(0, tipE)
 
-const nShape = (() => {
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
-
-	const diagonalLOuter: IPt = [0, 1024 - sw2]
-	const diagonalROuter: IPt = [1024, bTriangle.centerOuter[1]]
-
-	const run = diagonalROuter[0] - diagonalLOuter[0]
-	const rise = diagonalROuter[1] - diagonalLOuter[1]
-
-	const diagonalAngle = (Math.atan2(run, rise) * 180) / Math.PI
-
-	const w = distanceBetweenPts(diagonalLOuter, [
-		1024,
-		bTriangle.centerOuter[1],
-	])
-
-	// @todo Fix this horrendous math!
-	const diagonal: IPts = rotatePts(diagonalAngle - 32.72, diagonalLOuter, [
-		diagonalLOuter,
-		[w, diagonalLOuter[1]],
-		[w, diagonalLOuter[1] + sw],
-		[diagonalLOuter[0] + sw, diagonalLOuter[1] + sw],
-	])
-
-	const lTip = translatePts([0, 2048 - sw2], tipS)
-
-	const left: IPts = [
-		[0, 1024 - sw2],
-		lTip[0],
-		lTip[2],
-		lTip[1],
-		[sw, 1024 + sw2],
-	]
-
-	const right: IPts = [
-		[1024, bTriangle.centerOuter[1]],
-		...translatePts([1024 - sw, 0], verticalTipBottom),
-		[1024 - sw, bTriangle.centerOuter[1]],
-	]
-
-	const pts: IPts = [
-		diagonal[0],
-		diagonal[1],
-		right[1],
-		right[2],
-		right[3],
-
-		[
-			1024 - sw,
-			getBisectorYAtX(diagonal[0], diagonal[1], right[1], 1024 - sw),
-		],
-		[sw, getBisectorYAtX(left[1], diagonal[0], diagonal[1], sw)],
-
-		left[3],
-		left[2],
-		left[1],
-	]
-
-	return {pts}
-})()
-
 const B = (sw: number): IPts[] => {
 	const lobeLower = translatePtsX(sw / 2, gt(sw))
 
@@ -202,17 +170,6 @@ const C = (sw: number): IPts[] => {
 	]
 }
 
-/** @todo drop tipE/W references and spinoff */
-const horizontal = (sw: number, w: number): IPts => {
-	const sw2 = sw / 2
-	const minY = 1024 - sw2
-
-	const left = translatePts([sw2, minY], tipW)
-	const right = translatePts([w - sw2, minY], tipE)
-
-	return left.concat(right.reverse())
-}
-
 const E = (sw: number): IPts[] => {
 	const [CPts] = C(sw)
 
@@ -220,11 +177,14 @@ const E = (sw: number): IPts[] => {
 }
 
 const N = (sw: number): IPts[] => {
+	const [nPts] = n(sw)
+	const formerMinY = pts2MinY(nPts)
+
 	const newPts: IPts = [
-		...translatePts([0, -nShape.pts[0][1]], [nShape.pts[0], nShape.pts[1]]),
-		...nShape.pts.slice(2, 5),
-		...translatePts([0, -nShape.pts[0][1]], [nShape.pts[5], nShape.pts[6]]),
-		...nShape.pts.slice(6),
+		...translatePtsY(-formerMinY, [nPts[0], nPts[1]]), // diagonal top
+		...nPts.slice(2, 5), // tip right
+		...translatePtsY(-formerMinY, [nPts[5], nPts[6]]), // diagonal bottom
+		...nPts.slice(6), // tip left
 	]
 
 	return [newPts]
@@ -269,7 +229,7 @@ const c = (sw: number): IPts[] => {
 const e = (sw: number): IPts[] => {
 	const [cPts] = c(sw)
 
-	const centerY = cPts.find(([x]) => x === 0)![1]
+	const centerY = getLowercaseMidY(sw)
 	const maxX = pts2MaxX(cPts)
 	const dash = translatePtsY(centerY - 1024, horizontal(sw, maxX))
 
@@ -280,7 +240,7 @@ const f = (sw: number): IPts[] => {
 	return t(sw).map((stroke) => mirrorPtsV(1024, stroke))
 }
 
-const h = (sw: number): IPts[] => [vertical(sw), nShape.pts]
+const h = (sw: number): IPts[] => [vertical(sw), n(sw)[0]]
 
 const m = (sw: number): IPts[] => {
 	const centerTip = translatePts([512 - sw2, 2048 - sw2], tipS)
@@ -298,64 +258,37 @@ const m = (sw: number): IPts[] => {
 }
 
 const n = (sw: number): IPts[] => {
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
+	// ptOrder = right-to-left
+	const tipL = translatePtsY(2048 - sw / 2, tipNew(sw, 180))
+	const tipR = translatePtsX(1024 - sw, tipL)
 
-	const diagonalLOuter: IPt = [0, 1024 - sw2]
-	const diagonalROuter: IPt = [1024, bTriangle.centerOuter[1]]
+	const upperL = pt(0, 1024 - sw2)
+	const upperR = pt(1024, getLowercaseMidY(sw))
 
-	const run = diagonalROuter[0] - diagonalLOuter[0]
-	const rise = diagonalROuter[1] - diagonalLOuter[1]
+	const run = upperR[0] - upperL[0]
+	const rise = upperR[1] - upperL[1]
 
 	const diagonalAngle = (Math.atan2(run, rise) * 180) / Math.PI
 
-	const w = distanceBetweenPts(diagonalLOuter, [
-		1024,
-		bTriangle.centerOuter[1],
-	])
-
 	// @todo Fix this horrendous math!
-	const diagonal: IPts = rotatePts(diagonalAngle - 32.72, diagonalLOuter, [
-		diagonalLOuter,
-		[w, diagonalLOuter[1]],
-		[w, diagonalLOuter[1] + sw],
-		[diagonalLOuter[0] + sw, diagonalLOuter[1] + sw],
+	const diagonal: IPts = rotatePts(diagonalAngle - 32.72, upperL, [
+		upperL,
+		[distanceBetweenPts(upperL, upperR), upperL[1]],
 	])
-
-	const lTip = translatePts([0, 2048 - sw2], tipS)
-
-	const left: IPts = [
-		[0, 1024 - sw2],
-		lTip[0],
-		lTip[2],
-		lTip[1],
-		[sw, 1024 + sw2],
-	]
-
-	const right: IPts = [
-		[1024, bTriangle.centerOuter[1]],
-		...translatePts([1024 - sw, 0], verticalTipBottom),
-		[1024 - sw, bTriangle.centerOuter[1]],
-	]
 
 	const pts: IPts = [
 		diagonal[0],
 		diagonal[1],
-		right[1],
-		right[2],
-		right[3],
+
+		...tipR,
 
 		[
 			1024 - sw,
-			getBisectorYAtX(diagonal[0], diagonal[1], right[1], 1024 - sw),
+			getBisectorYAtX(diagonal[0], diagonal[1], tipR[0], 1024 - sw),
 		],
-		[sw, getBisectorYAtX(left[1], diagonal[0], diagonal[1], sw)],
+		[sw, getBisectorYAtX(tipL[2], diagonal[0], diagonal[1], sw)],
 
-		left[3],
-		left[2],
-		left[1],
+		...tipL,
 	]
 
 	return [pts]
