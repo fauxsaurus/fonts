@@ -1,4 +1,4 @@
-import {gt, lt, tip, verticalAscender2Base} from './stroke-components'
+import {gt, lt, tip, vertical} from './stroke-components'
 import {
 	distanceBetweenPts,
 	getBisectorYAtX,
@@ -65,6 +65,22 @@ const bTriangle = (() => {
 		] as IPt[],
 	}
 })()
+
+/** @todo -`bTriangle` and spinoff into stroke-components */
+const tail = (sw: number): IPts => {
+	const verticalTipBottom = translatePts(
+		[0, 2048 - sw2],
+		mirrorPtsV(0, tipN)
+	).reverse()
+
+	const tailTip = translatePts(bTriangle.centerInner, tipNE)
+
+	return [
+		...tailTip,
+		verticalTipBottom[0],
+		translatePt([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+	]
+}
 
 // tips named after the cardinal directions in which they point
 
@@ -170,7 +186,7 @@ const B = (sw: number): IPts[] => {
 	const minY = pts2MinY(lobeLower)
 	const lobeUpper = translatePtsY(-minY, lobeLower)
 
-	return [verticalAscender2Base(sw), lobeLower, lobeUpper]
+	return [vertical(sw), lobeLower, lobeUpper]
 }
 
 const C = (sw: number): IPts[] => {
@@ -204,10 +220,7 @@ const N = (sw: number): IPts[] => {
 	return [newPts]
 }
 
-const b = (sw: number): IPts[] => [
-	verticalAscender2Base(sw),
-	translatePtsX(sw / 2, gt(sw)),
-]
+const b = (sw: number): IPts[] => [vertical(sw), translatePtsX(sw / 2, gt(sw))]
 
 const c = (sw: number): IPts[] => {
 	const ltPts = lt(sw)
@@ -275,18 +288,7 @@ const e = (sw: number): IPts[] => {
 }
 
 const f = (sw: number): IPts[] => {
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
-
 	const tailTip = translatePts(bTriangle.centerInner, tipNE)
-
-	const tail: IPts = [
-		...tailTip,
-		verticalTipBottom[0],
-		translatePt([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
-	]
 
 	const horizontal = translatePts(
 		[pts2MaxX(tailTip) - sw2, 1024 - sw2],
@@ -296,12 +298,10 @@ const f = (sw: number): IPts[] => {
 		[0, 1024 - sw2],
 	])
 
-	return [verticalAscender2Base(sw), mirrorPtsV(1024, tail), horizontal]
+	return [vertical(sw), mirrorPtsV(1024, tail(sw)), horizontal]
 }
 
-const h = (sw: number): IPts[] => {
-	return [verticalAscender2Base(sw), nShape.pts]
-}
+const h = (sw: number): IPts[] => [vertical(sw), nShape.pts]
 
 const m = (sw: number): IPts[] => {
 	const centerTip = translatePts([512 - sw2, 2048 - sw2], tipS)
@@ -382,81 +382,46 @@ const n = (sw: number): IPts[] => {
 	return [pts]
 }
 
+/** @todo close up for a seamless shape  */
 const o = (sw: number): IPts[] => {
-	const triLeftPts = translatePts(
-		[bTriangle.centerOuter[0], 0],
-		mirrorPtsH(0, bTriangle.pts)
-	)
-	const triRightPts = translatePts(
-		[bTriangle.centerOuter[0] - sw, 0],
-		bTriangle.pts
-	)
+	const ltPts = lt(sw)
+	const centerX = pts2MaxX(ltPts)
 
-	return [triLeftPts, triRightPts]
+	return [ltPts, translatePtsX(centerX, gt(sw))]
 }
 
 const p = (sw: number): IPts[] => {
-	const vertical = translatePts([0, 1024 - sw2], verticalAscender2Base(sw))
-	const triangle = translatePts([0, 0], bTriangle.pts)
+	const verticalMinY = 1024 - sw / 2
 
-	return [vertical, triangle]
+	const triangle = bTriangle.pts.slice()
+
+	return [vertical(sw, verticalMinY, 2048 + verticalMinY), triangle]
 }
 
 const i = (sw: number): IPts[] => {
-	const verticalTipTop = translatePts([0, 1024], tipN)
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
+	const dotMinY = 1024 - sw * 3.5
+	const dotH = sw * 2
 
-	const vertical = verticalTipTop.concat(verticalTipBottom)
+	const verticalMinY = 1024 - sw / 2
 
-	const dotTop = translatePts([0, 1024 - sw * 3], tipN)
-	const dotBottom = translatePts(
-		[0, 1024 - sw * 2],
-		mirrorPtsV(0, tipN)
-	).reverse()
-
-	const dot = dotTop.concat(dotBottom)
-
-	const tailTip = translatePts(bTriangle.centerInner, tipNE)
-
-	const tail: IPts = [
-		...tailTip,
-		verticalTipBottom[0],
-		translatePt([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+	return [
+		vertical(sw, dotMinY, dotMinY + dotH),
+		vertical(sw, verticalMinY),
+		tail(sw),
 	]
-
-	return [dot, vertical, tail]
 }
 
 const k = (sw: number): IPts[] => {
-	/** @todo simplify vertical by creating a vertical creator fn with min/max ys and center x? */
-	const verticalTipTop = translatePts([0, 1024], tipN)
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
+	const [cPts] = c(sw)
 
-	const vertical = verticalTipTop.concat(verticalTipBottom)
+	const minY = pts2MinY(cPts)
+	const maxY = pts2MaxY(cPts)
 
-	return [vertical, c(sw)[0]]
+	return [vertical(sw, minY, maxY), cPts]
 }
 
 const l = (sw: number): IPts[] => {
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
-
-	const tailTip = translatePts(bTriangle.centerInner, tipNE)
-
-	const tail: IPts = [
-		...tailTip,
-		verticalTipBottom[0],
-		translatePt([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
-	]
-	return [verticalAscender2Base(sw), tail]
+	return [vertical(sw), tail(sw)]
 }
 
 const r = (sw: number): IPts[] => {
@@ -490,18 +455,7 @@ const s = (sw: number): IPts[] => {
 }
 
 const t = (sw: number): IPts[] => {
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
-
 	const tailTip = translatePts(bTriangle.centerInner, tipNE)
-
-	const tail: IPts = [
-		...tailTip,
-		verticalTipBottom[0],
-		translatePt([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
-	]
 
 	const horizontal = translatePts(
 		[pts2MaxX(tailTip) - sw2, 1024 - sw2],
@@ -510,7 +464,8 @@ const t = (sw: number): IPts[] => {
 		[0, 1024 + sw2],
 		[0, 1024 - sw2],
 	])
-	return [verticalAscender2Base(sw), tail, horizontal]
+
+	return [vertical(sw), tail(sw), horizontal]
 }
 
 const G = (sw: number): IPts[] => {
@@ -555,50 +510,28 @@ const G = (sw: number): IPts[] => {
 	return [CShape, overHang, _Shape, vertical]
 }
 const P = (sw: number): IPts[] => {
-	return [
-		verticalAscender2Base(sw),
-		translatePts([sw / 2, -1024 + sw / 2], gt(sw)),
-	]
+	return [vertical(sw), translatePts([sw / 2, -1024 + sw / 2], gt(sw))]
 }
 
 const a = (sw: number): IPts[] => {
-	const triLeftPts = translatePts(
-		[bTriangle.centerOuter[0], 0],
-		mirrorPtsH(0, bTriangle.pts)
-	)
-	const triRightPts = translatePts(
-		[bTriangle.centerOuter[0] - sw, 0],
-		bTriangle.pts
-	)
+	const oPts = o(sw)
+	const [_, gtPts] = oPts
 
-	const width = Math.max(...triRightPts.map(([x]) => x))
+	const maxX = pts2MaxX(gtPts)
+	const minY = pts2MinY(gtPts)
+	const maxY = pts2MaxY(gtPts)
 
-	const verticalTipTop = translatePts([0, 1024], tipN)
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
+	const verticalPts = translatePts([maxX - sw, 0], vertical(sw, minY, maxY))
 
-	const vertical = translatePts(
-		[width - sw, 0],
-		verticalTipTop.concat(verticalTipBottom)
-	)
-
-	return [triLeftPts, triRightPts, vertical]
+	return oPts.concat([verticalPts])
 }
 
 const d = (sw: number): IPts[] => {
-	const verticalPts = translatePts(
-		[bTriangle.centerOuter[0] - sw, 0],
-		verticalAscender2Base(sw)
-	)
+	const ltPts = lt(sw)
 
-	const trianglePts = translatePts(
-		[bTriangle.centerOuter[0], 0],
-		mirrorPtsH(0, bTriangle.pts)
-	)
+	const verticalPts = translatePtsX(pts2MaxX(ltPts) - sw / 2, vertical(sw))
 
-	return [verticalPts, trianglePts]
+	return [verticalPts, ltPts]
 }
 
 const GlyphStrokes = {

@@ -5,6 +5,7 @@ import {
 	pt,
 	pts2MaxX,
 	translatePtsX,
+	translatePtsY,
 	type IPts,
 } from './util'
 
@@ -33,6 +34,7 @@ export const gt = (sw: number): IPts => {
 		topOuter,
 		centerOuter,
 		bottomOuter,
+
 		bottomInner,
 		centerInner,
 		topInner,
@@ -53,5 +55,12 @@ export const tip = (sw: number): IPts => {
 	return [[0, sw2], [sw2, 0], [sw, sw2]] // prettier-ignore
 }
 
-export const verticalAscender2Base = (sw: number): IPts =>
-	tip(sw).concat(mirrorPtsV(1024, tip(sw)).reverse())
+export const vertical = (sw: number, minY = 0, maxY = 2048): IPts => {
+	const tipPts = tip(sw)
+	const sw2 = sw / 2
+
+	const top = translatePtsY(minY, tipPts)
+	const bottom = mirrorPtsV(sw2, tipPts).reverse()
+
+	return top.concat(translatePtsY(maxY - sw, bottom))
+}
