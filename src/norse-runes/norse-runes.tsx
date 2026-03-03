@@ -65,30 +65,6 @@ const bTriangle = (() => {
 	}
 })()
 
-const PTriangle = (() => {
-	const pts = translatePts([0, -bTriangle.topOuter[1]], bTriangle.pts)
-
-	const [
-		topOuter,
-		centerOuter,
-		bottomOuter,
-		bottomInner,
-		centerInner,
-		topInner,
-	] = pts
-
-	return {
-		topOuter,
-		centerOuter,
-		bottomOuter,
-		bottomInner,
-		centerInner,
-		topInner,
-
-		pts,
-	}
-})()
-
 const cShape = (() => {
 	const [topRight, centerOuter] = translatePts(
 		[bTriangle.centerOuter[0], 0],
@@ -605,7 +581,10 @@ const G = (sw: number): IPts[] => {
 	return [CShape, overHang, _Shape, vertical]
 }
 const P = (sw: number): IPts[] => {
-	return [verticalAscender2Base(sw), PTriangle.pts]
+	return [
+		verticalAscender2Base(sw),
+		translatePts([sw / 2, -1024 + sw / 2], gt(sw)),
+	]
 }
 
 const a = (sw: number): IPts[] => {
