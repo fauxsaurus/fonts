@@ -66,71 +66,6 @@ const bTriangle = (() => {
 	}
 })()
 
-/** @deprecated */
-const cShape = (() => {
-	const [topRight, centerOuter] = translatePts(
-		[bTriangle.centerOuter[0], 0],
-		mirrorPtsH(0, bTriangle.pts)
-	)
-
-	const originalTip: IPt[] = tip(sw)
-
-	const centerInner = translatePt([sw * Math.SQRT2, 0], centerOuter)
-
-	const [tipTopOuter, tipTop, tipTopInner] = translatePts(
-		[topRight[0], topRight[1] - sw2],
-		rotatePts(45, originalTip[0], originalTip)
-	)
-
-	const ltPts = lt(sw)
-
-	const maxX = pts2MaxX(ltPts)
-	const maxY = pts2MaxY(ltPts)
-	const minY = pts2MinY(ltPts)
-
-	// filter uncapped inner edge pts (so that nothing will be between the inner center point and the inner tip pts for the straightest possible line)
-	const [topOuter, outerCenter, bottomOuter, innerCenter] = ltPts.filter(
-		([x, y]) => x !== maxX || [minY, maxY].includes(y)
-	)
-
-	const [tipBottomOuter, tipBottom, tipBottomInner] = mirrorPtsV(
-		2048,
-		translatePts([0, 1024 + sw2], [tipTopOuter, tipTop, tipTopInner])
-	)
-
-	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
-
-	const newPts = [
-		outerCenter,
-
-		topOuter,
-		translatePt([swD45 / 2, 0], topOuter),
-		translatePt([swD45 / 2, swD45 / 2], topOuter),
-
-		innerCenter,
-
-		translatePt([swD45 / 2, -swD45 / 2], bottomOuter),
-		translatePt([swD45 / 2, 0], bottomOuter),
-		bottomOuter,
-	]
-
-	return {
-		centerOuter,
-
-		tipTopOuter,
-		tipTop,
-		tipTopInner,
-
-		centerInner,
-
-		tipBottomInner,
-		tipBottom,
-		tipBottomOuter,
-
-		pts: newPts,
-	}
-})()
-
 // tips named after the cardinal directions in which they point
 
 const tipN: IPts = [
@@ -523,7 +458,7 @@ const l = (sw: number): IPts[] => {
 	]
 	return [verticalAscender2Base(sw), tail]
 }
-// @todo left off here (finish removing cShape--see c() and e() for how to go about it)
+
 const r = (sw: number): IPts[] => {
 	const verticalTipTop = translatePts([0, 1024], tipN)
 	const verticalTipBottom = translatePts(
@@ -533,49 +468,25 @@ const r = (sw: number): IPts[] => {
 
 	const vertical = verticalTipTop.concat(verticalTipBottom)
 
-	const diagonal: IPts = [
-		cShape.centerOuter,
+	const [cPts] = c(sw)
+	const diagonalEndPt = translatePt([0, swD45], cPts[0])
+	const diagonalPts = cPts.slice(0, 4).concat([diagonalEndPt])
 
-		cShape.tipTopOuter,
-		cShape.tipTop,
-		cShape.tipTopInner,
-
-		translatePt([-swD45, swD45], cShape.centerInner),
-	]
-
-	return [vertical, diagonal]
+	return [vertical, diagonalPts]
 }
 
 const s = (sw: number): IPts[] => {
-	const tipLeft = cShape.centerOuter
-	const tipLeftTop = translatePt([sw2, -sw2], tipLeft)
-	const tipLeftBottom = translatePt([sw2, sw2], tipLeft)
+	const [cPts, _pts] = e(sw)
 
-	const tipRightBottom = translatePt(
-		[cShape.tipTop[0] - sw, 0],
-		tipLeftBottom
-	)
-	const tipRightTop = translatePt([cShape.tipTop[0] - sw, 0], tipLeftTop)
-	const tipRight = translatePt([cShape.tipTop[0], 0], tipLeft)
+	const diagonalUpper = cPts.slice(0, -3)
+	const lowerCaseMidline = diagonalUpper[0][1]
 
-	const _Shape: IPt[] = [
-		tipLeft,
-		tipLeftTop,
-
-		tipRightTop,
-		tipRight,
-
-		tipRightBottom,
-		tipLeftBottom,
-	]
-
-	const diagonalUpper = cShape.pts.slice(0, -3)
 	const diagonalLower = translatePts(
 		[diagonalUpper[2][0], 0],
-		mirrorPtsH(0, mirrorPtsV(diagonalUpper.slice(-1)[0][1], diagonalUpper))
+		mirrorPtsH(0, mirrorPtsV(lowerCaseMidline, diagonalUpper))
 	)
 
-	return [diagonalUpper, _Shape, diagonalLower]
+	return [diagonalUpper, diagonalLower, _pts]
 }
 
 const t = (sw: number): IPts[] => {
@@ -697,7 +608,7 @@ const GlyphStrokes = {
 	...{h, i, k, l, m, n, o, p},
 	//q
 	...{r, s, t},
-
+	// u, v, w, x, y, z
 	':': (sw: number): IPts[] => {
 		const topDotUpperTip = translatePts([0, 1024 - sw * 3], tipN)
 		const topDotLowerTip = translatePts(
