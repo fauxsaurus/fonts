@@ -64,10 +64,6 @@ export const translatePt = ([h, v]: IPt, pt: IPt) =>
 export const translatePtsX = (h: number, pts: IPts) => translatePts([h, 0], pts)
 export const translatePtsY = (v: number, pts: IPts) => translatePts([0, v], pts)
 
-/** @deprecated (Use `translatePts()`--without the rest params--instead.) */
-export const translatePtsOld = ([h, v]: IPt, ...pts: IPts) =>
-	pts.map<IPt>(([x, y]) => [x + h, y + v])
-
 // const getXFromYonLine = ([x1, y1]: IPt, m: number, y: number): number => {
 // 	if (m) return x1 + (y - y1) / m // rearranged point-slope formula
 
