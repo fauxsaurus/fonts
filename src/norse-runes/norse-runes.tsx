@@ -9,6 +9,7 @@ import {
 	pt,
 	pts2MaxX,
 	pts2MaxY,
+	pts2MinX,
 	pts2MinY,
 	rotatePts,
 	translatePt,
@@ -65,6 +66,7 @@ const bTriangle = (() => {
 	}
 })()
 
+/** @deprecated */
 const cShape = (() => {
 	const [topRight, centerOuter] = translatePts(
 		[bTriangle.centerOuter[0], 0],
@@ -80,23 +82,36 @@ const cShape = (() => {
 		rotatePts(45, originalTip[0], originalTip)
 	)
 
+	const ltPts = lt(sw)
+
+	const maxX = pts2MaxX(ltPts)
+	const maxY = pts2MaxY(ltPts)
+	const minY = pts2MinY(ltPts)
+
+	// filter uncapped inner edge pts (so that nothing will be between the inner center point and the inner tip pts for the straightest possible line)
+	const [topOuter, outerCenter, bottomOuter, innerCenter] = ltPts.filter(
+		([x, y]) => x !== maxX || [minY, maxY].includes(y)
+	)
+
 	const [tipBottomOuter, tipBottom, tipBottomInner] = mirrorPtsV(
 		2048,
 		translatePts([0, 1024 + sw2], [tipTopOuter, tipTop, tipTopInner])
 	)
 
-	const pts = [
-		centerOuter,
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-		tipTopOuter,
-		tipTop,
-		tipTopInner,
+	const newPts = [
+		outerCenter,
 
-		centerInner,
+		topOuter,
+		translatePt([swD45 / 2, 0], topOuter),
+		translatePt([swD45 / 2, swD45 / 2], topOuter),
 
-		tipBottomInner,
-		tipBottom,
-		tipBottomOuter,
+		innerCenter,
+
+		translatePt([swD45 / 2, -swD45 / 2], bottomOuter),
+		translatePt([swD45 / 2, 0], bottomOuter),
+		bottomOuter,
 	]
 
 	return {
@@ -112,7 +127,7 @@ const cShape = (() => {
 		tipBottom,
 		tipBottomOuter,
 
-		pts,
+		pts: newPts,
 	}
 })()
 
@@ -260,22 +275,57 @@ const b = (sw: number): IPts[] => [
 ]
 
 const c = (sw: number): IPts[] => {
-	return [cShape.pts]
+	const ltPts = lt(sw)
+
+	const maxX = pts2MaxX(ltPts)
+	const maxY = pts2MaxY(ltPts)
+	const minY = pts2MinY(ltPts)
+
+	/**
+	 * @note 4 the straightest line possible, filter out uncapped inner edge pts
+	 * so that nothing will be between the inner center pt and the inner tip pts
+	 */
+	const [topOuter, outerCenter, bottomOuter, innerCenter] = ltPts.filter(
+		([x, y]) => x !== maxX || [minY, maxY].includes(y)
+	)
+
+	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
+
+	const pts = [
+		outerCenter,
+
+		topOuter,
+		translatePt([sw2D45, 0], topOuter),
+		translatePt([sw2D45, sw2D45], topOuter),
+
+		innerCenter,
+
+		translatePt([sw2D45, -sw2D45], bottomOuter),
+		translatePt([sw2D45, 0], bottomOuter),
+		bottomOuter,
+	]
+
+	return [pts]
 }
 
 const e = (sw: number): IPts[] => {
-	const tipLeft = cShape.centerOuter
+	const [cPts] = c(sw)
+
+	/**
+	 * @todo to simplify the blocks below, create a tip function to create a tip
+	 * pointed in a given cardinal direction given an outermost pt
+	 */
+	const minX = pts2MinX(cPts)
+	const tipLeft = cPts.find(([x]) => x === minX)! // outer center pt
 	const tipLeftTop = translatePt([sw2, -sw2], tipLeft)
 	const tipLeftBottom = translatePt([sw2, sw2], tipLeft)
 
-	const tipRightBottom = translatePt(
-		[cShape.tipTop[0] - sw, 0],
-		tipLeftBottom
-	)
-	const tipRightTop = translatePt([cShape.tipTop[0] - sw, 0], tipLeftTop)
-	const tipRight = translatePt([cShape.tipTop[0], 0], tipLeft)
+	const maxX = pts2MaxX(cPts)
+	const tipRightBottom = translatePt([maxX - sw, 0], tipLeftBottom)
+	const tipRightTop = translatePt([maxX - sw, 0], tipLeftTop)
+	const tipRight = translatePt([maxX, 0], tipLeft)
 
-	const _Shape: IPt[] = [
+	const dash: IPt[] = [
 		tipLeft,
 		tipLeftTop,
 
@@ -286,7 +336,7 @@ const e = (sw: number): IPts[] => {
 		tipLeftBottom,
 	]
 
-	return [cShape.pts, _Shape]
+	return [cPts, dash]
 }
 
 const f = (sw: number): IPts[] => {
@@ -460,7 +510,7 @@ const l = (sw: number): IPts[] => {
 	]
 	return [verticalAscender2Base(sw), tail]
 }
-
+// @todo left off here (finish removing cShape--see c() and e() for how to go about it)
 const r = (sw: number): IPts[] => {
 	const verticalTipTop = translatePts([0, 1024], tipN)
 	const verticalTipBottom = translatePts(
