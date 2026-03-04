@@ -32,48 +32,16 @@ const areStrokesEqual = (pts1: IPts, pts2: IPts) =>
 
 // # STROKES
 
-/** @deprecated (use `gt(sw)` instead) */
-const bTriangle = (() => {
-	const center: IPt = [sw, 1024] // where the outer diagonal meets the center line of the glyph vertically
-
-	const bottomOuter: IPt = [sw2, 2048]
-
-	const topOuter = translatePt([-sw2, -sw2], center)
-	const topInner = translatePt([-sw2, swD45 - sw2], center)
-
-	const bottomInner = translatePt([0, -swD45], bottomOuter)
-
-	const centerOuter = lines2intersectionPt(bottomOuter, -1, topOuter, 1)
-
-	const centerInner = lines2intersectionPt(topInner, 1, bottomInner, -1)
-
-	return {
-		topOuter,
-		centerOuter,
-		bottomOuter,
-		bottomInner,
-		centerInner,
-		topInner,
-
-		pts: [
-			topOuter,
-			centerOuter,
-			bottomOuter,
-			bottomInner,
-			centerInner,
-			topInner,
-		] as IPt[],
-	}
-})()
-
-/** @todo -`bTriangle` and spinoff into stroke-components */
 const tail = (sw: number): IPts => {
 	const verticalTipBottom = translatePts(
 		[0, 2048 - sw2],
 		mirrorPtsV(0, tipN)
 	).reverse()
 
-	const tailTip = translatePts(bTriangle.centerInner, tipNE)
+	const tailTip = translatePts(
+		gt(sw)[4], // inner center pt of ">"
+		translatePtsX(sw / 2, tipNew(sw, 45))
+	)
 
 	return [
 		...tailTip,
