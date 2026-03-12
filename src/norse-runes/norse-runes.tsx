@@ -53,15 +53,14 @@ const tail = (sw: number): IPts => {
 	]
 }
 
-/** @todo drop tipE/W references and spinoff */
 const horizontal = (sw: number, w: number): IPts => {
 	const sw2 = sw / 2
 	const minY = 1024 - sw2
 
-	const left = translatePts([sw2, minY], tipW)
-	const right = translatePts([w - sw2, minY], tipE)
+	const left = translatePts([0, minY], tipNew(sw, 270))
+	const right = translatePts([w - sw2, minY], tipNew(sw, 90))
 
-	return left.concat(right.reverse())
+	return left.concat(right)
 }
 
 // @todo use this in `gt()` to simplify calculations?
@@ -93,21 +92,11 @@ const tipN: IPts = [
 ]
 
 /** @deprecated use `tipNew()` */
-const tipE: IPt[] = [
-	[0, 0],
-	[sw2, sw2],
-	[0, sw],
-]
-
-/** @deprecated use `tipNew()` */
 const tipS: IPt[] = [
 	[0, 0],
 	[sw, 0],
 	[sw2, sw2],
 ]
-
-/** @deprecated use `tipNew()` */
-const tipW: IPt[] = mirrorPtsH(0, tipE)
 
 const B = (sw: number): IPts[] => {
 	const lobeLower = translatePtsX(sw / 2, gt(sw))
@@ -362,7 +351,11 @@ const G = (sw: number): IPts[] => {
 	]
 
 	const tipInnerMinX = swD45 + sw2 * 3
-	const tipInner = translatePts([tipInnerMinX, 1024 - sw2], tipW)
+	const tipInner = translatePts(
+		[tipInnerMinX - sw / 2, 1024 - sw2],
+		tipNew(sw, 270)
+	).reverse()
+	// const tipInner = translatePts([tipInnerMinX, 1024 - sw2], tipW)
 
 	const _Shape: IPts = [...tipInner, [maxX, 1024 + sw2], [maxX, 1024 - sw2]]
 
@@ -376,6 +369,7 @@ const G = (sw: number): IPts[] => {
 
 	return [CShape, overHang, _Shape, vertical]
 }
+
 const P = (sw: number): IPts[] => {
 	return [vertical(sw), translatePts([sw / 2, -1024 + sw / 2], gt(sw))]
 }
