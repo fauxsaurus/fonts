@@ -91,13 +91,6 @@ const tipN: IPts = [
 	[sw, 0],
 ]
 
-/** @deprecated use `tipNew()` */
-const tipS: IPt[] = [
-	[0, 0],
-	[sw, 0],
-	[sw2, sw2],
-]
-
 const B = (sw: number): IPts[] => {
 	const lobeLower = translatePtsX(sw / 2, gt(sw))
 
@@ -191,15 +184,11 @@ const f = (sw: number): IPts[] => {
 const h = (sw: number): IPts[] => [vertical(sw), n(sw)[0]]
 
 const m = (sw: number): IPts[] => {
-	const centerTip = translatePts([512 - sw2, 2048 - sw2], tipS)
-
 	const center: IPts = [
 		[512 - sw2, 1024 + 256],
 		[512 + sw2, 1024 + 256],
 
-		centerTip[1],
-		centerTip[2],
-		centerTip[0],
+		...translatePts([512 - sw2, 2048 - sw2], tipNew(sw, 180)),
 	]
 
 	return [n(sw)[0], center]
@@ -339,15 +328,11 @@ const G = (sw: number): IPts[] => {
 
 	const maxX = 1024
 
-	const overHangTip = translatePts([maxX - sw, 1024 - sw * 2], tipS)
-
 	const overHang: IPts = [
-		[maxX, sw],
 		[maxX - sw, sw],
+		[maxX, sw],
 
-		overHangTip[0],
-		overHangTip[2],
-		overHangTip[1],
+		...translatePts([maxX - sw, 1024 - sw * 2], tipNew(sw, 180)),
 	]
 
 	const tipInnerMinX = swD45 + sw2 * 3
