@@ -36,20 +36,18 @@ const areStrokesEqual = (pts1: IPts, pts2: IPts) => {
 // # STROKES
 
 const tail = (sw: number): IPts => {
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
-
 	const tailTip = translatePts(
 		gt(sw)[4], // inner center pt of ">"
 		translatePtsX(sw / 2, tipNew(sw, 45))
 	)
 
+	// where tail meets the lower vertical tip
+	const intersectionPt = pt(sw, 2048 - sw / 2)
+
 	return [
 		...tailTip,
-		verticalTipBottom[0],
-		translatePt([-swD45 / 2, -swD45 / 2], verticalTipBottom[0]),
+		intersectionPt,
+		translatePt([-swD45 / 2, -swD45 / 2], intersectionPt),
 	]
 }
 
@@ -82,14 +80,6 @@ const tipNew = (sw: number, degrees = 0): IPts => {
 
 	// @todo fix floating pt errors?
 }
-
-// tips named after the cardinal directions in which they point
-/** @deprecated use `tipNew()` */
-const tipN: IPts = [
-	[0, 0],
-	[sw2, -sw2],
-	[sw, 0],
-]
 
 const B = (sw: number): IPts[] => {
 	const lobeLower = translatePtsX(sw / 2, gt(sw))
@@ -278,19 +268,11 @@ const l = (sw: number): IPts[] => {
 }
 
 const r = (sw: number): IPts[] => {
-	const verticalTipTop = translatePts([0, 1024], tipN)
-	const verticalTipBottom = translatePts(
-		[0, 2048 - sw2],
-		mirrorPtsV(0, tipN)
-	).reverse()
-
-	const vertical = verticalTipTop.concat(verticalTipBottom)
-
 	const [cPts] = c(sw)
 	const diagonalEndPt = translatePt([0, swD45], cPts[0])
 	const diagonalPts = cPts.slice(0, 4).concat([diagonalEndPt])
 
-	return [vertical, diagonalPts]
+	return [vertical(sw, 1024 - sw / 2, 2048), diagonalPts]
 }
 
 const s = (sw: number): IPts[] => {
