@@ -253,7 +253,7 @@ export const t = (sw: number): IPts[] => {
 
 export const u = (sw: number): IPts[] => {
 	const [nPts] = n(sw)
-	const mirroredNPts = mirrorPtsV(2048, nPts)
+	const mirroredNPts = mirrorPtsH(512, mirrorPtsV(2048, nPts))
 
 	const maxY = pts2MaxY(mirroredNPts)
 
@@ -262,9 +262,24 @@ export const u = (sw: number): IPts[] => {
 
 /** @todo this could be simplified by making "m" a single path */
 export const w = (sw: number): IPts[] => {
-	const mirroredMPts = m(sw).map((stroke) => mirrorPtsV(2048, stroke))
+	const mirroredMPts = m(sw).map((stroke) =>
+		mirrorPtsH(512, mirrorPtsV(2048, stroke))
+	)
 
 	const maxY = pts2MaxY(mirroredMPts.flat())
 
 	return mirroredMPts.map((stroke) => translatePtsY(2048 - maxY, stroke))
+}
+
+export const y = (sw: number): IPts[] => {
+	const [uPts] = u(sw)
+	const [verticalPts, tailPts] = j(sw)
+
+	const offsetX = 1024 - pts2MaxX(verticalPts)
+
+	return [
+		uPts,
+		translatePtsX(offsetX, verticalPts),
+		translatePtsX(offsetX, tailPts),
+	]
 }
