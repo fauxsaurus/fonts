@@ -1,1 +1,2 @@
-export * from './glyphs-lowercase' // @todo add support for: uvwxyz
+// @todo add support for: vwxyz
+export * from './glyphs-lowercase'

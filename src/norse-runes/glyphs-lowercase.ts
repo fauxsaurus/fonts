@@ -250,3 +250,12 @@ export const t = (sw: number): IPts[] => {
 
 	return lPts.concat([horizontal(sw, pts2MaxX(lPts.flat()))])
 }
+
+export const u = (sw: number): IPts[] => {
+	const [nPts] = n(sw)
+	const mirroredNPts = mirrorPtsV(2048, nPts)
+
+	const maxY = pts2MaxY(mirroredNPts)
+
+	return [translatePtsY(2048 - maxY, mirroredNPts)]
+}
