@@ -16,7 +16,7 @@ import {
 	type IPts,
 } from './util'
 
-/** @todo add support for: gjquvwxyz */
+/** @todo add support for: gjuvwxyz */
 
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
@@ -192,6 +192,13 @@ export const p = (sw: number): IPts[] => {
 		vertical(sw, verticalMinY, verticalMaxY),
 		translatePtsX(sw2, gt(sw)),
 	]
+}
+
+export const q = (sw: number): IPts[] => {
+	const pPts = p(sw)
+	const centerX = pts2MaxX(pPts.flat()) / 2
+
+	return p(sw).map((stroke) => mirrorPtsH(centerX, stroke))
 }
 
 export const r = (sw: number): IPts[] => {

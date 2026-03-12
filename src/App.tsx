@@ -10,7 +10,7 @@ function App() {
 			<NorseRunes key="line-1">Ghost Girl</NorseRunes>
 			<NorseRunes key="line-2">and the</NorseRunes>
 			<NorseRunes key="line-3">Ghost Giant</NorseRunes>
-			<NorseRunes key="line-4">BCPck</NorseRunes>
+			<NorseRunes key="line-4">BCPcgkq</NorseRunes>
 
 			<Braille>Andrew R. H. Quinn</Braille>
 			<Braille>ABCDEFGHIJKLMNOPQRSTUVWXYZ</Braille>
