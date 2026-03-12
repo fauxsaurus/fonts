@@ -27,8 +27,11 @@ const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
-const areStrokesEqual = (pts1: IPts, pts2: IPts) =>
-	console.log(pts2svg(pts1) === pts2svg(pts2))
+const areStrokesEqual = (pts1: IPts, pts2: IPts) => {
+	if (pts2svg(pts1) === pts2svg(pts2)) return console.log(true)
+
+	console.log(false, pts1, pts2)
+}
 
 // # STROKES
 
@@ -69,7 +72,6 @@ const tipNew = (sw: number, degrees = 0): IPts => {
 	const sw2 = sw / 2
 
 	const pts: IPts = [[0, sw2], [sw2, 0], [sw, sw2]] // prettier-ignore
-
 	if (!degrees) return pts
 
 	const rotatedPts = rotatePts(degrees, [0, 0], pts)
@@ -83,37 +85,28 @@ const tipNew = (sw: number, degrees = 0): IPts => {
 }
 
 // tips named after the cardinal directions in which they point
-
+/** @deprecated use `tipNew()` */
 const tipN: IPts = [
 	[0, 0],
 	[sw2, -sw2],
 	[sw, 0],
 ]
 
-const tipNE: IPt[] = [
-	[0, 0],
-	[sw / Math.SQRT2, 0],
-	[sw / Math.SQRT2, sw / Math.SQRT2],
-]
-
+/** @deprecated use `tipNew()` */
 const tipE: IPt[] = [
 	[0, 0],
 	[sw2, sw2],
 	[0, sw],
 ]
 
-const tipSE: IPt[] = [
-	[0, 0],
-	[sw / Math.SQRT2, 0],
-	[sw / Math.SQRT2, -sw / Math.SQRT2],
-]
-
+/** @deprecated use `tipNew()` */
 const tipS: IPt[] = [
 	[0, 0],
 	[sw, 0],
 	[sw2, sw2],
 ]
 
+/** @deprecated use `tipNew()` */
 const tipW: IPt[] = mirrorPtsH(0, tipE)
 
 const B = (sw: number): IPts[] => {
@@ -128,13 +121,11 @@ const B = (sw: number): IPts[] => {
 const C = (sw: number): IPts[] => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
+	const tipTop = translatePts([1024, 0], tipNew(sw, 45))
+	const tipBottom = translatePts([1024, 2048 - swD45 / 2], tipNew(sw, 135))
+
 	return [
-		[
-			...translatePts([1024, 0], tipNE).reverse(),
-			[0, 1024],
-			...translatePts([1024, 2048], tipSE),
-			[swD45, 1024],
-		],
+		[...tipTop.reverse(), [0, 1024], ...tipBottom.reverse(), [swD45, 1024]],
 	]
 }
 
