@@ -283,3 +283,11 @@ export const y = (sw: number): IPts[] => {
 		translatePtsX(offsetX, tailPts),
 	]
 }
+
+export const z = (sw: number): IPts[] => {
+	const sPts = s(sw)
+
+	const midX = pts2MaxX(sPts.flat()) / 2
+
+	return sPts.map((stroke) => mirrorPtsH(midX, stroke))
+}

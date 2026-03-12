@@ -1,2 +1,2 @@
-// @todo add support for: vxz
+// @todo add support for: vx
 export * from './glyphs-lowercase'
