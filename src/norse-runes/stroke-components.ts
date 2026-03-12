@@ -4,6 +4,10 @@ import {
 	mirrorPtsV,
 	pt,
 	pts2MaxX,
+	pts2MinX,
+	pts2MinY,
+	rotatePts,
+	translatePts,
 	translatePtsX,
 	translatePtsY,
 	type IPts,
@@ -49,10 +53,21 @@ export const lt = (sw: number): IPts => {
 	return translatePtsX(maxX, mirrorPtsH(0, lobe))
 }
 
-export const tip = (sw: number): IPts => {
+/** @note remember, pt order can flip from left-to-right (ltr) to rtl (depending on degrees). */
+export const tip = (sw: number, degrees = 0): IPts => {
 	const sw2 = sw / 2
 
-	return [[0, sw2], [sw2, 0], [sw, sw2]] // prettier-ignore
+	const pts: IPts = [[0, sw2], [sw2, 0], [sw, sw2]] // prettier-ignore
+	if (!degrees) return pts
+
+	const rotatedPts = rotatePts(degrees, [0, 0], pts)
+
+	const minX = pts2MinX(rotatedPts)
+	const minY = pts2MinY(rotatedPts)
+
+	return translatePts([0 - minX, 0 - minY], rotatedPts)
+
+	// @todo fix floating pt errors?
 }
 
 export const vertical = (sw: number, minY = 0, maxY = 2048): IPts => {

@@ -2,14 +2,11 @@ import {gt, lt, tip, vertical} from './stroke-components'
 import {
 	distanceBetweenPts,
 	getBisectorYAtX,
-	getYFromXOnLine,
-	lines2intersectionPt,
 	mirrorPtsH,
 	mirrorPtsV,
 	pt,
 	pts2MaxX,
 	pts2MaxY,
-	pts2MinX,
 	pts2MinY,
 	rotatePts,
 	translatePt,
@@ -27,18 +24,12 @@ const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
-const areStrokesEqual = (pts1: IPts, pts2: IPts) => {
-	if (pts2svg(pts1) === pts2svg(pts2)) return console.log(true)
-
-	console.log(false, pts1, pts2)
-}
-
 // # STROKES
 
 const tail = (sw: number): IPts => {
 	const tailTip = translatePts(
 		gt(sw)[4], // inner center pt of ">"
-		translatePtsX(sw / 2, tipNew(sw, 45))
+		translatePtsX(sw / 2, tip(sw, 45))
 	)
 
 	// where tail meets the lower vertical tip
@@ -55,31 +46,14 @@ const horizontal = (sw: number, w: number): IPts => {
 	const sw2 = sw / 2
 	const minY = 1024 - sw2
 
-	const left = translatePts([0, minY], tipNew(sw, 270))
-	const right = translatePts([w - sw2, minY], tipNew(sw, 90))
+	const left = translatePts([0, minY], tip(sw, 270))
+	const right = translatePts([w - sw2, minY], tip(sw, 90))
 
 	return left.concat(right)
 }
 
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
-
-/** @note remember, pt order can flip from left-to-right (ltr) to rtl (depending on degrees). */
-const tipNew = (sw: number, degrees = 0): IPts => {
-	const sw2 = sw / 2
-
-	const pts: IPts = [[0, sw2], [sw2, 0], [sw, sw2]] // prettier-ignore
-	if (!degrees) return pts
-
-	const rotatedPts = rotatePts(degrees, [0, 0], pts)
-
-	const minX = pts2MinX(rotatedPts)
-	const minY = pts2MinY(rotatedPts)
-
-	return translatePts([0 - minX, 0 - minY], rotatedPts)
-
-	// @todo fix floating pt errors?
-}
 
 const B = (sw: number): IPts[] => {
 	const lobeLower = translatePtsX(sw / 2, gt(sw))
@@ -93,8 +67,8 @@ const B = (sw: number): IPts[] => {
 const C = (sw: number): IPts[] => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const tipTop = translatePts([1024, 0], tipNew(sw, 45))
-	const tipBottom = translatePts([1024, 2048 - swD45 / 2], tipNew(sw, 135))
+	const tipTop = translatePts([1024, 0], tip(sw, 45))
+	const tipBottom = translatePts([1024, 2048 - swD45 / 2], tip(sw, 135))
 
 	return [
 		[...tipTop.reverse(), [0, 1024], ...tipBottom.reverse(), [swD45, 1024]],
@@ -178,7 +152,7 @@ const m = (sw: number): IPts[] => {
 		[512 - sw2, 1024 + 256],
 		[512 + sw2, 1024 + 256],
 
-		...translatePts([512 - sw2, 2048 - sw2], tipNew(sw, 180)),
+		...translatePts([512 - sw2, 2048 - sw2], tip(sw, 180)),
 	]
 
 	return [n(sw)[0], center]
@@ -186,7 +160,7 @@ const m = (sw: number): IPts[] => {
 
 const n = (sw: number): IPts[] => {
 	// ptOrder = right-to-left
-	const tipL = translatePtsY(2048 - sw / 2, tipNew(sw, 180))
+	const tipL = translatePtsY(2048 - sw / 2, tip(sw, 180))
 	const tipR = translatePtsX(1024 - sw, tipL)
 
 	const upperL = pt(0, 1024 - sw2)
@@ -314,13 +288,13 @@ const G = (sw: number): IPts[] => {
 		[maxX - sw, sw],
 		[maxX, sw],
 
-		...translatePts([maxX - sw, 1024 - sw * 2], tipNew(sw, 180)),
+		...translatePts([maxX - sw, 1024 - sw * 2], tip(sw, 180)),
 	]
 
 	const tipInnerMinX = swD45 + sw2 * 3
 	const tipInner = translatePts(
 		[tipInnerMinX - sw / 2, 1024 - sw2],
-		tipNew(sw, 270)
+		tip(sw, 270)
 	).reverse()
 	// const tipInner = translatePts([tipInnerMinX, 1024 - sw2], tipW)
 
