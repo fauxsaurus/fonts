@@ -380,6 +380,12 @@ const d = (sw: number): IPts[] => {
 	return [verticalPts, ltPts]
 }
 
+const colon = (sw: number): IPts[] => {
+	const dot = vertical(sw, sw * 2, 1024 - sw2 * 2)
+
+	return [dot, mirrorPtsV(1024, dot)]
+}
+
 const GlyphStrokes = {
 	...{B, C, E, G, N, P},
 	...{a, b, c, d, e, f},
@@ -388,17 +394,7 @@ const GlyphStrokes = {
 	//q
 	...{r, s, t},
 	// u, v, w, x, y, z
-	':': (sw: number): IPts[] => {
-		const topDotUpperTip = translatePts([0, 1024 - sw * 3], tipN)
-		const topDotLowerTip = translatePts(
-			[0, 1024 - sw * 2],
-			mirrorPtsV(0, tipN)
-		).reverse()
-
-		const dot = topDotUpperTip.concat(topDotLowerTip)
-
-		return [dot, mirrorPtsV(1024, dot)]
-	},
+	':': colon,
 	' ': (sw: number) => [
 		[
 			[1024, 0],
