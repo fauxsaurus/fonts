@@ -1,0 +1,225 @@
+import {gt, horizontal, lt, tail, tip, vertical} from './stroke-components'
+import {
+	distanceBetweenPts,
+	getBisectorYAtX,
+	mirrorPtsH,
+	mirrorPtsV,
+	pt,
+	pts2MaxX,
+	pts2MaxY,
+	pts2MinY,
+	rotatePts,
+	translatePt,
+	translatePts,
+	translatePtsX,
+	translatePtsY,
+	type IPts,
+} from './util'
+
+/** @todo add support for: gjquvwxyz */
+
+// @todo use this in `gt()` to simplify calculations?
+const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
+
+export const a = (sw: number): IPts[] => {
+	const oPts = o(sw)
+	const [_, gtPts] = oPts
+
+	const maxX = pts2MaxX(gtPts)
+	const minY = pts2MinY(gtPts)
+	const maxY = pts2MaxY(gtPts)
+
+	const verticalPts = translatePts([maxX - sw, 0], vertical(sw, minY, maxY))
+
+	return oPts.concat([verticalPts])
+}
+
+export const b = (sw: number): IPts[] => {
+	return [vertical(sw), translatePtsX(sw / 2, gt(sw))]
+}
+
+export const c = (sw: number): IPts[] => {
+	const ltPts = lt(sw)
+
+	const maxX = pts2MaxX(ltPts)
+	const maxY = pts2MaxY(ltPts)
+	const minY = pts2MinY(ltPts)
+
+	/**
+	 * @note 4 the straightest line possible, filter out uncapped inner edge pts
+	 * so that nothing will be between the inner center pt and the inner tip pts
+	 */
+	const [topOuter, outerCenter, bottomOuter, innerCenter] = ltPts.filter(
+		([x, y]) => x !== maxX || [minY, maxY].includes(y)
+	)
+
+	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
+
+	const pts = [
+		outerCenter,
+
+		topOuter,
+		translatePt([sw2D45, 0], topOuter),
+		translatePt([sw2D45, sw2D45], topOuter),
+
+		innerCenter,
+
+		translatePt([sw2D45, -sw2D45], bottomOuter),
+		translatePt([sw2D45, 0], bottomOuter),
+		bottomOuter,
+	]
+
+	return [pts]
+}
+
+export const d = (sw: number): IPts[] => {
+	const ltPts = lt(sw)
+
+	const verticalPts = translatePtsX(pts2MaxX(ltPts) - sw / 2, vertical(sw))
+
+	return [verticalPts, ltPts]
+}
+
+export const e = (sw: number): IPts[] => {
+	const [cPts] = c(sw)
+
+	const centerY = getLowercaseMidY(sw)
+	const maxX = pts2MaxX(cPts)
+	const dash = translatePtsY(centerY - 1024, horizontal(sw, maxX))
+
+	return [cPts, dash]
+}
+
+export const f = (sw: number): IPts[] => {
+	return t(sw).map((stroke) => mirrorPtsV(1024, stroke))
+}
+
+export const h = (sw: number): IPts[] => [vertical(sw), n(sw)[0]]
+
+export const i = (sw: number): IPts[] => {
+	const dotMinY = 1024 - sw * 3.5
+	const dotH = sw * 2
+
+	const verticalMinY = 1024 - sw / 2
+
+	return [
+		vertical(sw, dotMinY, dotMinY + dotH),
+		vertical(sw, verticalMinY),
+		tail(sw),
+	]
+}
+
+export const k = (sw: number): IPts[] => {
+	const [cPts] = c(sw)
+
+	const minY = pts2MinY(cPts)
+	const maxY = pts2MaxY(cPts)
+
+	return [vertical(sw, minY, maxY), cPts]
+}
+
+export const l = (sw: number): IPts[] => {
+	return [vertical(sw), tail(sw)]
+}
+
+export const m = (sw: number): IPts[] => {
+	const sw2 = sw / 2 // offset width
+
+	const center: IPts = [
+		[512 - sw2, 1024 + 256],
+		[512 + sw2, 1024 + 256],
+
+		...translatePts([512 - sw2, 2048 - sw2], tip(sw, 180)),
+	]
+
+	return [n(sw)[0], center]
+}
+
+export const n = (sw: number): IPts[] => {
+	const sw2 = sw / 2 // offset width
+
+	// ptOrder = right-to-left
+	const tipL = translatePtsY(2048 - sw / 2, tip(sw, 180))
+	const tipR = translatePtsX(1024 - sw, tipL)
+
+	const upperL = pt(0, 1024 - sw2)
+	const upperR = pt(1024, getLowercaseMidY(sw))
+
+	const run = upperR[0] - upperL[0]
+	const rise = upperR[1] - upperL[1]
+
+	const diagonalAngle = (Math.atan2(run, rise) * 180) / Math.PI
+
+	// @todo Fix this horrendous math!
+	const diagonal: IPts = rotatePts(diagonalAngle - 32.72, upperL, [
+		upperL,
+		[distanceBetweenPts(upperL, upperR), upperL[1]],
+	])
+
+	const pts: IPts = [
+		diagonal[0],
+		diagonal[1],
+
+		...tipR,
+
+		[
+			1024 - sw,
+			getBisectorYAtX(diagonal[0], diagonal[1], tipR[0], 1024 - sw),
+		],
+		[sw, getBisectorYAtX(tipL[2], diagonal[0], diagonal[1], sw)],
+
+		...tipL,
+	]
+
+	return [pts]
+}
+
+/** @todo close up for a seamless shape  */
+export const o = (sw: number): IPts[] => {
+	const ltPts = lt(sw)
+	const centerX = pts2MaxX(ltPts)
+
+	return [ltPts, translatePtsX(centerX, gt(sw))]
+}
+
+export const p = (sw: number): IPts[] => {
+	const sw2 = sw / 2
+
+	const verticalMinY = 1024 - sw2
+	const verticalMaxY = verticalMinY + 2048
+
+	return [
+		vertical(sw, verticalMinY, verticalMaxY),
+		translatePtsX(sw2, gt(sw)),
+	]
+}
+
+export const r = (sw: number): IPts[] => {
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
+	const [cPts] = c(sw)
+	const diagonalEndPt = translatePt([0, swD45], cPts[0])
+	const diagonalPts = cPts.slice(0, 4).concat([diagonalEndPt])
+
+	return [vertical(sw, 1024 - sw / 2, 2048), diagonalPts]
+}
+
+export const s = (sw: number): IPts[] => {
+	const [cPts, _pts] = e(sw)
+
+	const diagonalUpper = cPts.slice(0, -3)
+	const lowerCaseMidline = diagonalUpper[0][1]
+
+	const diagonalLower = translatePts(
+		[diagonalUpper[2][0], 0],
+		mirrorPtsH(0, mirrorPtsV(lowerCaseMidline, diagonalUpper))
+	)
+
+	return [diagonalUpper, diagonalLower, _pts]
+}
+
+export const t = (sw: number): IPts[] => {
+	const lPts = l(sw)
+
+	return lPts.concat([horizontal(sw, pts2MaxX(lPts.flat()))])
+}
