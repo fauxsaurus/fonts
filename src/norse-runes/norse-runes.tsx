@@ -471,7 +471,16 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 			{...{width, height}}
 			style={{background: 'white'}}
 		>
-			<g stroke="none" fill="#000">
+			<style>{`g[transform] path {
+			fill: hsl(
+				from plum
+				calc(
+					60 * (sibling-index() - 1)
+				) s l
+			)
+		}
+		`}</style>
+			<g stroke="none">
 				{children.split('').map((glyph, i) => {
 					const strokeFn = GlyphStrokes?.[glyph]
 					if (!strokeFn) return <></>
