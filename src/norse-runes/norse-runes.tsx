@@ -1,28 +1,13 @@
 import * as glyphs from './glyphs'
-import {vertical} from './stroke-components'
-import {mirrorPtsV, pts2MaxX, type IPt, type IPts} from './util'
+import {pts2MaxX, type IPt} from './util'
 
 const sw = 192 // stroke width
-const sw2 = sw / 2 // offset width
-
-const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
-
-const colon = (sw: number): IPts[] => {
-	const dot = vertical(sw, sw * 2, 1024 - sw2 * 2)
-
-	return [dot, mirrorPtsV(1024, dot)]
-}
 
 const GlyphStrokes = {
 	...glyphs,
 
-	':': colon,
-	' ': (sw: number) => [
-		[
-			[1024, 0],
-			[1024, 0],
-		],
-	],
+	':': glyphs.colon,
+	' ': glyphs.space,
 }
 
 const sw4 = sw / 4
@@ -37,6 +22,8 @@ const CUSTOM_SPACING = {
 	nd: sw4,
 	rs: -sw / 2,
 }
+
+const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
 const Line = ({children, kerning}: {children: string; kerning: number}) => {
 	const height = 2048 * 1.5
