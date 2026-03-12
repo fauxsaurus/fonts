@@ -452,7 +452,8 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 				calc(
 					60 * (sibling-index() - 1)
 				) s l
-			)
+			);
+			opacity: 0.75;
 		}
 		`}</style>
 			<g stroke="none">
