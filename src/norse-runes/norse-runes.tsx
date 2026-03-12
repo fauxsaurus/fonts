@@ -1,4 +1,4 @@
-import {gt, lt, tip, vertical} from './stroke-components'
+import {gt, horizontal, lt, tail, tip, vertical} from './stroke-components'
 import {
 	distanceBetweenPts,
 	getBisectorYAtX,
@@ -23,34 +23,6 @@ const sw2 = sw / 2 // offset width
 const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
-
-// # STROKES
-
-const tail = (sw: number): IPts => {
-	const tailTip = translatePts(
-		gt(sw)[4], // inner center pt of ">"
-		translatePtsX(sw / 2, tip(sw, 45))
-	)
-
-	// where tail meets the lower vertical tip
-	const intersectionPt = pt(sw, 2048 - sw / 2)
-
-	return [
-		...tailTip,
-		intersectionPt,
-		translatePt([-swD45 / 2, -swD45 / 2], intersectionPt),
-	]
-}
-
-const horizontal = (sw: number, w: number): IPts => {
-	const sw2 = sw / 2
-	const minY = 1024 - sw2
-
-	const left = translatePts([0, minY], tip(sw, 270))
-	const right = translatePts([w - sw2, minY], tip(sw, 90))
-
-	return left.concat(right)
-}
 
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]

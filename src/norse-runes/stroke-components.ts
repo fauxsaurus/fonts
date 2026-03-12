@@ -7,6 +7,7 @@ import {
 	pts2MinX,
 	pts2MinY,
 	rotatePts,
+	translatePt,
 	translatePts,
 	translatePtsX,
 	translatePtsY,
@@ -45,12 +46,41 @@ export const gt = (sw: number): IPts => {
 	]
 }
 
+/** @returns a horizontal line centered on the x-height of a glyph */
+export const horizontal = (sw: number, w: number): IPts => {
+	const sw2 = sw / 2
+	const minY = 1024 - sw2
+
+	const left = translatePts([0, minY], tip(sw, 270))
+	const right = translatePts([w - sw2, minY], tip(sw, 90))
+
+	return left.concat(right)
+}
+
 /** @note "<" shape */
 export const lt = (sw: number): IPts => {
 	const lobe = gt(sw)
 	const maxX = pts2MaxX(lobe)
 
 	return translatePtsX(maxX, mirrorPtsH(0, lobe))
+}
+
+export const tail = (sw: number): IPts => {
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
+	const tailTip = translatePts(
+		gt(sw)[4], // inner center pt of ">"
+		translatePtsX(sw / 2, tip(sw, 45))
+	)
+
+	// where tail meets the lower vertical tip
+	const intersectionPt = pt(sw, 2048 - sw / 2)
+
+	return [
+		...tailTip,
+		intersectionPt,
+		translatePt([-swD45 / 2, -swD45 / 2], intersectionPt),
+	]
 }
 
 /** @note remember, pt order can flip from left-to-right (ltr) to rtl (depending on degrees). */
