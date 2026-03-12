@@ -120,6 +120,15 @@ export const i = (sw: number): IPts[] => {
 	]
 }
 
+export const j = (sw: number): IPts[] => {
+	const [verticalPts, _ltPts, tailPts] = g(sw)
+	const [dot] = i(sw)
+
+	const maxX = pts2MaxX(verticalPts) - sw
+
+	return [verticalPts, tailPts, translatePtsX(maxX, dot)]
+}
+
 export const k = (sw: number): IPts[] => {
 	const [cPts] = c(sw)
 
