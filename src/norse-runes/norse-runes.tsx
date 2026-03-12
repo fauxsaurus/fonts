@@ -1,37 +1,58 @@
 import * as glyphs from './glyphs'
 import {pts2MaxX, type IPt} from './util'
 
-const sw = 192 // stroke width
+type IProps = {
+	children: string
+	/** @note If true, individual glyph strokes will render with different colors to help visualize changes. */
+	debug?: boolean
+	kerning: number
+	strokeWidth: number
+}
 
-const GlyphStrokes = {
+const DEBUG_STYLES = `g[transform] path {
+	fill: hsl(
+		from plum
+		calc(
+			60 * (sibling-index() - 1)
+		) s l
+	);
+	opacity: 0.75;
+}
+`
+
+const GLYPH_STROKES = {
 	...glyphs,
 
 	':': glyphs.colon,
 	' ': glyphs.space,
 }
 
-const sw4 = sw / 4
+const calcLetterSpacings = (sw: number) => {
+	const sw4 = sw / 4
 
-const CUSTOM_SPACING = {
-	BC: -sw,
-	be: sw4,
-	he: sw4,
-	ia: sw4,
-	ho: sw4,
-	os: sw4,
-	nd: sw4,
-	rs: -sw / 2,
+	return {
+		BC: -sw,
+		be: sw4,
+		he: sw4,
+		ia: sw4,
+		ho: sw4,
+		os: sw4,
+		nd: sw4,
+		rs: -sw / 2,
+	}
 }
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 
-const Line = ({children, kerning}: {children: string; kerning: number}) => {
+const Line = ({children, debug = false, kerning, strokeWidth: sw}: IProps) => {
+	const letterSpacings = calcLetterSpacings(sw)
+
 	const height = 2048 * 1.5
 
 	const sum = (numbers: number[]) => numbers.reduce((a, b) => a + b, 0)
 
 	const glyphWidths = children.split('').map((glyph) => {
-		const strokeFn = GlyphStrokes?.[glyph]
+		const strokeFn = GLYPH_STROKES?.[glyph]
 		if (!strokeFn) return kerning
 
 		return pts2MaxX(strokeFn(sw).flat())
@@ -43,7 +64,7 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 		const prevGlyph = glyphs[i - 1]
 		const glyphPair = prevGlyph + currentGlyph
 
-		return CUSTOM_SPACING[glyphPair] ?? sw / 2
+		return letterSpacings[glyphPair] ?? sw
 	})
 
 	const width = sum(glyphWidths) + sum(glyphGaps)
@@ -55,19 +76,10 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 			{...{width, height}}
 			style={{background: 'white'}}
 		>
-			<style>{`g[transform] path {
-			fill: hsl(
-				from plum
-				calc(
-					60 * (sibling-index() - 1)
-				) s l
-			);
-			opacity: 0.75;
-		}
-		`}</style>
+			{debug && <style>{DEBUG_STYLES}</style>}
 			<g stroke="none">
 				{children.split('').map((glyph, i) => {
-					const strokeFn = GlyphStrokes?.[glyph]
+					const strokeFn = GLYPH_STROKES?.[glyph]
 					if (!strokeFn) return <></>
 
 					const x =
@@ -98,7 +110,9 @@ const Line = ({children, kerning}: {children: string; kerning: number}) => {
 export const NorseRunes = ({children = ''}: {children: string}) => {
 	return (
 		<div style={{display: 'flex'}}>
-			<Line kerning={512}>{children}</Line>
+			<Line kerning={512} strokeWidth={192}>
+				{children}
+			</Line>
 		</div>
 	)
 }
