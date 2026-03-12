@@ -271,6 +271,18 @@ export const w = (sw: number): IPts[] => {
 	return mirroredMPts.map((stroke) => translatePtsY(2048 - maxY, stroke))
 }
 
+/** @todo +pts2MidX/Y */
+export const x = (sw: number): IPts[] => {
+	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
+
+	const [cPts] = c(sw)
+
+	const maxX = pts2MaxX(cPts)
+	const midX = maxX / 2
+
+	return [mirrorPtsH(midX, cPts), translatePtsX(maxX - sw2D45 * 2, cPts)]
+}
+
 export const y = (sw: number): IPts[] => {
 	const [uPts] = u(sw)
 	const [verticalPts, tailPts] = j(sw)
