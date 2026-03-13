@@ -48,7 +48,6 @@ const sum = (numbers: number[]) => numbers.reduce((a, b) => a + b, 0)
 const Line = ({children, debug = false, kerning, strokeWidth: sw}: IProps) => {
 	const letterSpacings = calcLetterSpacings(sw)
 
-	const height = 2048 * 1.5
 
 
 	const glyphWidths = children.split('').map((glyph) => {
@@ -57,6 +56,15 @@ const Line = ({children, debug = false, kerning, strokeWidth: sw}: IProps) => {
 
 		return pts2MaxX(strokeFn(sw).flat())
 	})
+
+	const height = Math.max(
+		...glyphs.map((glyph) => {
+			const strokeFn = GLYPH_STROKES?.[glyph]
+			if (!strokeFn) return kerning
+
+			return pts2MaxY(strokeFn(sw).flat())
+		})
+	)
 
 	const glyphGaps = children.split('').map((currentGlyph, i, glyphs) => {
 		if (!i) return 0 // no prior glyph, zero additional spacing
