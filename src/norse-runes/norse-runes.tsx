@@ -1,10 +1,12 @@
 import * as glyphs from './glyphs'
-import {pts2MaxX, type IPt} from './util'
+import {pts2MaxX, pts2MaxY, type IPt} from './util'
 
 type IProps = {
 	children: string
 	/** @note If true, individual glyph strokes will render with different colors to help visualize changes. */
 	debug?: boolean
+	/** @note height of the <svg> element in rem units */
+	fontSize: number
 	kerning: number
 	strokeWidth: number
 }
@@ -24,7 +26,6 @@ const GLYPH_STROKES = {
 	...glyphs,
 
 	':': glyphs.colon,
-	' ': glyphs.space,
 }
 
 const calcLetterSpacings = (sw: number) => {
@@ -45,12 +46,14 @@ const calcLetterSpacings = (sw: number) => {
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 const sum = (numbers: number[]) => numbers.reduce((a, b) => a + b, 0)
 
-const Line = ({children, debug = false, kerning, strokeWidth: sw}: IProps) => {
+const Line = (props: IProps) => {
+	const {children, debug = false, kerning, strokeWidth: sw} = props
+
 	const letterSpacings = calcLetterSpacings(sw)
 
+	const glyphs = children.trim().split('')
 
-
-	const glyphWidths = children.split('').map((glyph) => {
+	const glyphWidths = glyphs.map((glyph) => {
 		const strokeFn = GLYPH_STROKES?.[glyph]
 		if (!strokeFn) return kerning
 
@@ -82,11 +85,11 @@ const Line = ({children, debug = false, kerning, strokeWidth: sw}: IProps) => {
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox={`0 0 ${width} ${height}`}
 			{...{width, height}}
-			style={{background: 'white'}}
+			style={{height: `${props.fontSize}rem`}}
 		>
 			{debug && <style>{DEBUG_STYLES}</style>}
 			<g stroke="none">
-				{children.split('').map((glyph, i) => {
+				{glyphs.map((glyph, i) => {
 					const strokeFn = GLYPH_STROKES?.[glyph]
 					if (!strokeFn) return <></>
 
@@ -115,10 +118,12 @@ const Line = ({children, debug = false, kerning, strokeWidth: sw}: IProps) => {
 	)
 }
 
-export const NorseRunes = ({children = ''}: {children: string}) => {
+export const NorseRunes = (props: {children: string; fontSize: number}) => {
+	const {children = '', fontSize} = props
+
 	return (
 		<div style={{display: 'flex'}}>
-			<Line kerning={512} strokeWidth={192}>
+			<Line kerning={192 * 2.5} strokeWidth={192} fontSize={fontSize}>
 				{children}
 			</Line>
 		</div>

@@ -171,7 +171,6 @@ export const Braille = ({children}: {children: string}) => {
 				height: height + 1024,
 				viewBox: `-512 -512 ${width + 1024} ${height + 1024}`,
 			}}
-			style={{background: 'linear-gradient(90deg, #fc0 50%, #069 50%)'}}
 		>
 			<defs>
 				{uniqueCharsInString(children).map((char) => {

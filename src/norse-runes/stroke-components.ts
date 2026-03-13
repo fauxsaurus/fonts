@@ -21,6 +21,17 @@ import {
  * DESCENDER LINE
  */
 
+export const getLowercaseMidline = (sw: number) => {
+	const sw2 = sw / 2
+
+	const topOuter = pt(0, 1024 - sw2)
+	const bottomOuter = pt(0, 2048)
+
+	const centerOuter = lines2intersectionPt(bottomOuter, -1, topOuter, 1)
+
+	return centerOuter[1]
+}
+
 /** @note ">" shape */
 export const gt = (sw: number): IPts => {
 	const sw2 = sw / 2
