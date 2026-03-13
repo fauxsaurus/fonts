@@ -43,13 +43,13 @@ const calcLetterSpacings = (sw: number) => {
 }
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
+const sum = (numbers: number[]) => numbers.reduce((a, b) => a + b, 0)
 
 const Line = ({children, debug = false, kerning, strokeWidth: sw}: IProps) => {
 	const letterSpacings = calcLetterSpacings(sw)
 
 	const height = 2048 * 1.5
 
-	const sum = (numbers: number[]) => numbers.reduce((a, b) => a + b, 0)
 
 	const glyphWidths = children.split('').map((glyph) => {
 		const strokeFn = GLYPH_STROKES?.[glyph]
