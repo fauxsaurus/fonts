@@ -6,7 +6,7 @@
 	--height: 50rem;
 	--width: calc(var(--height) * 0.625);
 
-	background-image: url('../public/cover-textless.jpg');
+	background-image: url('../cover-textless.jpg');
 	background-size: 100%;
 	display: flex;
 	flex-direction: column;
