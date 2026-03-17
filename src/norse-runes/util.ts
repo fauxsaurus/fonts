@@ -130,3 +130,23 @@ export const getBisectorYAtX = (
 
 	return getYFromXOnLine([bx, by], bisectorY / bisectorX, x)
 }
+
+/**
+ * @note stretches lowercase glyphs into uppercase height
+ * @param threshold everything above this line will move upward
+ * @param offset amount to move selected pts upward
+ * @param strokes
+ * @returns adjusted points
+ */
+export const stretchStrokesUpward = (
+	threshold: number,
+	offset: number,
+	strokes: IPts[]
+) =>
+	strokes.map((stroke) =>
+		stroke.map((pt) => {
+			if (pt[1] >= threshold) return pt
+
+			return translatePtsY(offset, [pt])[0]
+		})
+	)

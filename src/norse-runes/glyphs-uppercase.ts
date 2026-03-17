@@ -1,8 +1,9 @@
-import {oldN} from './glyphs-lowercase'
+import {oldN, m} from './glyphs-lowercase'
 import {gt, horizontal, tip, vertical} from './stroke-components'
 import {
 	pts2MaxX,
 	pts2MinY,
+	stretchStrokesUpward,
 	translatePts,
 	translatePtsX,
 	translatePtsY,
@@ -78,6 +79,15 @@ export const G = (sw: number): IPts[] => {
 	]
 
 	return [CShape, overHang, _Shape, vertical]
+}
+
+export const M = (sw: number): IPts[] => {
+	const mStrokes = m(sw)
+
+	const yThreshold = 2028 - sw / 2
+	const minY = pts2MinY(mStrokes.flat())
+
+	return stretchStrokesUpward(yThreshold, -minY, mStrokes)
 }
 
 export const N = (sw: number): IPts[] => {
