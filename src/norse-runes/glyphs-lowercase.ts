@@ -8,6 +8,7 @@ import {
 	pt,
 	pts2MaxX,
 	pts2MaxY,
+	pts2MidX,
 	pts2MidY,
 	pts2MinY,
 	rotatePts,
@@ -290,12 +291,17 @@ export const t = (sw: number): IPts[] => {
 }
 
 export const u = (sw: number): IPts[] => {
-	const [nPts] = oldN(sw)
-	const mirroredNPts = mirrorPtsH(512, mirrorPtsV(2048, nPts))
+	const [nPts] = n(sw)
 
-	const maxY = pts2MaxY(mirroredNPts)
+	const midX = pts2MidX(nPts)
+	const midY = pts2MidY(nPts)
 
-	return [translatePtsY(2048 - maxY, mirroredNPts)]
+	const uPts = mirrorPtsH(midX, mirrorPtsV(midY, nPts))
+
+	/** @note to align the glyph with x-height (since it is slightly taller than that) */
+	const xHeightOffset = sw / 2
+
+	return [translatePtsY(xHeightOffset, uPts)]
 }
 
 /** @todo this could be simplified by making "m" a single path */
