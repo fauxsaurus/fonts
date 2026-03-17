@@ -32,14 +32,24 @@ const calcLetterSpacings = (sw: number) => {
 	const sw2 = sw / 2
 	const sw4 = sw / 4
 
+	const perpendicularDiagonals = sw4
+	const nestedDiagonals = -sw
+
 	return {
-		BC: -sw,
-		be: sw4,
+		BC: nestedDiagonals,
+		be: perpendicularDiagonals,
+		bc: perpendicularDiagonals,
+		cd: nestedDiagonals,
 		dj: sw * -0.75 /** @todo come up with a more exact figure */,
+		fg: -sw,
 		he: sw2,
 		ho: sw2,
 		ia: sw4,
+		ij: -sw,
+		no: sw2, // label as corner + vertical?
+		op: sw2,
 		os: sw2,
+		pq: perpendicularDiagonals,
 		nd: sw2,
 		rs: -sw2,
 	}
