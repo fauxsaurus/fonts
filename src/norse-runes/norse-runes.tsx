@@ -35,6 +35,7 @@ const calcLetterSpacings = (sw: number) => {
 	return {
 		BC: -sw,
 		be: sw4,
+		dj: sw * -0.75 /** @todo come up with a more exact figure */,
 		he: sw4,
 		ho: sw2,
 		ia: sw4,

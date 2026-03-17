@@ -10,6 +10,7 @@ import {
 	pts2MaxY,
 	pts2MidX,
 	pts2MidY,
+	pts2MinX,
 	pts2MinY,
 	rotatePts,
 	translatePt,
@@ -129,7 +130,11 @@ export const j = (sw: number): IPts[] => {
 
 	const maxX = pts2MaxX(verticalPts) - sw
 
-	return [verticalPts, tailPts, translatePtsX(maxX, dot)]
+	const strokes = [verticalPts, tailPts, translatePtsX(maxX, dot)]
+
+	const minX = pts2MinX(strokes.flat())
+
+	return strokes.map((pts) => translatePtsX(-minX, pts))
 }
 
 export const k = (sw: number): IPts[] => {
