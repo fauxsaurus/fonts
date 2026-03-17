@@ -335,7 +335,10 @@ export const y = (sw: number): IPts[] => {
 	const [uPts] = u(sw)
 	const [verticalPts, tailPts] = j(sw)
 
-	const offsetX = 1024 - pts2MaxX(verticalPts)
+	const uMaxX = pts2MaxX(uPts)
+	const jMaxX = pts2MaxX(verticalPts)
+
+	const offsetX = uMaxX - jMaxX
 
 	return [
 		uPts,
