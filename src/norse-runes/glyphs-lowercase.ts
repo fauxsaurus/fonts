@@ -304,15 +304,14 @@ export const u = (sw: number): IPts[] => {
 	return [mirrorPtsH(midX, mirrorPtsV(midY, nPts))]
 }
 
-/** @todo this could be simplified by making "m" a single path */
 export const w = (sw: number): IPts[] => {
-	const mirroredMPts = m(sw).map((stroke) =>
-		mirrorPtsH(512, mirrorPtsV(2048, stroke))
+	const [nPts] = n(sw)
+
+	const nReversePts = mirrorPtsH(pts2MidX(nPts), nPts)
+
+	return [translatePtsX(pts2MaxX(nPts) - sw, nPts), nReversePts].map((pts) =>
+		mirrorPtsV(pts2MidY(nPts), pts)
 	)
-
-	const maxY = pts2MaxY(mirroredMPts.flat())
-
-	return mirroredMPts.map((stroke) => translatePtsY(2048 - maxY, stroke))
 }
 
 /** @todo +pts2MidX/Y */
