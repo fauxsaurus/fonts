@@ -151,16 +151,12 @@ export const l = (sw: number): IPts[] => {
 }
 
 export const m = (sw: number): IPts[] => {
-	const sw2 = sw / 2 // offset width
+	const [nPts] = n(sw)
 
-	const center: IPts = [
-		[512 - sw2, 1024 + 256],
-		[512 + sw2, 1024 + 256],
+	const maxX = pts2MaxX(nPts)
+	const reverseNPts = mirrorPtsH(maxX - sw / 2, nPts)
 
-		...translatePts([512 - sw2, 2048 - sw2], tip(sw, 180)),
-	]
-
-	return [oldN(sw)[0], center]
+	return [nPts, reverseNPts]
 }
 
 export const n = (sw: number): IPts[] => {
