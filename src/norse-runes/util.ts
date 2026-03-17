@@ -55,11 +55,18 @@ export const pts2MaxY = (pts: IPts) => Math.max(...pts.map(([_, y]) => y))
 export const pts2MinX = (pts: IPts) => Math.min(...pts.map(([x]) => x))
 export const pts2MinY = (pts: IPts) => Math.min(...pts.map(([_, y]) => y))
 
-export const pts2MidY = (pts: IPts) => {
-	const minY = pts2MinY(pts)
-	const maxY = pts2MaxY(pts)
+export const pts2MidX = (pts: IPts) => {
+	const min = pts2MinX(pts)
+	const max = pts2MaxX(pts)
 
-	return (maxY - minY) / 2 + minY
+	return (max - min) / 2 + min
+}
+
+export const pts2MidY = (pts: IPts) => {
+	const min = pts2MinY(pts)
+	const max = pts2MaxY(pts)
+
+	return (max - min) / 2 + min
 }
 
 export const translatePts = ([h, v]: IPt, pts: IPts) =>
