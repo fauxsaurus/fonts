@@ -29,17 +29,18 @@ const GLYPH_STROKES = {
 }
 
 const calcLetterSpacings = (sw: number) => {
+	const sw2 = sw / 2
 	const sw4 = sw / 4
 
 	return {
 		BC: -sw,
 		be: sw4,
 		he: sw4,
+		ho: sw2,
 		ia: sw4,
-		ho: sw4,
-		os: sw4,
-		nd: sw4,
-		rs: -sw / 2,
+		os: sw2,
+		nd: sw2,
+		rs: -sw2,
 	}
 }
 

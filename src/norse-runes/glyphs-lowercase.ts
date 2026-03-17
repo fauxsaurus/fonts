@@ -107,7 +107,7 @@ export const g = (sw: number): IPts[] => {
 	])
 }
 
-export const h = (sw: number): IPts[] => [vertical(sw), oldN(sw)[0]]
+export const h = (sw: number): IPts[] => [vertical(sw), n(sw)[0]]
 
 export const i = (sw: number): IPts[] => {
 	const dotMinY = 1024 - sw * 3.5
