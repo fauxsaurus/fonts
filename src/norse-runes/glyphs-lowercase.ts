@@ -304,6 +304,19 @@ export const u = (sw: number): IPts[] => {
 	return [mirrorPtsH(midX, mirrorPtsV(midY, nPts))]
 }
 
+export const v = (sw: number): IPts[] => {
+	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
+
+	const wPts = w(sw)
+
+	const midX = pts2MidX(wPts.flat())
+	const innerY = 2048 - sw2D45 * 2 // ensures a full square 45 degree intersection corner
+	const innerCenter = pt(midX, innerY)
+
+	// remove the center line from w
+	return wPts.map((pts) => pts.slice(0, 8).concat([innerCenter]))
+}
+
 export const w = (sw: number): IPts[] => {
 	const [nPts] = n(sw)
 
