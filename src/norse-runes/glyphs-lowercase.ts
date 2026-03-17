@@ -198,46 +198,6 @@ export const n = (sw: number): IPts[] => {
 	]
 }
 
-/** @deprecated */
-export const oldN = (sw: number): IPts[] => {
-	const sw2 = sw / 2 // offset width
-
-	// ptOrder = right-to-left
-	const tipL = translatePtsY(2048 - sw / 2, tip(sw, 180))
-	const tipR = translatePtsX(1024 - sw, tipL)
-
-	const upperL = pt(0, 1024 - sw2)
-	const upperR = pt(1024, getLowercaseMidY(sw))
-
-	const run = upperR[0] - upperL[0]
-	const rise = upperR[1] - upperL[1]
-
-	const diagonalAngle = (Math.atan2(run, rise) * 180) / Math.PI
-
-	// @todo Fix this horrendous math!
-	const diagonal: IPts = rotatePts(diagonalAngle - 32.72, upperL, [
-		upperL,
-		[distanceBetweenPts(upperL, upperR), upperL[1]],
-	])
-
-	const pts: IPts = [
-		diagonal[0],
-		diagonal[1],
-
-		...tipR,
-
-		[
-			1024 - sw,
-			getBisectorYAtX(diagonal[0], diagonal[1], tipR[0], 1024 - sw),
-		],
-		[sw, getBisectorYAtX(tipL[2], diagonal[0], diagonal[1], sw)],
-
-		...tipL,
-	]
-
-	return [pts]
-}
-
 /** @todo close up for a seamless shape  */
 export const o = (sw: number): IPts[] => {
 	const ltPts = lt(sw)

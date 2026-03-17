@@ -1,12 +1,16 @@
-import {oldN, m} from './glyphs-lowercase'
+import {m, n} from './glyphs-lowercase'
 import {gt, horizontal, tip, vertical} from './stroke-components'
 import {
+	getYFromXOnLine,
+	pt,
 	pts2MaxX,
 	pts2MinY,
 	stretchStrokesUpward,
+	translatePt,
 	translatePts,
 	translatePtsX,
 	translatePtsY,
+	type IPt,
 	type IPts,
 } from './util'
 
@@ -91,19 +95,78 @@ export const M = (sw: number): IPts[] => {
 }
 
 export const N = (sw: number): IPts[] => {
-	const [nPts] = oldN(sw)
-	const formerMinY = pts2MinY(nPts)
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const newPts: IPts = [
-		...translatePtsY(-formerMinY, [nPts[0], nPts[1]]), // diagonal top
-		...nPts.slice(2, 5), // tip right
-		...translatePtsY(-formerMinY, [nPts[5], nPts[6]]), // diagonal bottom
-		...nPts.slice(6), // tip left
+	const mStrokes = m(sw)
+	const width = pts2MaxX(mStrokes.flat())
+
+	const left = vertical(sw, 0, 2048)
+	const right = translatePtsX(width - sw, left)
+
+	const gap = width - sw - sw
+
+	// diagonal pts
+	const diagonalNWpt = pt(sw, 0)
+	const diagonalNEpt = translatePt([gap, gap], diagonalNWpt)
+
+	const diagonalSWpt = translatePtsY(swD45, [diagonalNWpt])[0]
+	const diagonalSEpt = translatePtsY(swD45, [diagonalNEpt])[0]
+
+	const diagonal: IPts = [
+		diagonalNWpt,
+		diagonalNEpt,
+		diagonalSEpt,
+		diagonalSWpt,
 	]
 
-	return [newPts]
+	const halfDiagonalHeight = gap / 2
+
+	return [
+		left,
+		translatePtsY(1024 - halfDiagonalHeight - swD45 / 2, diagonal),
+		right,
+	]
 }
+
+// export const N = (sw: number): IPts[] => {
+// 	const nStrokes = n(sw)
+
+// 	const yThreshold = 2028 - sw / 2
+// 	const minY = pts2MinY(nStrokes.flat())
+
+// 	const nMaxX = pts2MaxX(nStrokes.flat())
+// 	const mMaxX = pts2MaxX(m(sw).flat()) - sw / 2 // unsure why the offset adjustment is needed
+// 	const offsetX = mMaxX - nMaxX
+
+// 	return stretchStrokesUpward(yThreshold, -minY, nStrokes).map((stroke) => {
+// 		return stroke.map((pt) => {
+// 			const [x, y] = pt
+
+// 			if (x <= sw) return pt // don't move western pts
+// 			if (y >= 2048 - sw / 2) return translatePtsX(offsetX, [pt])[0] // widen SE pts
+
+// 			// outer NE edge of the upper diagonal
+// 			if (x === nMaxX)
+// 				return [mMaxX, getYFromXOnLine(pt, 1, mMaxX)] as IPt
+
+// 			// inner NE corner of the bottom of the upper diagonal
+// 			return [mMaxX - sw, getYFromXOnLine(pt, 1, mMaxX - sw)] as IPt
+// 		})
+// 	})
+// }
 
 export const P = (sw: number): IPts[] => {
 	return [vertical(sw), translatePts([sw / 2, -1024 + sw / 2], gt(sw))]
 }
+
+// use this shape for a capital?
+// /** @todo this could be simplified by making "m" a single path */
+// export const w = (sw: number): IPts[] => {
+// 	const mirroredMPts = m(sw).map((stroke) =>
+// 		mirrorPtsH(512, mirrorPtsV(2048, stroke))
+// 	)
+
+// 	const maxY = pts2MaxY(mirroredMPts.flat())
+
+// 	return mirroredMPts.map((stroke) => translatePtsY(2048 - maxY, stroke))
+// }
