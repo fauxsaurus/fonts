@@ -1,4 +1,4 @@
-import {n} from './glyphs-lowercase'
+import {oldN} from './glyphs-lowercase'
 import {gt, horizontal, tip, vertical} from './stroke-components'
 import {
 	pts2MaxX,
@@ -81,7 +81,7 @@ export const G = (sw: number): IPts[] => {
 }
 
 export const N = (sw: number): IPts[] => {
-	const [nPts] = n(sw)
+	const [nPts] = oldN(sw)
 	const formerMinY = pts2MinY(nPts)
 
 	const newPts: IPts = [

@@ -2,11 +2,13 @@ import {gt, horizontal, lt, tail, tip, vertical} from './stroke-components'
 import {
 	distanceBetweenPts,
 	getBisectorYAtX,
+	getYFromXOnLine,
 	mirrorPtsH,
 	mirrorPtsV,
 	pt,
 	pts2MaxX,
 	pts2MaxY,
+	pts2MidY,
 	pts2MinY,
 	rotatePts,
 	translatePt,
@@ -105,7 +107,7 @@ export const g = (sw: number): IPts[] => {
 	])
 }
 
-export const h = (sw: number): IPts[] => [vertical(sw), n(sw)[0]]
+export const h = (sw: number): IPts[] => [vertical(sw), oldN(sw)[0]]
 
 export const i = (sw: number): IPts[] => {
 	const dotMinY = 1024 - sw * 3.5
@@ -152,10 +154,46 @@ export const m = (sw: number): IPts[] => {
 		...translatePts([512 - sw2, 2048 - sw2], tip(sw, 180)),
 	]
 
-	return [n(sw)[0], center]
+	return [oldN(sw)[0], center]
 }
 
 export const n = (sw: number): IPts[] => {
+	const sw2 = sw / 2 // offset width
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
+	/** @note used to calculate the right outer pt (intersection between the h curve) */
+	const gtPts = b(sw)[1]
+	const maxX = pts2MaxX(gtPts)
+	const gtMidY = pts2MidY(gtPts)
+
+	// tips
+	const leftTipPts = translatePtsY(2048 - sw2, tip(sw, 180))
+	const rightTipPts = translatePtsX(maxX - sw, leftTipPts)
+
+	// upper diagonal pts
+	const rightOuter = pt(maxX, gtMidY)
+	const leftOuter = pt(0, getYFromXOnLine(rightOuter, 1, 0))
+
+	/** @note the `leftOuter` shifted down by the width of a 45 degree diagonal */
+	const leftTmp = translatePtsY(swD45, [leftOuter])[0]
+
+	const leftInner = pt(sw, getYFromXOnLine(leftTmp, 1, sw))
+	const rightInner = pt(maxX - sw, getYFromXOnLine(leftTmp, 1, maxX - sw))
+
+	return [
+		[
+			leftOuter,
+			rightOuter,
+			...rightTipPts,
+			rightInner,
+			leftInner,
+			...leftTipPts,
+		],
+	]
+}
+
+/** @deprecated */
+export const oldN = (sw: number): IPts[] => {
 	const sw2 = sw / 2 // offset width
 
 	// ptOrder = right-to-left
@@ -252,7 +290,7 @@ export const t = (sw: number): IPts[] => {
 }
 
 export const u = (sw: number): IPts[] => {
-	const [nPts] = n(sw)
+	const [nPts] = oldN(sw)
 	const mirroredNPts = mirrorPtsH(512, mirrorPtsV(2048, nPts))
 
 	const maxY = pts2MaxY(mirroredNPts)
