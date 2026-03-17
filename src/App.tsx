@@ -3,6 +3,8 @@ import {Braille} from './braille'
 import {NorseRunes} from './norse-runes'
 
 function App() {
+	const alphabet = 'abcdefghijklmnopqrstuvwxyz'
+
 	return (
 		<>
 			<div className="cover">
@@ -25,7 +27,12 @@ function App() {
 				</div>
 			</div>
 
-			{/* <NorseRunes key="line-4">BCPcgjkquvwxyz</NorseRunes> */}
+			<NorseRunes key="new" fontSize={2}>
+				{alphabet}
+			</NorseRunes>
+			<NorseRunes debug key="old" fontSize={2}>
+				{alphabet.toLocaleUpperCase()}
+			</NorseRunes>
 
 			{/* <Braille>ABCDEFGHIJKLMNOPQRSTUVWXYZ</Braille> */}
 		</>
