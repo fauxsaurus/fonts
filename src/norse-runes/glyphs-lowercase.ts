@@ -159,36 +159,40 @@ export const m = (sw: number): IPts[] => {
 }
 
 export const n = (sw: number): IPts[] => {
-	const sw2 = sw / 2 // offset width
+	const sw2 = sw / 2 // half stroke width
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	/** @note used to calculate the right outer pt (intersection between the h curve) */
 	const gtPts = b(sw)[1]
-	const maxX = pts2MaxX(gtPts)
-	const gtMidY = pts2MidY(gtPts)
 
-	// tips
-	const leftTipPts = translatePtsY(2048 - sw2, tip(sw, 180))
-	const rightTipPts = translatePtsX(maxX - sw, leftTipPts)
+	const maxX = pts2MaxX(gtPts)
+
+	const minY = pts2MinY(gtPts)
+	const maxY = pts2MaxY(gtPts)
+	const midY = pts2MidY(gtPts)
+
+	const leftVerticalPts = vertical(sw, minY, maxY)
+	// denoted by cardinal directions
+	const tipNWPts = leftVerticalPts.slice(0, 3)
+	const tipSWPts = leftVerticalPts.slice(3)
+	const tipSEPts = translatePtsX(maxX - sw, tipSWPts)
 
 	// upper diagonal pts
-	const rightOuter = pt(maxX, gtMidY)
-	const leftOuter = pt(0, getYFromXOnLine(rightOuter, 1, 0))
+	const rightOuter = pt(maxX, midY)
 
-	/** @note the `leftOuter` shifted down by the width of a 45 degree diagonal */
-	const leftTmp = translatePtsY(swD45, [leftOuter])[0]
+	/** @note the `topTipPt` shifted down by the width of a 45 degree diagonal */
+	const leftTmp = translatePtsY(swD45, [pt(sw2, minY)])[0]
 
 	const leftInner = pt(sw, getYFromXOnLine(leftTmp, 1, sw))
 	const rightInner = pt(maxX - sw, getYFromXOnLine(leftTmp, 1, maxX - sw))
 
 	return [
 		[
-			leftOuter,
+			...tipNWPts,
 			rightOuter,
-			...rightTipPts,
+			...tipSEPts,
 			rightInner,
 			leftInner,
-			...leftTipPts,
+			...tipSWPts,
 		],
 	]
 }
@@ -296,12 +300,7 @@ export const u = (sw: number): IPts[] => {
 	const midX = pts2MidX(nPts)
 	const midY = pts2MidY(nPts)
 
-	const uPts = mirrorPtsH(midX, mirrorPtsV(midY, nPts))
-
-	/** @note to align the glyph with x-height (since it is slightly taller than that) */
-	const xHeightOffset = sw / 2
-
-	return [translatePtsY(xHeightOffset, uPts)]
+	return [mirrorPtsH(midX, mirrorPtsV(midY, nPts))]
 }
 
 /** @todo this could be simplified by making "m" a single path */
