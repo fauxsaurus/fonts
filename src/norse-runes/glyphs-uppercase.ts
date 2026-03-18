@@ -1,4 +1,4 @@
-import {m, n} from './glyphs-lowercase'
+import {l, m, n} from './glyphs-lowercase'
 import {gt, horizontal, tail, tip, vertical} from './stroke-components'
 import {
 	getYFromXOnLine,
@@ -8,6 +8,7 @@ import {
 	pts2MaxX,
 	pts2MidX,
 	pts2MidY,
+	pts2MinX,
 	pts2MinY,
 	stretchStrokesUpward,
 	translatePt,
@@ -152,6 +153,18 @@ export const H = (sw: number): IPts[] => {
 	]
 }
 
+export const I = (sw: number): IPts[] => {
+	const [verticalPts, tail] = l(sw)
+
+	const tailUpper = mirrorPtsV(1024, tail)
+	const tailLower = mirrorPtsH(sw / 2, tail)
+
+	const minX = pts2MinX(tailLower)
+
+	return [verticalPts, tailLower, tailUpper].map((stroke) =>
+		translatePtsX(-minX, stroke)
+	)
+}
 export const J = (sw: number): IPts[] => {
 	const LPts = L(sw)
 	const midX = pts2MidX(LPts.flat())
