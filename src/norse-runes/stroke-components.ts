@@ -76,12 +76,16 @@ export const lt = (sw: number): IPts => {
 	return translatePtsX(maxX, mirrorPtsH(0, lobe))
 }
 
-export const tail = (sw: number, double = false): IPts => {
+export const tail = (sw: number, scaleFactor = 1): IPts => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const innerCenter = !double
-		? gt(sw)[4]
-		: translatePts([512, -512], [gt(sw)[4]])[0]
+	const innerCenter =
+		scaleFactor === 1
+			? gt(sw)[4]
+			: translatePts(
+					[256 * scaleFactor, -256 * scaleFactor],
+					[gt(sw)[4]]
+				)[0]
 
 	const tailTip = translatePts(
 		innerCenter,
