@@ -374,5 +374,13 @@ export const Y = (sw: number): IPts[] => {
 
 	const midY = pts2MidY(leftPts)
 
-	return [verticalPts, mirrorPtsV(midY, leftPts), mirrorPtsV(midY, rightPts)]
+	const strokes = [
+		verticalPts,
+		mirrorPtsV(midY, leftPts),
+		mirrorPtsV(midY, rightPts),
+	]
+
+	const minX = pts2MinX(strokes.flat())
+
+	return strokes.map((stroke) => translatePtsX(-minX, stroke))
 }
