@@ -74,6 +74,16 @@ export const C = (sw: number): IPts[] => {
 	]
 }
 
+/** @todo should this be based off the more angular G outline? */
+export const D = (sw: number): IPts[] => {
+	const [CPts] = C(sw)
+	const midX = pts2MidX(CPts)
+
+	const verticalPts = vertical(sw, 0, 2048)
+
+	return [verticalPts, mirrorPtsH(midX, CPts)]
+}
+
 export const E = (sw: number): IPts[] => {
 	const [CPts] = C(sw)
 
