@@ -266,8 +266,6 @@ export const P = (sw: number): IPts[] => {
 }
 
 export const Q = (sw: number): IPts[] => {
-	const width = 1024 * Math.SQRT2
-
 	const tipSE = translatePts([2048 - sw, 2048 - sw], tip(sw, 135))
 	const tipNW = translatePts([1024, 1024], tip(sw, -45))
 
