@@ -88,6 +88,13 @@ export const G = (sw: number): IPts[] => {
 	return [CShape, overHang, _Shape, vertical]
 }
 
+export const J = (sw: number): IPts[] => {
+	const LPts = L(sw)
+	const midX = pts2MidX(LPts.flat())
+
+	return LPts.map((stroke) => mirrorPtsH(midX, stroke))
+}
+
 export const L = (sw: number): IPts[] => {
 	return [vertical(sw, 0, 2048), tail(sw, true)]
 }
