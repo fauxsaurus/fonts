@@ -10,6 +10,7 @@ import {
 	pts2MidY,
 	pts2MinX,
 	pts2MinY,
+	rotatePts,
 	stretchStrokesUpward,
 	translatePt,
 	translatePts,
@@ -264,6 +265,14 @@ export const P = (sw: number): IPts[] => {
 	return [vertical(sw), translatePts([sw / 2, -1024 + sw / 2], gt(sw))]
 }
 
+export const Q = (sw: number): IPts[] => {
+	const width = 1024 * Math.SQRT2
+
+	const tipSE = translatePts([2048 - sw, 2048 - sw], tip(sw, 135))
+	const tipNW = translatePts([1024, 1024], tip(sw, -45))
+
+	return [...O(sw), tipNW.concat(tipSE)]
+}
 export const T = (sw: number): IPts[] => {
 	const right = tail(sw, 1.25)
 
