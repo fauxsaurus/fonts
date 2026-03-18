@@ -1,5 +1,5 @@
 import {m, n} from './glyphs-lowercase'
-import {gt, horizontal, tip, vertical} from './stroke-components'
+import {gt, horizontal, tail, tip, vertical} from './stroke-components'
 import {
 	getYFromXOnLine,
 	mirrorPtsH,
@@ -86,6 +86,10 @@ export const G = (sw: number): IPts[] => {
 	]
 
 	return [CShape, overHang, _Shape, vertical]
+}
+
+export const L = (sw: number): IPts[] => {
+	return [vertical(sw, 0, 2048), tail(sw, true)]
 }
 
 export const M = (sw: number): IPts[] => {
