@@ -25,6 +25,12 @@ export const mirrorPtsH = (xAxis: number, pts: IPts) =>
 export const mirrorPtsV = (yAxis: number, pts: IPts) =>
 	pts.map<IPt>(([x, y]) => [x, yAxis - y + yAxis])
 
+export const mirrorPtsHOnCenter = (pts: IPts): IPts =>
+	mirrorPtsH(pts2MidX(pts), pts)
+
+export const mirrorPtsVOnCenter = (pts: IPts): IPts =>
+	mirrorPtsV(pts2MidY(pts), pts)
+
 export const rotatePts = (degrees: number, [cx, cy]: IPt, pts: IPts) => {
 	const angleInRadians = (degrees * Math.PI) / 180
 	const cos = Math.cos(angleInRadians)
