@@ -247,6 +247,18 @@ export const P = (sw: number): IPts[] => {
 	return [vertical(sw), translatePts([sw / 2, -1024 + sw / 2], gt(sw))]
 }
 
+export const T = (sw: number): IPts[] => {
+	const right = tail(sw, 1.25)
+
+	const left = mirrorPtsH(sw / 2, right)
+
+	const minX = pts2MidX(left)
+
+	return [vertical(sw, 0, 2048), right, left].map((stroke) =>
+		mirrorPtsV(1024, translatePtsX(minX, stroke))
+	)
+}
+
 export const U = (sw: number): IPts[] => {
 	const [NShape] = A(sw)
 
