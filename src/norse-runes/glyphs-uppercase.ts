@@ -3,7 +3,9 @@ import {gt, horizontal, tail, tip, vertical} from './stroke-components'
 import {
 	getYFromXOnLine,
 	mirrorPtsH,
+	mirrorPtsHOnCenter,
 	mirrorPtsV,
+	mirrorPtsVOnCenter,
 	pt,
 	pts2MaxX,
 	pts2MidX,
@@ -93,6 +95,33 @@ export const E = (sw: number): IPts[] => {
 	const [CPts] = C(sw)
 
 	return [CPts, horizontal(sw, pts2MaxX(CPts))]
+}
+
+export const F = (sw: number): IPts[] => {
+	const [CPts, verticalPts] = K(sw)
+
+	const centerLine = translatePts(
+		[sw / 2, sw / 2],
+		mirrorPtsVOnCenter(tail(sw))
+	)
+
+	const centerLine2 = translatePts(
+		[-sw / 2, -sw / 2],
+		mirrorPtsVOnCenter(mirrorPtsHOnCenter(centerLine))
+	)
+
+	const outerLine = CPts.filter((pt) => {
+		return pt[1] <= 1024
+	})
+
+	return [
+		outerLine,
+		verticalPts,
+		mirrorPtsV(1024, centerLine),
+		mirrorPtsV(1024, centerLine2),
+
+		translatePtsY(1024 - sw / 2, tip(sw, 270)),
+	]
 }
 
 export const G = (sw: number): IPts[] => {
