@@ -174,7 +174,7 @@ export const J = (sw: number): IPts[] => {
 }
 
 export const K = (sw: number): IPts[] => {
-	return [...C(sw), vertical(sw, 0, 2048)]
+	return [...C(sw), translatePtsX(sw / 2, vertical(sw, 0, 2048))]
 }
 export const L = (sw: number): IPts[] => {
 	return [vertical(sw, 0, 2048), tail(sw, 1.25)]
