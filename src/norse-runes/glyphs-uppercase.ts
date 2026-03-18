@@ -342,13 +342,12 @@ export const S = (sw: number): IPts[] => {
 }
 export const T = (sw: number): IPts[] => {
 	const right = tail(sw, 1.25)
-
 	const left = mirrorPtsH(sw / 2, right)
 
-	const minX = pts2MidX(left)
+	const minX = pts2MinX(left)
 
 	return [vertical(sw, 0, 2048), left, right].map((stroke) =>
-		mirrorPtsV(1024, translatePtsX(minX, stroke))
+		mirrorPtsV(1024, translatePtsX(-minX, stroke))
 	)
 }
 
