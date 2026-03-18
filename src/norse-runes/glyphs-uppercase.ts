@@ -18,6 +18,8 @@ import {
 } from './util'
 
 export const A = (sw: number): IPts[] => {
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
 	const nStrokes = n(sw)
 
 	const yThreshold = 2028 - sw / 2
@@ -48,7 +50,7 @@ export const A = (sw: number): IPts[] => {
 	const midDiagonal = NPts.flatMap((pt) => {
 		if (pt[1] >= yThreshold) return [] // drop lower tips
 
-		return translatePtsY(512, [pt])
+		return translatePtsY(swD45 * 2, [pt])
 	})
 
 	return [NPts, midDiagonal]
