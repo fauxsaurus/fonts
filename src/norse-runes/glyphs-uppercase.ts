@@ -8,6 +8,7 @@ import {
 	mirrorPtsVOnCenter,
 	pt,
 	pts2MaxX,
+	pts2MaxY,
 	pts2MidX,
 	pts2MidY,
 	pts2MinX,
@@ -340,17 +341,10 @@ export const U = (sw: number): IPts[] => {
 	return [mirrorPtsH(midX, mirrorPtsV(1024, NShape))]
 }
 
-// use this shape for a capital?
-// /** @todo this could be simplified by making "m" a single path */
-// export const w = (sw: number): IPts[] => {
-// 	const mirroredMPts = m(sw).map((stroke) =>
-// 		mirrorPtsH(512, mirrorPtsV(2048, stroke))
-// 	)
 
-// 	const maxY = pts2MaxY(mirroredMPts.flat())
-
-// 	return mirroredMPts.map((stroke) => translatePtsY(2048 - maxY, stroke))
-// }
+export const W = (sw: number): IPts[] => {
+	return M(sw).map((stroke) => mirrorPtsV(1024, stroke))
+}
 
 export const Y = (sw: number): IPts[] => {
 	const [verticalPts, leftPts, rightPts] = T(sw)
