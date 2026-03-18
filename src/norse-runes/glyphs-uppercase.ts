@@ -183,38 +183,12 @@ export const P = (sw: number): IPts[] => {
 	return [vertical(sw), translatePts([sw / 2, -1024 + sw / 2], gt(sw))]
 }
 
-/** @todo simplify with u (based on old N shape) */
 export const U = (sw: number): IPts[] => {
-	const nStrokes = n(sw)
+	const [NShape] = A(sw)
 
-	const yThreshold = 2028 - sw / 2
-	const minY = pts2MinY(nStrokes.flat())
+	const midX = pts2MidX(NShape)
 
-	const nMaxX = pts2MaxX(nStrokes.flat())
-	const mMaxX = pts2MaxX(m(sw).flat()) - sw / 2 // unsure why the offset adjustment is needed
-	const offsetX = mMaxX - nMaxX
-
-	const [NPts] = stretchStrokesUpward(yThreshold, -minY, nStrokes).map(
-		(stroke) => {
-			return stroke.map((pt) => {
-				const [x, y] = pt
-
-				if (x <= sw) return pt // don't move western pts
-				if (y >= 2048 - sw / 2) return translatePtsX(offsetX, [pt])[0] // widen SE pts
-
-				// outer NE edge of the upper diagonal
-				if (x === nMaxX)
-					return [mMaxX, getYFromXOnLine(pt, 1, mMaxX)] as IPt
-
-				// inner NE corner of the bottom of the upper diagonal
-				return [mMaxX - sw, getYFromXOnLine(pt, 1, mMaxX - sw)] as IPt
-			})
-		}
-	)
-
-	const midX = pts2MidX(NPts)
-
-	return [mirrorPtsH(midX, mirrorPtsV(1024, NPts))]
+	return [mirrorPtsH(midX, mirrorPtsV(1024, NShape))]
 }
 
 // use this shape for a capital?
