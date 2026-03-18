@@ -11,14 +11,16 @@ type IProps = {
 	strokeWidth: number
 }
 
-const DEBUG_STYLES = `g[transform] path {
-	fill: hsl(
-		from plum
-		calc(
-			60 * (sibling-index() - 1)
-		) s l
-	);
-	opacity: 0.75;
+const DEBUG_STYLES = `@scope {
+	g[transform] path {
+		fill: hsl(
+			from plum
+			calc(
+				60 * (sibling-index() - 1)
+			) s l
+		);
+		opacity: 0.75;
+	}
 }
 `
 
@@ -130,12 +132,16 @@ const Line = (props: IProps) => {
 	)
 }
 
-export const NorseRunes = (props: {children: string; fontSize: number}) => {
-	const {children = '', fontSize} = props
+export const NorseRunes = (props: {
+	children: string
+	fontSize: number
+	debug?: boolean
+}) => {
+	const {children = '', fontSize, debug = false} = props
 
 	return (
 		<div style={{display: 'flex'}}>
-			<Line kerning={192 * 2.5} strokeWidth={192} fontSize={fontSize}>
+			<Line {...{debug, fontSize}} kerning={192 * 2.5} strokeWidth={192}>
 				{children}
 			</Line>
 		</div>
