@@ -7,6 +7,7 @@ import {
 	pt,
 	pts2MaxX,
 	pts2MidX,
+	pts2MidY,
 	pts2MinY,
 	stretchStrokesUpward,
 	translatePt,
@@ -254,7 +255,7 @@ export const T = (sw: number): IPts[] => {
 
 	const minX = pts2MidX(left)
 
-	return [vertical(sw, 0, 2048), right, left].map((stroke) =>
+	return [vertical(sw, 0, 2048), left, right].map((stroke) =>
 		mirrorPtsV(1024, translatePtsX(minX, stroke))
 	)
 }
@@ -278,3 +279,11 @@ export const U = (sw: number): IPts[] => {
 
 // 	return mirroredMPts.map((stroke) => translatePtsY(2048 - maxY, stroke))
 // }
+
+export const Y = (sw: number): IPts[] => {
+	const [verticalPts, leftPts, rightPts] = T(sw)
+
+	const midY = pts2MidY(leftPts)
+
+	return [verticalPts, mirrorPtsV(midY, leftPts), mirrorPtsV(midY, rightPts)]
+}
