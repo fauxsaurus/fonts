@@ -137,6 +137,20 @@ export const G = (sw: number): IPts[] => {
 	return [CShape, overHang, _Shape, vertical]
 }
 
+export const H = (sw: number): IPts[] => {
+	const [left, _diagonal, right] = N(sw)
+
+	const width = pts2MaxX(right)
+	const middle = horizontal(sw, width)
+
+	return [
+		translatePtsX(sw / 2, left),
+		translatePtsX(-sw / 2, right),
+		translatePtsY(-sw, middle),
+		translatePtsY(sw, middle),
+	]
+}
+
 export const J = (sw: number): IPts[] => {
 	const LPts = L(sw)
 	const midX = pts2MidX(LPts.flat())
