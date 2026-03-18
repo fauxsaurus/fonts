@@ -17,6 +17,43 @@ import {
 	type IPts,
 } from './util'
 
+export const A = (sw: number): IPts[] => {
+	const nStrokes = n(sw)
+
+	const yThreshold = 2028 - sw / 2
+	const minY = pts2MinY(nStrokes.flat())
+
+	const nMaxX = pts2MaxX(nStrokes.flat())
+	const mMaxX = pts2MaxX(m(sw).flat()) - sw / 2 // unsure why the offset adjustment is needed
+	const offsetX = mMaxX - nMaxX
+
+	const [NPts] = stretchStrokesUpward(yThreshold, -minY, nStrokes).map(
+		(stroke) => {
+			return stroke.map((pt) => {
+				const [x, y] = pt
+
+				if (x <= sw) return pt // don't move western pts
+				if (y >= 2048 - sw / 2) return translatePtsX(offsetX, [pt])[0] // widen SE pts
+
+				// outer NE edge of the upper diagonal
+				if (x === nMaxX)
+					return [mMaxX, getYFromXOnLine(pt, 1, mMaxX)] as IPt
+
+				// inner NE corner of the bottom of the upper diagonal
+				return [mMaxX - sw, getYFromXOnLine(pt, 1, mMaxX - sw)] as IPt
+			})
+		}
+	)
+
+	const midDiagonal = NPts.flatMap((pt) => {
+		if (pt[1] >= yThreshold) return [] // drop lower tips
+
+		return translatePtsY(512, [pt])
+	})
+
+	return [NPts, midDiagonal]
+}
+
 export const B = (sw: number): IPts[] => {
 	const lobeLower = translatePtsX(sw / 2, gt(sw))
 
