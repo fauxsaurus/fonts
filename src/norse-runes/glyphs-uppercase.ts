@@ -205,6 +205,44 @@ export const N = (sw: number): IPts[] => {
 	]
 }
 
+export const O = (sw: number): IPts[] => {
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
+	const cornerNOuter = pt(1024, 0)
+	const cornerNInner = pt(1024, swD45)
+
+	const cornerSOuter = pt(1024, 2048)
+	const cornerSInner = pt(1024, 2048 - swD45)
+
+	const cornerWOuter = pt(0, 1024)
+	const cornerWInner = pt(swD45, 1024)
+
+	const cornerEOuter = pt(2048, 1024)
+	const cornerEInner = pt(2048 - swD45, 1024)
+
+	return [
+		[
+			cornerNInner,
+			cornerNOuter,
+
+			cornerWOuter,
+
+			cornerSOuter,
+
+			cornerEOuter,
+
+			cornerNOuter,
+			cornerNInner,
+
+			cornerEInner,
+
+			cornerSInner,
+
+			cornerWInner,
+		],
+	]
+}
+
 export const P = (sw: number): IPts[] => {
 	return [vertical(sw), translatePts([sw / 2, -1024 + sw / 2], gt(sw))]
 }
