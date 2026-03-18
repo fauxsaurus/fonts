@@ -321,6 +321,25 @@ export const R = (sw: number): IPts[] => {
 	]
 }
 
+export const S = (sw: number): IPts[] => {
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
+	const third = 2048 / 3
+
+	const upperSegment = [
+		pt(0 - swD45 / 2, third),
+		...translatePtsX(third - sw / 2, tip(sw, 45)),
+		pt(0 + swD45 / 2, third),
+	]
+
+	const lowerSegment = mirrorPtsHOnCenter(mirrorPtsV(1024, upperSegment))
+
+	const path = upperSegment.concat(lowerSegment)
+
+	const minX = pts2MinX(path)
+
+	return [translatePtsX(-minX, path)]
+}
 export const T = (sw: number): IPts[] => {
 	const right = tail(sw, 1.25)
 
