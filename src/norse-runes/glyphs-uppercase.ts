@@ -403,3 +403,7 @@ export const Y = (sw: number): IPts[] => {
 
 	return strokes.map((stroke) => translatePtsX(-minX, stroke))
 }
+
+export const Z = (sw: number): IPts[] => {
+	return [mirrorPtsHOnCenter(S(sw)[0])]
+}
