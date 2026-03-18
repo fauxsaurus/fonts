@@ -300,6 +300,26 @@ export const Q = (sw: number): IPts[] => {
 
 	return [...O(sw), tipNW.concat(tipSE)]
 }
+
+export const R = (sw: number): IPts[] => {
+	const PPts = P(sw)
+
+	const maxX = pts2MaxX(PPts.flat())
+
+	return [
+		...PPts,
+		translatePts([maxX - sw, 512], tip(sw, 45)),
+		mirrorPtsH(
+			sw / 2,
+			rotatePts(
+				-45 * 1.5 - 180,
+				[sw / 2, 1024],
+				horizontal(sw, 1024 * 1.15)
+			)
+		),
+	]
+}
+
 export const T = (sw: number): IPts[] => {
 	const right = tail(sw, 1.25)
 
