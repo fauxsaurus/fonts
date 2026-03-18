@@ -355,6 +355,20 @@ export const W = (sw: number): IPts[] => {
 	return M(sw).map((stroke) => mirrorPtsV(1024, stroke))
 }
 
+export const X = (sw: number): IPts[] => {
+	const MPts = M(sw)
+
+	const diagonal = rotatePts(
+		-27.5,
+		[sw / 2, sw / 2],
+		vertical(sw, 0, 2048 * 1.1)
+	)
+
+	const midX = pts2MidX(MPts.flat())
+
+	return [diagonal, mirrorPtsH(midX, diagonal)]
+}
+
 export const Y = (sw: number): IPts[] => {
 	const [verticalPts, leftPts, rightPts] = T(sw)
 
