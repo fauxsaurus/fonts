@@ -50,7 +50,7 @@ function App() {
 			<NorseRunes key="b5-title" fontSize={64}>
 				Ghost Girl and the Final Power
 			</NorseRunes>
-			{/* <Braille>{alphabet.toLocaleUpperCase()}</Braille> */}
+			<Braille>{alphabet.toLocaleUpperCase() + '.'}</Braille>
 		</>
 	)
 }
