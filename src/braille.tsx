@@ -1,7 +1,7 @@
 const GLYPHS = {
-	// fix dots
 	A: {
 		dots: '1',
+		dotFix: {1: [128, 128]},
 		lines: [
 			`M0,2048 v-${2048 - 512} q0,-512,512,-512 q512,0,512,512 v${1024 + 512}`,
 			`M0,1024 h1024`,
@@ -14,18 +14,18 @@ const GLYPHS = {
 			`M0,0 h512 q512,0,512,512 q0,512,-512,512 h-256`,
 		],
 	},
-	// fix dots
 	C: {
 		dots: '14',
+		dotFix: {1: [128, 128], 4: [1024 - 128, 128]},
 		lines: [
 			`M1024,${1024 - 256} v-256 q0,-512,-512,-512 q-512,0,-512,512 v1024 q0,512,512,512 q512,0,512,-512 v-256`,
 			// q0,512,-512,512 q-512,0,-512,-512 v-1024 q0,-512,512,-512`,
 			//`M1024,0 h-1024 v${2048 - 512} q0,512,512,512 h512`
 		],
 	},
-	// fix dots
 	D: {
 		dots: '145',
+		dotFix: {4: [1024 - 128, 128]},
 		lines: [`M0,2048 v-2048 h512 q512,0,512,512 v1024 q0,512,-512,512z`],
 	},
 	E: {
@@ -40,9 +40,9 @@ const GLYPHS = {
 		dots: '124',
 		lines: [`M1024,0 h-1024 v2048`, `M1024,1024 h-1024`],
 	},
-	// fix dots
 	G: {
 		dots: '1245',
+		dotFix: {1: [128, 128], 4: [1024 - 128, 128]},
 		lines: [
 			`M1024,512 q0,-512,-512,-512 q-512,0,-512,512 v1024 q0,512,512,512 q512,0,512,-512 v-512 h-512`,
 		],
@@ -70,9 +70,9 @@ const GLYPHS = {
 		dots: '123',
 		lines: [`M0,0 v${2048 - 256} q0,256,256,256 h${512 + 256}`],
 	},
-	// fix dots
 	M: {
 		dots: '134',
+		dotFix: {1: [128, 128], 4: [1024 - 128, 128]},
 		lines: [
 			`M0,2048 v-${2048 - 512} q0,-512,512,-512 q512,0,512,512 v${2048 - 512}`,
 			`M512,0 v2048`,
@@ -84,21 +84,21 @@ const GLYPHS = {
 			`M0,2048 v-2048 h256 q256,0,256,256 v${2048 - 512} q0,256,256,256 q256,0,256,-256 v-${2048 - 256}`,
 		],
 	},
-	// fix dots
 	O: {
 		dots: '135',
+		dotFix: {1: [128, 128], 3: [128, 2048 - 128]},
 		lines: [
 			`M512,0 q512,0,512,512 v1024 q0,512,-512,512 q-512,0,-512,-512 v-1024 q0,-512,512,-512`,
 		],
 	},
-	// fix dots
 	P: {
 		dots: '1234',
+		dotFix: {4: [1024 - 128, 128]},
 		lines: [`M0,2048 v-2048 h512 q512,0,512,512 q0,512,-512,512 h-256`],
 	},
-	// fix dots
 	Q: {
 		dots: '12345',
+		dotFix: {1: [128, 128], 3: [128, 2048 - 128], 4: [1024 - 128, 128]},
 		lines: [
 			`M512,0 q512,0,512,512 v1024 q0,512,-512,512 q-512,0,-512,-512 v-1024 q0,-512,512,-512`,
 			`M512,2048 v256 q0,256,256,256 h256`,
@@ -108,36 +108,38 @@ const GLYPHS = {
 		dots: '1235',
 		lines: [
 			`M0,2048 v-2048 h512 q512,0,512,512 v512 h-1024`,
-			// `M512,1024 v${1024 - 256} q0,256,256,256 h256`,
 			`M0,1024 1024,2048`,
 		],
 	},
-	// fix dots
 	S: {
 		dots: '234',
+		dotFix: {
+			2: [128, 1024 - 128],
+			3: [128, 2048 - 128],
+			4: [1024 - 128, 128],
+		},
 		lines: [
 			`M1024,512 q0,-512,-512,-512 q-512,0,-512,512 q0,512,512,512 q512,0,512,512 q0,512,-512,512 q-512,0,-512,-512`,
 		],
 	},
 	T: {dots: '2345', filled: '4', lines: [`M0,0 h1024`, `M512,0 v2048`]},
-	// fix dots
 	U: {
 		dots: '136',
+		dotFix: {3: [128, 2048 - 128], 6: [1024 - 128, 2048 - 128]},
 		lines: [
 			`M0,0 v${1024 + 512} q0,512,512,512 q512,0,512,-512 v-${1024 + 512}`,
 		],
 	},
-	// fix dots
 	V: {
 		dots: '1236',
+		dotFix: {2: [256, 1024]},
 		filled: '12',
 		lines: [`M0,0 512,2028`, `M1024,0 512,2028`],
 	},
-	// fix dots
 	W: {
 		dots: '2456',
+		dotFix: {6: [1024 - 128, 2048 - 128]},
 		lines: [
-			// `M0,0 v${2048 - 256} q0,256,256,256 h${1024 - 256} v-2048`,
 			`M0,0 v${1024 + 512} q0,512,512,512 q512,0,512,-512 v-${1024 + 512}`,
 			`M512,0 v2048`,
 		],
@@ -149,9 +151,10 @@ const GLYPHS = {
 			`M1024,0 v512 q0,512,-512,512 q-512,0,-512,512 v512`,
 		],
 	},
-	// fix dots
 	Y: {
 		dots: '13456',
+		dotFix: {5: [1024 - 128, 1024 - 128]},
+		filled: '145',
 		lines: [
 			`M0,0 v512 q0,512,512,512 q512,0,512,-512 v-512`,
 			`M512,1024 v1024`,
@@ -193,6 +196,17 @@ const GLYPH_WIDTH = GLYPH_UNIT + STROKE_WIDTH * 5
 const uniqueCharsInString = (string: string) =>
 	Array.from(new Set(string.split('')))
 
+type IProps = {cx: number; cy: number; stroke: string; fill: string}
+const Dot = ({cx, cy, stroke, fill}: IProps) => {
+	return (
+		<circle
+			{...{cx, cy, stroke, fill}}
+			r={STROKE_WIDTH * 1.5}
+			strokeWidth={STROKE_WIDTH / 1.25}
+		/>
+	)
+}
+
 // @todo need to do something about rounded edges like K's diagonals, L's horizontal from being cut off on the right edge... (MAKE IT THE SAME WIDTH AS THE UNFILLED DOTS IN THE CORNERS--SEE "t"!)
 export const Braille = ({children}: {children: string}) => {
 	const width = GLYPH_WIDTH * children.length
@@ -213,7 +227,13 @@ export const Braille = ({children}: {children: string}) => {
 						GLYPHS[char.toLocaleUpperCase() as keyof typeof GLYPHS]
 					if (!metadata) return ''
 
-					const {dots, filled} = Object.assign({filled: ''}, metadata)
+					const {dots, filled, dotFix} = Object.assign(
+						{
+							filled: '',
+							dotFix: {} as Record<number, [number, number]>,
+						},
+						metadata
+					)
 
 					return (
 						<mask key={`mask-${char}`} id={`mask-${char}`}>
@@ -224,26 +244,24 @@ export const Braille = ({children}: {children: string}) => {
 								height={2048 + 1024}
 								fill="#fff"
 							/>
-							{(dots + filled).split('').map((num, i) => (
-								<circle
-									key={`dot-${i}`}
-									cx={
-										DOT_COORDS[
-											num as keyof typeof DOT_COORDS
-										][0]
-									}
-									cy={
-										DOT_COORDS[
-											num as keyof typeof DOT_COORDS
-										][1]
-									}
-									r={STROKE_WIDTH * 1.5}
-									strokeWidth={STROKE_WIDTH / 1.25}
-									{...(filled && filled.indexOf(num) === -1
-										? {stroke: 'white', fill: 'black'}
-										: {stroke: 'black', fill: 'white'})}
-								/>
-							))}
+							{(dots + filled).split('').map((num, i) => {
+								const dotI = num as keyof typeof DOT_COORDS
+								const coords = dotFix[dotI] ?? DOT_COORDS[dotI]
+								const [cx, cy] = coords
+								const isFilled =
+									filled && filled.indexOf(num) === -1
+
+								const {stroke, fill} = isFilled
+									? {stroke: 'white', fill: 'black'}
+									: {stroke: 'black', fill: 'white'}
+
+								return (
+									<Dot
+										key={`dot-${i}`}
+										{...{cx, cy, stroke, fill}}
+									/>
+								)
+							})}
 						</mask>
 					)
 				})}
@@ -260,7 +278,13 @@ export const Braille = ({children}: {children: string}) => {
 						GLYPHS[glyph.toLocaleUpperCase() as keyof typeof GLYPHS]
 					if (!metadata) return ''
 
-					const {dots, filled} = Object.assign({filled: ''}, metadata)
+					const {dots, filled, dotFix} = Object.assign(
+						{
+							filled: '',
+							dotFix: {} as Record<number, [number, number]>,
+						},
+						metadata
+					)
 
 					return (
 						<g
@@ -276,26 +300,24 @@ export const Braille = ({children}: {children: string}) => {
 								/>
 							))}
 
-							{(dots + filled).split('').map((num, i) => (
-								<circle
-									key={`dot-${i}`}
-									cx={
-										DOT_COORDS[
-											num as keyof typeof DOT_COORDS
-										][0]
-									}
-									cy={
-										DOT_COORDS[
-											num as keyof typeof DOT_COORDS
-										][1]
-									}
-									r={STROKE_WIDTH * 1.5}
-									strokeWidth={STROKE_WIDTH / 1.25}
-									{...(filled && filled.indexOf(num) === -1
-										? {stroke: 'black', fill: 'none'}
-										: {stroke: 'none', fill: 'black'})}
-								/>
-							))}
+							{(dots + filled).split('').map((num, i) => {
+								const dotI = num as keyof typeof DOT_COORDS
+								const coords = dotFix[dotI] ?? DOT_COORDS[dotI]
+								const [cx, cy] = coords
+								const isFilled =
+									filled && filled.indexOf(num) === -1
+
+								const {stroke, fill} = isFilled
+									? {stroke: 'black', fill: 'none'}
+									: {stroke: 'none', fill: 'black'}
+
+								return (
+									<Dot
+										key={`dot-${i}`}
+										{...{cx, cy, stroke, fill}}
+									/>
+								)
+							})}
 						</g>
 					)
 				})}
