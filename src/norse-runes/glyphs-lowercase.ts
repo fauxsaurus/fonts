@@ -31,7 +31,10 @@ export const a = (sw: number): IPts[] => {
 	const minY = pts2MinY(gtPts)
 	const maxY = pts2MaxY(gtPts)
 
-	const verticalPts = translatePts([maxX - sw, 0], vertical(sw, minY, maxY))
+	const verticalPts = translatePts(
+		[maxX - sw * 1.5, 0],
+		vertical(sw, minY, maxY)
+	)
 
 	return oPts.concat([verticalPts])
 }
