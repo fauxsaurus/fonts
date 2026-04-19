@@ -281,13 +281,7 @@ export const v = (sw: number): IPts[] => {
 }
 
 export const w = (sw: number): IPts[] => {
-	const [nPts] = n(sw)
-
-	const nReversePts = mirrorPtsH(pts2MidX(nPts), nPts)
-
-	return [translatePtsX(pts2MaxX(nPts) - sw, nPts), nReversePts].map((pts) =>
-		mirrorPtsV(pts2MidY(nPts), pts)
-	)
+	return m(sw).map(mirrorPtsVOnCenter)
 }
 
 /** @todo +pts2MidX/Y */
