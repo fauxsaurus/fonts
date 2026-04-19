@@ -261,23 +261,23 @@ export const t = (sw: number): IPts[] => {
 export const u = (sw: number): IPts[] => {
 	const [nPts] = n(sw)
 
+	const left = vertical(sw, pts2MinY(nPts), 2048)
+	const right = translatePtsX(pts2MaxX(nPts), left)
+
+	const width = pts2MaxX(right) - pts2MinX(left) - sw
+
+	const _ = translatePts([0, 1024 - sw], horizontal(sw, width))
+
+	return [left, _, translatePtsX(-sw, right)]
+}
+
+export const v = (sw: number): IPts[] => {
+	const [nPts] = n(sw)
+
 	const midX = pts2MidX(nPts)
 	const midY = pts2MidY(nPts)
 
 	return [mirrorPtsH(midX, mirrorPtsV(midY, nPts))]
-}
-
-export const v = (sw: number): IPts[] => {
-	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
-
-	const wPts = w(sw)
-
-	const midX = pts2MidX(wPts.flat())
-	const innerY = 2048 - sw2D45 * 2 // ensures a full square 45 degree intersection corner
-	const innerCenter = pt(midX, innerY)
-
-	// remove the center line from w
-	return wPts.map((pts) => pts.slice(0, 8).concat([innerCenter]))
 }
 
 export const w = (sw: number): IPts[] => {
