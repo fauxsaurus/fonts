@@ -293,7 +293,7 @@ export const x = (sw: number): IPts[] => {
 	const maxX = pts2MaxX(cPts)
 	const midX = maxX / 2
 
-	return [mirrorPtsH(midX, cPts), translatePtsX(maxX - sw2D45 * 4, cPts)]
+	return [mirrorPtsH(midX, cPts), translatePtsX(maxX - sw2D45 * 3.5, cPts)]
 }
 
 export const y = (sw: number): IPts[] => {
