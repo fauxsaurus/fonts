@@ -297,7 +297,7 @@ export const x = (sw: number): IPts[] => {
 }
 
 export const y = (sw: number): IPts[] => {
-	const [uPts] = u(sw)
+	const [uPts] = v(sw)
 	const [verticalPts, tailPts] = j(sw)
 
 	const uMaxX = pts2MaxX(uPts)
