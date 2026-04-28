@@ -90,7 +90,7 @@ export const e = (sw: number): IPts[] => {
 
 	const centerY = getLowercaseMidY(sw)
 	const maxX = pts2MaxX(cPts)
-	const dash = translatePtsY(centerY - 1024, horizontal(sw, maxX))
+	const dash = translatePtsY(centerY - 1024, horizontal(sw, maxX + sw / 2))
 
 	return [cPts, dash]
 }
@@ -249,7 +249,16 @@ export const s = (sw: number): IPts[] => {
 		mirrorPtsH(0, mirrorPtsV(lowerCaseMidline, diagonalUpper))
 	)
 
-	return [diagonalUpper, diagonalLower, _pts]
+	const maxX = pts2MaxX(_pts)
+	const horizontalBound = maxX - sw / 2
+
+	const dash = _pts.map(([x, y]) => {
+		if (x >= horizontalBound) return pt(x - sw / 2, y)
+
+		return pt(x, y)
+	})
+
+	return [diagonalUpper, diagonalLower, dash]
 }
 
 export const t = (sw: number): IPts[] => {
