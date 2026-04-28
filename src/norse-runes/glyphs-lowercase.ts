@@ -5,6 +5,7 @@ import {
 	getYFromXOnLine,
 	mirrorPtsH,
 	mirrorPtsV,
+	mirrorPtsVOnCenter,
 	pt,
 	pts2MaxX,
 	pts2MaxY,
