@@ -320,7 +320,25 @@ export const s = (sw: number): IPts[] => {
 export const t = (sw: number): IPts[] => {
 	const lPts = l(sw)
 
-	return lPts.concat([horizontal(sw, pts2MaxX(lPts.flat()))])
+	const sw2 = sw / 2
+	const dashWidth = pts2MaxX(lPts.flat()) - sw2
+	const [
+		leftTipBottom,
+		leftTip,
+		leftTipTop,
+		rightTipTop,
+		rightTip,
+		rightTipBottom,
+	] = translatePtsX(sw2, horizontal(sw, dashWidth))
+
+	const [rightTipInset] = translatePtsX(-sw, [rightTip])
+
+	return lPts.concat([
+		[leftTip, leftTipTop, rightTipTop, rightTipInset],
+		[rightTipInset, rightTipTop, rightTip],
+		[rightTipInset, rightTip, rightTipBottom],
+		[leftTip, rightTipInset, rightTipBottom, leftTipBottom],
+	])
 }
 
 export const u = (sw: number): IPts[] => {
