@@ -267,7 +267,7 @@ export const k = (sw: number): IPts[] => {
 	return [translatePtsX(sw / 2, vertical(sw, minY, maxY)), cPts]
 }
 
-export const l = (sw: number): IPts[] => {
+const lGeometry = (sw: number) => {
 	// outline
 	const topTipLeft = pt(0, sw / 2)
 	const topTip = pt(sw / 2, 0)
@@ -298,7 +298,44 @@ export const l = (sw: number): IPts[] => {
 		tailTip[1] - (topTip[0] - tailTip[0])
 	)
 
-	// faces
+	return {
+		topTip,
+		topTipLeft,
+		topTipRight,
+		topTipInset,
+
+		bottomTip,
+		bottomTipLeft,
+
+		tailTip,
+		tailTipLeft,
+		tailTipRight,
+		tailTipInset,
+
+		upperTail_VerticalRight,
+		tailMiddle_verticalMiddle,
+	}
+}
+
+export const l = (sw: number): IPts[] => {
+	const {
+		topTip,
+		topTipLeft,
+		topTipRight,
+		topTipInset,
+
+		bottomTip,
+		bottomTipLeft,
+
+		tailTip,
+		tailTipLeft,
+		tailTipRight,
+		tailTipInset,
+
+		upperTail_VerticalRight,
+		tailMiddle_verticalMiddle,
+	} = lGeometry(sw)
+
 	return [
 		[topTipLeft, topTip, topTipInset],
 		[topTip, topTipRight, topTipInset],
