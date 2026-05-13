@@ -1,5 +1,6 @@
 import {gt, horizontal, lt, tail, tip, vertical} from './stroke-components'
 import {
+	avgPts,
 	distanceBetweenPts,
 	getBisectorYAtX,
 	getYFromXOnLine,
@@ -257,7 +258,7 @@ export const m = (sw: number): IPts[] => {
 	return [nPts, reverseNPts]
 }
 
-export const n = (sw: number): IPts[] => {
+const nGeometry = (sw: number) => {
 	const sw2 = sw / 2 // half stroke width
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
@@ -266,26 +267,10 @@ export const n = (sw: number): IPts[] => {
 	const maxX = pts2MaxX(gtPts)
 
 	const minY = pts2MinY(gtPts)
-	const maxY = pts2MaxY(gtPts)
-	const midY = pts2MidY(gtPts)
-
-	const leftVerticalPts = vertical(sw, minY, maxY)
-	// denoted by cardinal directions
-	const tipNWPts = leftVerticalPts.slice(0, 3)
-	const tipSWPts = leftVerticalPts.slice(3)
-	const tipSEPts = translatePtsX(maxX - sw, tipSWPts)
-
-	// upper diagonal pts
-	const rightOuter = pt(maxX, midY)
-
-	/** @note the `topTipPt` shifted down by the width of a 45 degree diagonal */
-	const leftTmp = translatePtsY(swD45, [pt(sw2, minY)])[0]
-
-	const leftInner = pt(sw, getYFromXOnLine(leftTmp, 1, sw))
-	const rightInner = pt(maxX - sw, getYFromXOnLine(leftTmp, 1, maxX - sw))
 
 	const topTip = pt(sw2, minY)
 	const topTipLeft = pt(0, minY + sw2)
+	const topTipInset = pt(sw2, minY + swD45 / 2)
 
 	const leftTip = pt(sw2, 2048)
 	const leftTipLeft = pt(0, 2048 - sw2)
@@ -306,25 +291,54 @@ export const n = (sw: number): IPts[] => {
 		diagonalLowerLeft[1] + (maxX - sw - diagonalLowerLeft[0])
 	)
 
-	const avgPts = (pts: IPts) => {
-		const sum = pts.reduce(
-			(sum, pt) => {
-				sum[0] += pt[0]
-				sum[1] += pt[1]
-				return sum
-			},
-			pt(0, 0)
-		)
-
-		return pt(sum[0] / pts.length, sum[1] / pts.length)
-	}
-
 	const bottomRightDiagonalInset = avgPts([
 		diagonalTopRight,
 		diagonalLowerRight,
 	])
 
-	const topTipInset = pt(sw2, minY + swD45 / 2)
+	return {
+		topTip,
+		topTipLeft,
+		topTipInset,
+
+		leftTip,
+		leftTipLeft,
+		leftTipRight,
+		leftTipInset,
+
+		rightTip,
+		rightTipLeft,
+		rightTipRight,
+		rightTipInset,
+
+		diagonalTopRight,
+		diagonalLowerLeft,
+		diagonalLowerRight,
+		bottomRightDiagonalInset,
+	}
+}
+
+export const n = (sw: number): IPts[] => {
+	const {
+		topTip,
+		topTipLeft,
+		topTipInset,
+
+		leftTip,
+		leftTipLeft,
+		leftTipRight,
+		leftTipInset,
+
+		rightTip,
+		rightTipLeft,
+		rightTipRight,
+		rightTipInset,
+
+		diagonalTopRight,
+		diagonalLowerLeft,
+		diagonalLowerRight,
+		bottomRightDiagonalInset,
+	} = nGeometry(sw)
 
 	return [
 		[topTipLeft, topTip, topTipInset],

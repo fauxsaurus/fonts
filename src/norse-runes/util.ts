@@ -2,6 +2,19 @@
 export type IPt = [number, number]
 export type IPts = IPt[]
 
+export const avgPts = (pts: IPts) => {
+	const sum = pts.reduce(
+		(sum, pt) => {
+			sum[0] += pt[0]
+			sum[1] += pt[1]
+			return sum
+		},
+		pt(0, 0)
+	)
+
+	return pt(sum[0] / pts.length, sum[1] / pts.length)
+}
+
 export const distanceBetweenPts = (a: IPt, b: IPt) =>
 	Math.hypot(b[0] - a[0], b[1] - a[1])
 
