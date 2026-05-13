@@ -21,6 +21,8 @@ import {
 	type IPts,
 } from './util'
 
+import {n as flatN} from './glyphs-lowercase-flat'
+
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
 
@@ -113,7 +115,44 @@ export const g = (sw: number): IPts[] => {
 	])
 }
 
-export const h = (sw: number): IPts[] => [vertical(sw), n(sw)[0]]
+export const h = (sw: number): IPts[] => {
+	// vertical
+	const topTipLeft = pt(0, sw / 2)
+	const topTip = pt(sw / 2, 0)
+	const topTipRight = pt(sw, sw / 2)
+
+	const topTipInset = translatePt([0, sw], topTip)
+
+	const bottomTipRight = pt(sw, 2048 - sw / 2)
+	const bottomTip = pt(sw / 2, 2048)
+	const bottomTipLeft = pt(0, 2048 - sw / 2)
+
+	const bottomTipInset = translatePt([0, -sw], bottomTip)
+
+	// arch
+	// const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
+	const [nPts] = flatN(sw)
+	const sw2 = sw / 2
+
+	const minY = pts2MinY(nPts)
+	const upperMostNPt = nPts.find((pt) => pt[1] === minY)!
+
+	const upperDiagonal_verticalRight = translatePt([sw2, sw2], upperMostNPt)
+
+	return [
+		vertical(sw),
+		flatN(sw)[0],
+
+		[topTipLeft, topTip, topTipInset],
+		[topTip, topTipRight, topTipInset],
+
+		[bottomTipInset, bottomTipRight, bottomTip],
+		[bottomTipLeft, bottomTipInset, bottomTip],
+
+		[topTipLeft, topTipInset, bottomTipInset, bottomTipLeft],
+	]
+}
 
 export const i = (sw: number): IPts[] => {
 	const dotMinY = 1024 - sw * 3.5
@@ -210,7 +249,7 @@ export const l = (sw: number): IPts[] => {
 }
 
 export const m = (sw: number): IPts[] => {
-	const [nPts] = n(sw)
+	const [nPts] = flatN(sw)
 
 	const maxX = pts2MaxX(nPts)
 	const reverseNPts = mirrorPtsH(maxX - sw / 2, nPts)
@@ -245,15 +284,75 @@ export const n = (sw: number): IPts[] => {
 	const leftInner = pt(sw, getYFromXOnLine(leftTmp, 1, sw))
 	const rightInner = pt(maxX - sw, getYFromXOnLine(leftTmp, 1, maxX - sw))
 
+	const topTip = pt(sw2, minY)
+	const topTipLeft = pt(0, minY + sw2)
+
+	const leftTip = pt(sw2, 2048)
+	const leftTipLeft = pt(0, 2048 - sw2)
+	const leftTipRight = pt(sw, 2048 - sw2)
+	const leftTipInset = pt(sw2, 2048 - sw)
+
+	const rightTip = pt(maxX - sw2, 2048)
+	const rightTipLeft = pt(maxX - sw, 2048 - sw2)
+	const rightTipRight = pt(maxX, 2048 - sw2)
+	const rightTipInset = pt(maxX - sw2, 2048 - sw)
+
+	const topLeft2rightDistance = maxX - topTip[0]
+	const diagonalTopRight = pt(maxX, topTip[1] + topLeft2rightDistance)
+
+	const diagonalLowerLeft = pt(sw, minY + sw2 + swD45)
+	const diagonalLowerRight = pt(
+		maxX - sw,
+		diagonalLowerLeft[1] + (maxX - sw - diagonalLowerLeft[0])
+	)
+
+	const avgPts = (pts: IPts) => {
+		const sum = pts.reduce(
+			(sum, pt) => {
+				sum[0] += pt[0]
+				sum[1] += pt[1]
+				return sum
+			},
+			pt(0, 0)
+		)
+
+		return pt(sum[0] / pts.length, sum[1] / pts.length)
+	}
+
+	const bottomRightDiagonalInset = avgPts([
+		diagonalTopRight,
+		diagonalLowerRight,
+	])
+
+	const topTipInset = pt(sw2, minY + swD45 / 2)
+
 	return [
+		[topTipLeft, topTip, topTipInset],
+		[topTip, diagonalTopRight, bottomRightDiagonalInset, topTipInset],
 		[
-			...tipNWPts,
-			rightOuter,
-			...tipSEPts,
-			rightInner,
-			leftInner,
-			...tipSWPts,
+			bottomRightDiagonalInset,
+			diagonalTopRight,
+			rightTipRight,
+			rightTipInset,
 		],
+		[rightTipInset, rightTipRight, rightTip],
+		[rightTipLeft, rightTipInset, rightTip],
+		[
+			diagonalLowerRight,
+			bottomRightDiagonalInset,
+			rightTipInset,
+			rightTipLeft,
+		],
+		[
+			topTipInset,
+			bottomRightDiagonalInset,
+			diagonalLowerRight,
+			diagonalLowerLeft,
+		],
+		[topTipInset, diagonalLowerLeft, leftTipRight, leftTipInset],
+		[leftTipInset, leftTipRight, leftTip],
+		[leftTipLeft, leftTipInset, leftTip],
+		[topTipLeft, topTipInset, leftTipInset, leftTipLeft],
 	]
 }
 
@@ -342,7 +441,7 @@ export const t = (sw: number): IPts[] => {
 }
 
 export const u = (sw: number): IPts[] => {
-	const [nPts] = n(sw)
+	const [nPts] = flatN(sw)
 
 	const left = vertical(sw, pts2MinY(nPts), 2048)
 	const right = translatePtsX(pts2MaxX(nPts), left)
@@ -355,7 +454,7 @@ export const u = (sw: number): IPts[] => {
 }
 
 export const v = (sw: number): IPts[] => {
-	const [nPts] = n(sw)
+	const [nPts] = flatN(sw)
 
 	const midX = pts2MidX(nPts)
 	const midY = pts2MidY(nPts)
