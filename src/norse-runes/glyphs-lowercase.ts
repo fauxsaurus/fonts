@@ -517,8 +517,11 @@ export const r = (sw: number): IPts[] => {
 }
 
 export const s = (sw: number): IPts[] => {
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
 	const [cPts, _pts] = flatE(sw)
 
+	// @todo replace with eGeometry (after adding that down the line)
 	const diagonalUpper = cPts.slice(0, -3)
 	const lowerCaseMidline = diagonalUpper[0][1]
 
@@ -536,7 +539,80 @@ export const s = (sw: number): IPts[] => {
 		return pt(x, y)
 	})
 
-	return [diagonalUpper, diagonalLower, dash]
+	const [_, topTipLeft, topTip, topTipRight] = diagonalUpper
+	const topTipInset = pt(topTipLeft[0], topTipRight[1])
+
+	const [bottomTipLeft, bottomTip, bottomTipRight] = diagonalLower.slice(
+		1,
+		-1
+	)
+	const bottomTipInset = pt(bottomTipLeft[0], bottomTipRight[1])
+
+	const [
+		leftTipLeft,
+		leftTip,
+		_leftTipRight,
+		rightTipLeft,
+		rightTip,
+		_rightTipRight,
+	] = dash
+
+	const leftTipInset = translatePt([swD45 / 2, 0], leftTip)
+	const rightTipInset = translatePt([-swD45 / 2, 0], rightTip)
+
+	const upperDiagonalLowerIntersection = pt(
+		topTipRight[0] - (rightTipLeft[1] - topTipRight[1]),
+		rightTipLeft[1]
+	)
+
+	const lowerDiagonalUpperIntersection = pt(
+		bottomTipRight[0] + (bottomTipRight[1] - leftTipLeft[1]),
+		leftTipLeft[1]
+	)
+
+	return [
+		// dash,
+
+		[leftTip, topTipLeft, topTipInset, leftTipInset],
+
+		[topTipLeft, topTip, topTipInset],
+		[topTipInset, topTip, topTipRight],
+
+		[
+			leftTipInset,
+			topTipInset,
+			topTipRight,
+			upperDiagonalLowerIntersection,
+		],
+
+		[
+			leftTipInset,
+			upperDiagonalLowerIntersection,
+			rightTipLeft,
+			rightTipInset,
+		],
+
+		[rightTipInset, rightTipLeft, rightTip],
+		[bottomTipInset, rightTipInset, rightTip, bottomTipLeft],
+
+		[bottomTip, bottomTipInset, bottomTipLeft],
+		[bottomTipRight, bottomTipInset, bottomTip],
+		[
+			bottomTipRight,
+			lowerDiagonalUpperIntersection,
+			rightTipInset,
+			bottomTipInset,
+		],
+
+		[
+			leftTipLeft,
+			leftTipInset,
+			rightTipInset,
+			lowerDiagonalUpperIntersection,
+		],
+
+		[leftTip, leftTipInset, leftTipLeft],
+	]
 }
 
 export const t = (sw: number): IPts[] => {
