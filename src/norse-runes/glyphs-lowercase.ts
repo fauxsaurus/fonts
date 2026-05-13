@@ -131,21 +131,24 @@ export const h = (sw: number): IPts[] => {
 	const bottomTipInset = translatePt([0, -sw], bottomTip)
 
 	// arch
-	// const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const [nPts] = flatN(sw)
-	const sw2 = sw / 2
+	const geometry = nGeometry(sw)
 
-	const minY = pts2MinY(nPts)
-	const upperMostNPt = nPts.find((pt) => pt[1] === minY)!
-
-	const upperDiagonal_verticalRight = translatePt([sw2, sw2], upperMostNPt)
+	const diagonalUpperLeft = pt(sw, geometry.diagonalLowerLeft[1] - swD45)
 
 	return [
-		vertical(sw),
-		flatN(sw)[0],
+		...n(sw).filter((_, i) => i !== 1 && i < 8),
+
+		[
+			geometry.topTipInset,
+			diagonalUpperLeft,
+			geometry.diagonalTopRight,
+			geometry.bottomRightDiagonalInset,
+		],
 
 		[topTipLeft, topTip, topTipInset],
+		[topTipInset, topTipRight, diagonalUpperLeft, geometry.topTipInset],
 		[topTip, topTipRight, topTipInset],
 
 		[bottomTipInset, bottomTipRight, bottomTip],
@@ -187,7 +190,7 @@ export const k = (sw: number): IPts[] => {
 	const minY = pts2MinY(cPts)
 	const maxY = pts2MaxY(cPts)
 
-	return [vertical(sw, minY, maxY), cPts]
+	return [translatePtsX(sw / 2, vertical(sw, minY, maxY)), cPts]
 }
 
 export const l = (sw: number): IPts[] => {
