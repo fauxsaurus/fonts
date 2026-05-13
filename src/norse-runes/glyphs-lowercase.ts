@@ -238,10 +238,80 @@ export const i = (sw: number): IPts[] => {
 
 	const verticalMinY = 1024 - sw / 2
 
+	const geometry = lGeometry(sw)
+
+	const {
+		bottomTip,
+		bottomTipLeft,
+
+		tailTip,
+		tailTipLeft,
+		tailTipRight,
+		tailTipInset,
+
+		upperTail_VerticalRight,
+		tailMiddle_verticalMiddle,
+	} = geometry
+
+	const [topTip, topTipLeft, topTipRight, topTipInset] = translatePts(
+		[0, verticalMinY],
+		[
+			geometry.topTip,
+			geometry.topTipLeft,
+			geometry.topTipRight,
+			geometry.topTipInset,
+		]
+	)
+
+	const [
+		topDotLeft,
+		topDot,
+		topDotRight,
+		bottomDotLeft,
+		bottomDot,
+		bottomDotRight,
+	] = vertical(sw, dotMinY, dotMinY + dotH)
+
+	const dotInset = pt(topDot[0], topDot[1] + sw)
+	const topDotInset = dotInset // pt(topDot[0], topDot[1] + sw)
+	const bottomDotInset = dotInset // pt(bottomDot[0], bottomDot[1] - sw)
+
 	return [
-		vertical(sw, dotMinY, dotMinY + dotH),
-		vertical(sw, verticalMinY),
-		tail(sw),
+		// dot
+		[topDotLeft, topDot, topDotInset],
+		[topDot, topDotRight, topDotInset],
+
+		[topDotInset, topDotRight, bottomDotLeft],
+
+		[bottomDotInset, bottomDotLeft, bottomDot],
+		[bottomDotInset, bottomDot, bottomDotRight],
+
+		[topDotLeft, topDotInset, bottomDotRight],
+
+		// vertical
+		[topTipLeft, topTip, topTipInset],
+		[topTip, topTipRight, topTipInset],
+
+		[
+			topTipInset,
+			topTipRight,
+			upperTail_VerticalRight,
+			tailMiddle_verticalMiddle,
+		],
+
+		[
+			upperTail_VerticalRight,
+			tailTipLeft,
+			tailTipInset,
+			tailMiddle_verticalMiddle,
+		],
+		[tailTipLeft, tailTip, tailTipInset],
+		[tailTipInset, tailTip, tailTipRight],
+		[tailMiddle_verticalMiddle, tailTipInset, tailTipRight, bottomTip],
+
+		[bottomTipLeft, tailMiddle_verticalMiddle, bottomTip],
+
+		[topTipLeft, topTipInset, tailMiddle_verticalMiddle, bottomTipLeft],
 	]
 }
 
