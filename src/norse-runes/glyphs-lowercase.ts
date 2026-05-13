@@ -507,13 +507,72 @@ export const q = (sw: number): IPts[] => {
 }
 
 export const r = (sw: number): IPts[] => {
+	const sw2 = sw / 2
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 	const [cPts] = c(sw)
 	const diagonalEndPt = translatePt([0, swD45], cPts[0])
 	const diagonalPts = cPts.slice(0, 4).concat([diagonalEndPt])
 
-	return [vertical(sw, 1024 - sw / 2, 2048), diagonalPts]
+	const topTip = pt(sw2, 1024 - sw2)
+	const topTipLeft = pt(0, 1024)
+	const topTipRight = pt(sw, 1024)
+	const topTipInset = pt(sw2, 1024 + sw2)
+
+	const bottomTip = pt(sw2, 2048)
+	const bottomTipLeft = pt(sw, 2048 - sw2)
+	const bottomTipRight = pt(0, 2048 - sw2)
+	const bottomTipInset = pt(sw2, 2048 - sw)
+
+	const [rightTipLeft, rightTip, rightTipRight] = diagonalPts.slice(1, 4)
+	const rightTipInset = pt(rightTipLeft[0], rightTipRight[1])
+
+	const upperDiagonalIntersection = pt(
+		topTipRight[0],
+		rightTipLeft[1] + (rightTipLeft[0] - topTipRight[0])
+	)
+	const middleDiagonalIntersection = pt(
+		topTip[0],
+		rightTip[1] + (rightTip[0] - topTip[0])
+	)
+	const lowerDiagonalIntersection = pt(
+		topTipRight[0],
+		rightTipRight[1] + (rightTipRight[0] - topTipRight[0])
+	)
+
+	return [
+		[topTipLeft, topTip, topTipInset],
+		[topTip, topTipRight, topTipInset],
+		[
+			topTipInset,
+			topTipRight,
+			upperDiagonalIntersection,
+			middleDiagonalIntersection,
+		],
+		[
+			middleDiagonalIntersection,
+			upperDiagonalIntersection,
+			rightTipLeft,
+			rightTipInset,
+		],
+		[rightTipLeft, rightTip, rightTipInset],
+		[rightTipInset, rightTip, rightTipRight],
+		[
+			middleDiagonalIntersection,
+			rightTipInset,
+			rightTipRight,
+			lowerDiagonalIntersection,
+		],
+		[
+			middleDiagonalIntersection,
+			lowerDiagonalIntersection,
+			bottomTipLeft,
+			bottomTipInset,
+		],
+		[bottomTipInset, bottomTipLeft, bottomTip],
+		[bottomTipRight, bottomTipInset, bottomTip],
+		[topTipLeft, topTipInset, bottomTipInset, bottomTipRight],
+	]
 }
 
 export const s = (sw: number): IPts[] => {
