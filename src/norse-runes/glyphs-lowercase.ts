@@ -18,7 +18,7 @@ import {
 	type IPts,
 } from './util'
 
-import {n as flatN, o as oFlat} from './glyphs-lowercase-flat'
+import {e as flatE, n as flatN, o as oFlat} from './glyphs-lowercase-flat'
 
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
@@ -41,6 +41,40 @@ export const a = (sw: number): IPts[] => {
 
 export const b = (sw: number): IPts[] => {
 	return [vertical(sw), translatePtsX(sw / 2, gt(sw))]
+}
+
+const cGeometry = (sw: number) => {
+	const ltPts = lt(sw)
+
+	const maxX = pts2MaxX(ltPts)
+	const maxY = pts2MaxY(ltPts)
+	const minY = pts2MinY(ltPts)
+
+	/**
+	 * @note 4 the straightest line possible, filter out uncapped inner edge pts
+	 * so that nothing will be between the inner center pt and the inner tip pts
+	 */
+	const [topOuter, outerCenter, bottomOuter, innerCenter] = ltPts.filter(
+		([x, y]) => x !== maxX || [minY, maxY].includes(y)
+	)
+
+	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
+
+	return {
+		topTipLeft: topOuter,
+		topTip: translatePt([sw2D45, 0], topOuter),
+		topTipRight: translatePt([sw2D45, sw2D45], topOuter),
+		topTipInset: translatePt([0, sw2D45], topOuter),
+
+		centerLeft: outerCenter,
+		centerMiddle: avgPts([outerCenter, innerCenter]),
+		centerRight: innerCenter,
+
+		bottomTipLeft: translatePt([sw2D45, -sw2D45], bottomOuter),
+		bottomTip: translatePt([sw2D45, 0], bottomOuter),
+		bottomTipRight: bottomOuter,
+		bottomTipInset: translatePt([0, -sw2D45], bottomOuter),
+	}
 }
 
 export const c = (sw: number): IPts[] => {
@@ -86,13 +120,57 @@ export const d = (sw: number): IPts[] => {
 }
 
 export const e = (sw: number): IPts[] => {
-	const [cPts] = c(sw)
+	const sw2 = sw / 2
 
-	const centerY = getLowercaseMidY(sw)
-	const maxX = pts2MaxX(cPts)
-	const dash = translatePtsY(centerY - 1024, horizontal(sw, maxX + sw / 2))
+	const {
+		topTipLeft,
+		topTip,
+		topTipRight,
+		topTipInset,
 
-	return [cPts, dash]
+		centerLeft,
+		centerMiddle,
+		centerRight,
+
+		bottomTipLeft,
+		bottomTip,
+		bottomTipRight,
+		bottomTipInset,
+	} = cGeometry(sw)
+
+	const dashTip = pt(topTip[0] + sw2, centerLeft[1])
+	const dashTipLeft = pt(topTip[0], centerLeft[1] - sw2)
+	const dashTipRight = pt(topTip[0], centerLeft[1] + sw2)
+	const dashTipInset = pt(topTip[0] - sw2, centerLeft[1])
+
+	const upperLeftDashIntersection = pt(centerRight[0] + sw2, dashTipLeft[1])
+	const lowerLeftDashIntersection = pt(centerRight[0] + sw2, dashTipRight[1])
+
+	return [
+		[topTipLeft, topTip, topTipInset],
+		[topTip, topTipRight, topTipInset],
+
+		[centerLeft, topTipLeft, topTipInset, centerMiddle],
+		[centerMiddle, topTipInset, topTipRight, upperLeftDashIntersection],
+
+		[centerMiddle, upperLeftDashIntersection, dashTipLeft, dashTipInset],
+
+		[dashTipInset, dashTipLeft, dashTip],
+		[dashTipInset, dashTip, dashTipRight],
+
+		[centerMiddle, dashTipInset, dashTipRight, lowerLeftDashIntersection],
+
+		[
+			centerMiddle,
+			lowerLeftDashIntersection,
+			bottomTipLeft,
+			bottomTipInset,
+		],
+		[centerLeft, centerMiddle, bottomTipInset, bottomTipRight],
+
+		[bottomTipInset, bottomTipLeft, bottomTip],
+		[bottomTipInset, bottomTip, bottomTipRight],
+	]
 }
 
 export const f = (sw: number): IPts[] => {
@@ -439,7 +517,7 @@ export const r = (sw: number): IPts[] => {
 }
 
 export const s = (sw: number): IPts[] => {
-	const [cPts, _pts] = e(sw)
+	const [cPts, _pts] = flatE(sw)
 
 	const diagonalUpper = cPts.slice(0, -3)
 	const lowerCaseMidline = diagonalUpper[0][1]
