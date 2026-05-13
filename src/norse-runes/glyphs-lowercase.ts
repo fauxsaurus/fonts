@@ -1,9 +1,6 @@
 import {gt, horizontal, lt, tail, tip, vertical} from './stroke-components'
 import {
 	avgPts,
-	distanceBetweenPts,
-	getBisectorYAtX,
-	getYFromXOnLine,
 	mirrorPtsH,
 	mirrorPtsV,
 	mirrorPtsVOnCenter,
@@ -14,7 +11,6 @@ import {
 	pts2MidY,
 	pts2MinX,
 	pts2MinY,
-	rotatePts,
 	translatePt,
 	translatePts,
 	translatePtsX,
@@ -22,13 +18,13 @@ import {
 	type IPts,
 } from './util'
 
-import {n as flatN} from './glyphs-lowercase-flat'
+import {n as flatN, o as oFlat} from './glyphs-lowercase-flat'
 
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
 
 export const a = (sw: number): IPts[] => {
-	const oPts = o(sw)
+	const oPts = oFlat(sw)
 	const [_, gtPts] = oPts
 
 	const maxX = pts2MaxX(gtPts)
@@ -375,10 +371,42 @@ export const n = (sw: number): IPts[] => {
 
 /** @todo close up for a seamless shape  */
 export const o = (sw: number): IPts[] => {
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
+
 	const ltPts = lt(sw)
 	const centerX = pts2MaxX(ltPts)
+	const maxX = centerX * 2
 
-	return [ltPts, translatePtsX(centerX, gt(sw))]
+	const minY = pts2MinY(ltPts)
+	const centerY = (2048 - minY) / 2 + minY
+
+	const topOuter = pt(centerX, minY)
+	const topMiddle = pt(centerX, minY + swD45 / 2)
+	const topInner = pt(centerX, minY + swD45)
+
+	const bottomOuter = pt(centerX, 2048)
+	const bottomMiddle = pt(centerX, 2048 - swD45 / 2)
+	const bottomInner = pt(centerX, 2048 - swD45)
+
+	const leftOuter = pt(0, centerY)
+	const leftMiddle = pt(swD45 / 2, centerY)
+	const leftInner = pt(swD45, centerY)
+
+	const rightOuter = pt(maxX, centerY)
+	const rightMiddle = pt(maxX - swD45 / 2, centerY)
+	const rightInner = pt(maxX - swD45, centerY)
+
+	return [
+		[topOuter, rightOuter, rightMiddle, topMiddle],
+		[rightMiddle, rightOuter, bottomOuter, bottomMiddle],
+		[leftOuter, leftMiddle, bottomMiddle, bottomOuter],
+		[leftOuter, topOuter, topMiddle, leftMiddle],
+
+		[leftMiddle, topMiddle, topInner, leftInner],
+		[topMiddle, rightMiddle, rightInner, topInner],
+		[rightInner, rightMiddle, bottomMiddle, bottomInner],
+		[leftMiddle, leftInner, bottomInner, bottomMiddle],
+	]
 }
 
 export const p = (sw: number): IPts[] => {
