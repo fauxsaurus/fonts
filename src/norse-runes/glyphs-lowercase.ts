@@ -554,8 +554,7 @@ export const n = (sw: number): IPts[] => {
 	]
 }
 
-/** @todo close up for a seamless shape  */
-export const o = (sw: number): IPts[] => {
+const oGeometry = (sw: number) => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 	const ltPts = lt(sw)
@@ -580,6 +579,44 @@ export const o = (sw: number): IPts[] => {
 	const rightOuter = pt(maxX, centerY)
 	const rightMiddle = pt(maxX - swD45 / 2, centerY)
 	const rightInner = pt(maxX - swD45, centerY)
+
+	return {
+		topOuter,
+		topMiddle,
+		topInner,
+
+		bottomOuter,
+		bottomMiddle,
+		bottomInner,
+
+		leftOuter,
+		leftMiddle,
+		leftInner,
+
+		rightOuter,
+		rightMiddle,
+		rightInner,
+	}
+}
+
+export const o = (sw: number): IPts[] => {
+	const {
+		topOuter,
+		topMiddle,
+		topInner,
+
+		bottomOuter,
+		bottomMiddle,
+		bottomInner,
+
+		leftOuter,
+		leftMiddle,
+		leftInner,
+
+		rightOuter,
+		rightMiddle,
+		rightInner,
+	} = oGeometry(sw)
 
 	return [
 		[topOuter, rightOuter, rightMiddle, topMiddle],
