@@ -31,12 +31,128 @@ export const a = (sw: number): IPts[] => {
 	const minY = pts2MinY(gtPts)
 	const maxY = pts2MaxY(gtPts)
 
-	const verticalPts = translatePts(
-		[maxX - sw * 1.5, 0],
-		vertical(sw, minY, maxY)
+	const [
+		topTipLeft,
+		topTip,
+		topTipRight,
+		bottomTipLeft,
+		bottomTip,
+		bottomTipRight,
+	] = translatePts([maxX - sw * 1.5, 0], vertical(sw, minY, maxY))
+
+	const topTipInset = translatePt([0, sw], topTip)
+	const bottomTipInset = translatePt([0, -sw], bottomTip)
+
+	const {
+		topOuter,
+		topMiddle,
+		topInner,
+
+		bottomOuter,
+		bottomMiddle,
+		bottomInner,
+
+		leftOuter,
+		leftMiddle,
+		leftInner,
+
+		rightOuter,
+		rightMiddle,
+		rightInner,
+	} = oGeometry(sw)
+
+	const upperLeftIntersection = pt(
+		topTipLeft[0],
+		topOuter[1] + (topTipLeft[0] - topOuter[0])
 	)
 
-	return oPts.concat([verticalPts])
+	const upperMiddleIntersection = pt(
+		topTip[0],
+		topMiddle[1] + (topTip[0] - topMiddle[0])
+	)
+
+	const upperRightIntersection = pt(
+		topTipRight[0],
+		rightOuter[1] - (rightOuter[0] - topTipRight[0])
+	)
+
+	const lowerRightIntersection = pt(
+		topTipRight[0],
+		rightOuter[1] + (rightOuter[0] - topTipRight[0])
+	)
+
+	const lowerMiddleIntersection = pt(
+		bottomTip[0],
+		bottomMiddle[1] - (bottomTip[0] - bottomMiddle[0])
+	)
+
+	const lowerLeftIntersection = pt(
+		bottomTipRight[0],
+		bottomOuter[1] - (bottomTipRight[0] - bottomOuter[0])
+	)
+
+	return [
+		// top left circle
+		[leftOuter, topOuter, topMiddle, leftMiddle],
+		[topOuter, upperLeftIntersection, upperMiddleIntersection, topMiddle],
+
+		// # upper vertical
+		[
+			topTipLeft,
+			topTipInset,
+			upperMiddleIntersection,
+			upperLeftIntersection,
+		],
+		[topTipLeft, topTip, topTipInset],
+		[topTip, topTipRight, topTipInset],
+		[
+			topTipInset,
+			topTipRight,
+			upperRightIntersection,
+			upperMiddleIntersection,
+		],
+		// # right corner
+		[
+			upperMiddleIntersection,
+			upperRightIntersection,
+			rightOuter,
+			rightMiddle,
+		],
+		[
+			rightMiddle,
+			rightOuter,
+			lowerRightIntersection,
+			lowerMiddleIntersection,
+		],
+		// lower vertical
+		[
+			lowerMiddleIntersection,
+			lowerRightIntersection,
+			bottomTipLeft,
+			bottomTipInset,
+		],
+		[bottomTipInset, bottomTipLeft, bottomTip],
+		[bottomTipInset, bottomTip, bottomTipRight],
+		[
+			lowerLeftIntersection,
+			lowerMiddleIntersection,
+			bottomTipInset,
+			bottomTipRight,
+		],
+		// rest of circle
+		[
+			bottomMiddle,
+			lowerMiddleIntersection,
+			lowerLeftIntersection,
+			bottomOuter,
+		],
+		[leftOuter, leftMiddle, bottomMiddle, bottomOuter],
+
+		[leftMiddle, topMiddle, topInner, leftInner],
+		[topMiddle, rightMiddle, rightInner, topInner],
+		[rightInner, rightMiddle, bottomMiddle, bottomInner],
+		[leftMiddle, leftInner, bottomInner, bottomMiddle],
+	]
 }
 
 export const b = (sw: number): IPts[] => {
