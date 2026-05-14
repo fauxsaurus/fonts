@@ -317,11 +317,11 @@ export const c = (sw: number): IPts[] => {
 }
 
 export const d = (sw: number): IPts[] => {
-	const ltPts = lt(sw)
+	const bPts = b(sw)
+	const maxX = pts2MaxX(bPts.flat())
+	const yAxis = maxX / 2
 
-	const verticalPts = translatePtsX(pts2MaxX(ltPts) - sw / 2, vertical(sw))
-
-	return [verticalPts, ltPts]
+	return bPts.map((face) => mirrorPtsH(yAxis, face))
 }
 
 export const e = (sw: number): IPts[] => {
