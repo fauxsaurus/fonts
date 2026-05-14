@@ -837,15 +837,11 @@ export const o = (sw: number): IPts[] => {
 }
 
 export const p = (sw: number): IPts[] => {
-	const sw2 = sw / 2
+	const bPts = b(sw)
+	const maxX = pts2MaxX(bPts.flat())
+	const midPt = bPts.flat().find((pt) => pt[0] === maxX)!
 
-	const verticalMinY = 1024 - sw2
-	const verticalMaxY = verticalMinY + 2048
-
-	return [
-		vertical(sw, verticalMinY, verticalMaxY),
-		translatePtsX(sw2, gt(sw)),
-	]
+	return bPts.map((face) => mirrorPtsV(midPt[1], face))
 }
 
 export const q = (sw: number): IPts[] => {
