@@ -156,7 +156,91 @@ export const a = (sw: number): IPts[] => {
 }
 
 export const b = (sw: number): IPts[] => {
-	return [vertical(sw), translatePtsX(sw / 2, gt(sw))]
+	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
+
+	// vertical
+	const [
+		topTipLeft,
+		topTip,
+		topTipRight,
+		bottomTipLeft,
+		bottomTip,
+		bottomTipRight,
+	] = vertical(sw)
+
+	const topTipInset = translatePt([0, sw], topTip)
+
+	// loop
+	const loop = translatePtsX(sw / 2, gt(sw))
+	const maxX = pts2MaxX(loop)
+	const rightOuter = loop.find((pt) => pt[0] === maxX)!
+	const [rightMiddle] = translatePtsX(-sw2D45, [rightOuter])
+	const [rightInner] = translatePtsX(-sw2D45, [rightMiddle])
+
+	// intersections
+	const upperOuterIntersection = pt(
+		topTipRight[0],
+		rightOuter[1] - (rightOuter[0] - topTipRight[0])
+	)
+	const upperMiddleIntersection = pt(
+		topTip[0],
+		rightMiddle[1] - (rightMiddle[0] - topTip[0])
+	)
+	const upperInnerIntersection = pt(
+		topTipRight[0],
+		rightInner[1] - (rightInner[0] - topTipRight[0])
+	)
+
+	const lowerInnerIntersection = pt(
+		bottomTipLeft[0],
+		rightInner[1] + (rightInner[0] - bottomTipLeft[0])
+	)
+	const lowerMiddleIntersection = pt(
+		bottomTip[0],
+		rightMiddle[1] + (rightMiddle[0] - bottomTip[0])
+	)
+
+	return [
+		// vertical
+		[topTipLeft, topTip, topTipInset],
+		[topTip, topTipRight, topTipInset],
+		[
+			topTipInset,
+			topTipRight,
+			upperOuterIntersection,
+			upperMiddleIntersection,
+		],
+		// loop (outer)
+		[
+			upperMiddleIntersection,
+			upperOuterIntersection,
+			rightOuter,
+			rightMiddle,
+		],
+		[rightMiddle, rightOuter, bottomTip, lowerMiddleIntersection],
+		// vertical (left)
+		[bottomTipRight, lowerMiddleIntersection, bottomTip],
+		[topTipLeft, topTipInset, lowerMiddleIntersection, bottomTipRight],
+		// loop (inner)
+		[
+			upperMiddleIntersection,
+			rightMiddle,
+			rightInner,
+			upperInnerIntersection,
+		],
+		[
+			lowerInnerIntersection,
+			rightInner,
+			rightMiddle,
+			lowerMiddleIntersection,
+		],
+		[
+			upperMiddleIntersection,
+			upperInnerIntersection,
+			lowerInnerIntersection,
+			lowerMiddleIntersection,
+		],
+	]
 }
 
 const cGeometry = (sw: number) => {
