@@ -18,7 +18,12 @@ import {
 	type IPts,
 } from './util'
 
-import {e as flatE, n as flatN, o as oFlat} from './glyphs-lowercase-flat'
+import {
+	e as flatE,
+	b as flatB,
+	n as flatN,
+	o as oFlat,
+} from './glyphs-lowercase-flat'
 
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
@@ -646,7 +651,7 @@ const nGeometry = (sw: number) => {
 	const sw2 = sw / 2 // half stroke width
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const gtPts = b(sw)[1]
+	const gtPts = flatB(sw)[1]
 
 	const maxX = pts2MaxX(gtPts)
 
