@@ -9,6 +9,7 @@ type IProps = {
 	fontSize: number
 	kerning: number
 	strokeWidth: number
+	twoTone?: boolean
 }
 
 const DEBUG_STYLES = `@scope {
@@ -20,6 +21,8 @@ const DEBUG_STYLES = `@scope {
 			) s l
 		);
 		opacity: 0.75;
+		stroke: black;
+		stroke-width: 1;
 	}
 }
 `
@@ -97,12 +100,18 @@ const Line = (props: IProps) => {
 	/** Adjusts the height of the svg to maintain a base line of `fontSize`px tall (by elongating the height if there were characters below the ) */
 	const proportionalHeight = (height / 2048) * props.fontSize
 
+	// maintain svg aspect ratio
+	const proportionalWidth = (width * props.fontSize) / 2048
+
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox={`0 0 ${width} ${height}`}
 			{...{width, height}}
-			style={{height: `${proportionalHeight}px`}}
+			style={{
+				height: `${proportionalHeight}px`,
+				width: `${proportionalWidth}px`,
+			}}
 		>
 			{debug && <style>{DEBUG_STYLES}</style>}
 			<g stroke="none">
@@ -143,10 +152,31 @@ export const NorseRunes = (props: {
 	const {children = '', fontSize, debug = false} = props
 
 	return (
-		<div style={{display: 'flex'}}>
-			<Line {...{debug, fontSize}} kerning={192 * 2.5} strokeWidth={192}>
-				{children}
-			</Line>
-		</div>
+		<Line {...{debug, fontSize}} kerning={192 * 2.5} strokeWidth={192}>
+			{children}
+		</Line>
 	)
 }
+
+/*
+const uniqueObjArray = serializerFn => {
+	const hashes = []
+	
+	return (obj, i, objs) => {
+		hash = serializerFn(obj)
+		if (hashes.includes(hash)) return false
+
+		hashes.push(hash)
+		return true
+	}
+}
+const uniquePts = uniqueObjArray(obj => obj.join(','))
+const outline = glyph(sw)
+const spin = glyph(0)
+const faces = outline.flatMap((_,i,{length}) => {
+		return i ? [i - 1, i] : [length - 1, i]
+	}).map(([i,ii]) => {
+		return [spine[i], outline[i], outline[ii], spine[ii]]
+			.filter(uniquePts)
+	})
+ */

@@ -5,26 +5,51 @@ import {NorseRunes} from './norse-runes'
 function App() {
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
+	const fontSizeLarge = 64
+	const fontSizeSmall = 37
+
 	return (
 		<>
 			<div className="cover">
-				<div className="text-title">
-					<NorseRunes key="subtitle" fontSize={40}>
-						Embers of the Nephilim:
-					</NorseRunes>
-					<NorseRunes key="line-1" fontSize={64}>
-						Ghost Girl and
-					</NorseRunes>
-					<NorseRunes key="line-3" fontSize={64}>
-						the Ghost Giant
-					</NorseRunes>
+				<div
+					className="text-title"
+					style={{'--space-width': `${fontSizeSmall / 4}px`}}
+				>
+					<div className="subtitle">
+						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
+							Embers of the _Nephilim:
+						</NorseRunes>
+					</div>
+					<div key="title-line-2">
+						<NorseRunes key="capital" fontSize={fontSizeLarge}>
+							Ghost Girl
+						</NorseRunes>
+						<span className="space"></span>
+						<NorseRunes key="article" fontSize={fontSizeSmall}>
+							and
+						</NorseRunes>
+					</div>
+					<div key="title-line-3">
+						<NorseRunes key="article" fontSize={fontSizeSmall}>
+							the
+						</NorseRunes>
+						{/* <span className="space"></span> */}
+						<NorseRunes key="capital" fontSize={fontSizeLarge}>
+							Ghost Giant
+						</NorseRunes>
+					</div>
 				</div>
 				<div className="text-author">
 					<Braille>Andrew R. H. Quinn</Braille>
 				</div>
 			</div>
+			<br />
 			<NorseRunes key="preview" fontSize={64} debug>
 				JTL
+			</NorseRunes>
+			<div></div>
+			<NorseRunes key="unique glyphs" fontSize={64}>
+				theiGsomrlanEbfNp:d
 			</NorseRunes>
 			<NorseRunes key="lower" fontSize={64}>
 				{alphabet}
