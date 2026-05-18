@@ -639,12 +639,69 @@ export const l = (sw: number): IPts[] => {
 }
 
 export const m = (sw: number): IPts[] => {
-	const [nPts] = flatN(sw)
+	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const maxX = pts2MaxX(nPts)
-	const reverseNPts = mirrorPtsH(maxX - sw / 2, nPts)
+	const geometry = nGeometry(sw)
 
-	return [nPts, reverseNPts]
+	const {
+		topTipLeft: topLeftTipLeft,
+		topTip: topLeftTip,
+		diagonalTopRight: upperCenter,
+
+		diagonalLowerLeft: innerLeft,
+
+		leftTip: lowerLeftTip,
+		leftTipLeft: lowerLeftTipLeft,
+		leftTipRight: lowerLeftTipRight,
+	} = geometry
+
+	const [lowerCenter] = translatePtsY(swD45, [upperCenter])
+
+	const [
+		topRightTipRight,
+		topRightTip,
+
+		bottomRightTip,
+		bottomRightTipLeft,
+		bottomRightTipRight,
+
+		innerRight,
+	] = mirrorPtsH(lowerCenter[0], [
+		topLeftTipLeft,
+		topLeftTip,
+
+		lowerLeftTip,
+		lowerLeftTipLeft,
+		lowerLeftTipRight,
+
+		innerLeft,
+	])
+
+	return [
+		[
+			topLeftTipLeft,
+			topLeftTip,
+
+			upperCenter,
+
+			topRightTip,
+			topRightTipRight,
+
+			bottomRightTipLeft,
+			bottomRightTip,
+			bottomRightTipRight,
+
+			innerRight,
+
+			lowerCenter,
+
+			innerLeft,
+
+			lowerLeftTipRight,
+			lowerLeftTip,
+			lowerLeftTipLeft,
+		],
+	]
 }
 
 const nGeometry = (sw: number) => {

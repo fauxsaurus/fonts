@@ -1,4 +1,4 @@
-import {f, l, m, n} from './glyphs-lowercase'
+import {f, l, n} from './glyphs-lowercase'
 import {gt, horizontal, tail, tip, vertical} from './stroke-components'
 import {
 	getYFromXOnLine,
@@ -22,6 +22,7 @@ import {
 	type IPt,
 	type IPts,
 } from './util'
+import {m as mFlat} from './glyphs-lowercase-flat'
 
 export const A = (sw: number): IPts[] => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
@@ -32,7 +33,7 @@ export const A = (sw: number): IPts[] => {
 	const minY = pts2MinY(nStrokes.flat())
 
 	const nMaxX = pts2MaxX(nStrokes.flat())
-	const mMaxX = pts2MaxX(m(sw).flat()) - sw / 2 // unsure why the offset adjustment is needed
+	const mMaxX = pts2MaxX(mFlat(sw).flat()) - sw / 2 // unsure why the offset adjustment is needed
 	const offsetX = mMaxX - nMaxX
 
 	const [NPts] = stretchStrokesUpward(yThreshold, -minY, nStrokes).map(
@@ -229,7 +230,7 @@ export const L = (sw: number): IPts[] => {
 }
 
 export const M = (sw: number): IPts[] => {
-	const mStrokes = m(sw)
+	const mStrokes = mFlat(sw)
 
 	const yThreshold = 2028 - sw / 2
 	const minY = pts2MinY(mStrokes.flat())
