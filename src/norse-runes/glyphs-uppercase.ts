@@ -240,38 +240,6 @@ export const M = (sw: number): IPts[] => {
 export const N = (sw: number): IPts[] => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const mStrokes = m(sw)
-	const width = pts2MaxX(mStrokes.flat())
-
-	const left = vertical(sw, 0, 2048)
-	const right = translatePtsX(width - sw, left)
-
-	const gap = width - sw - sw
-
-	// diagonal pts
-	const diagonalNWpt = pt(sw, 0)
-	const diagonalNEpt = translatePt([gap, gap], diagonalNWpt)
-
-	const diagonalSWpt = translatePtsY(swD45, [diagonalNWpt])[0]
-	const diagonalSEpt = translatePtsY(swD45, [diagonalNEpt])[0]
-
-	const diagonal: IPts = [
-		diagonalNWpt,
-		diagonalNEpt,
-		diagonalSEpt,
-		diagonalSWpt,
-	]
-
-	const halfDiagonalHeight = gap / 2
-
-	return [
-		left,
-		translatePtsY(1024 - halfDiagonalHeight - swD45 / 2, diagonal),
-		right,
-	]
-}
-
-export const _ = (sw: number): IPts[] => {
 	// left pts
 	const topLeftTip = pt(sw / 2, 0)
 	const topLeftTipLeft = pt(0, sw / 2)
@@ -301,8 +269,8 @@ export const _ = (sw: number): IPts[] => {
 		topRightTipLeft,
 		topRightTipInset,
 		bottomRightTip,
-		bottomRightTipLeft,
 		bottomRightTipRight,
+		bottomRightTipLeft,
 		bottomRightTipInset,
 	] = mirrorPtsH(midX, [
 		topLeftTip,
@@ -316,25 +284,104 @@ export const _ = (sw: number): IPts[] => {
 		bottomLeftTipInset,
 	])
 
+	const middleMidPt = pt(midX, 1024)
+	const [upperMidPt] = translatePtsY(-swD45 / 2, [middleMidPt])
+	const [lowerMidPt] = translatePtsY(swD45 / 2, [middleMidPt])
+
+	const upperLeftDiagonalIntersection = pt(
+		topLeftTipRight[0],
+		upperMidPt[1] - (upperMidPt[0] - topLeftTipRight[0])
+	)
+	const middleLeftDiagonalIntersection = pt(
+		topLeftTip[0],
+		middleMidPt[1] - (middleMidPt[0] - topLeftTip[0])
+	)
+	const lowerLeftDiagonalIntersection = pt(
+		topLeftTipRight[0],
+		lowerMidPt[1] - (lowerMidPt[0] - topLeftTipRight[0])
+	)
+
+	const [
+		lowerRightDiagonalIntersection,
+		middleRightDiagonalIntersection,
+		upperRightDiagonalIntersection,
+	] = mirrorPtsV(
+		1024,
+		mirrorPtsH(midX, [
+			upperLeftDiagonalIntersection,
+			middleLeftDiagonalIntersection,
+			lowerLeftDiagonalIntersection,
+		])
+	)
+
 	return [
 		// left vertical
 		[topLeftTipLeft, topLeftTip, topLeftTipInset],
 		[topLeftTip, topLeftTipRight, topLeftTipInset],
 
+		[
+			topLeftTipInset,
+			topLeftTipRight,
+			upperLeftDiagonalIntersection,
+			middleLeftDiagonalIntersection,
+		],
+
+		// upper diagonal
+		[
+			middleLeftDiagonalIntersection,
+			upperLeftDiagonalIntersection,
+			upperRightDiagonalIntersection,
+			middleRightDiagonalIntersection,
+		],
+
 		// right vertical
+		[
+			upperRightDiagonalIntersection,
+			topRightTipLeft,
+			topRightTipInset,
+			middleRightDiagonalIntersection,
+		],
+
 		[topRightTipLeft, topRightTip, topRightTipInset],
 		[topRightTip, topRightTipRight, topRightTipInset],
 
 		[
 			topRightTipInset,
 			topRightTipRight,
-			bottomRightTipRight,
+			bottomRightTipLeft,
 			bottomRightTipInset,
 		],
 
+		[bottomRightTipInset, bottomRightTipLeft, bottomRightTip],
+		[bottomRightTipInset, bottomRightTip, bottomRightTipRight],
+
+		[
+			lowerRightDiagonalIntersection,
+			middleRightDiagonalIntersection,
+			bottomRightTipInset,
+			bottomRightTipRight,
+		],
+
+		// lower diagonal
+		[
+			middleLeftDiagonalIntersection,
+			middleRightDiagonalIntersection,
+			lowerRightDiagonalIntersection,
+			lowerLeftDiagonalIntersection,
+		],
+
 		// left vertical continued
+		[
+			middleLeftDiagonalIntersection,
+			lowerLeftDiagonalIntersection,
+			// @note this name may be incorrect, but everything else relies on the wrong name...
+			bottomLeftTipRight,
+			bottomLeftTipInset,
+		],
+
 		[bottomLeftTipInset, bottomLeftTipRight, bottomLeftTip],
 		[bottomLeftTipInset, bottomLeftTipLeft, bottomLeftTip],
+
 		[
 			topLeftTipLeft,
 			topLeftTipInset,

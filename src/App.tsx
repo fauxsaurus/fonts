@@ -17,7 +17,7 @@ function App() {
 				>
 					<div className="subtitle">
 						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
-							Embers of the _Nephilim:
+							Embers of the Nephilim:
 						</NorseRunes>
 					</div>
 					<div key="title-line-2">
