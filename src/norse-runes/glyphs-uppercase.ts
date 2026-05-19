@@ -316,7 +316,7 @@ export const N = (sw: number): IPts[] => {
 	// right pts
 	const nFaces = n(sw)
 	const maxX = pts2MaxX(nFaces.flat())
-	const midX = maxX / 2
+	const midX = (maxX + sw) / 2
 
 	const [
 		topRightTip,
