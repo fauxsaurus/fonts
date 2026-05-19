@@ -139,32 +139,37 @@ export const E = (sw: number): IPts[] => {
 
 	const slope = 1024 / width
 	const cos = 1 / Math.sqrt(1 + slope ** 2)
-	const verticalCrossSectionH = sw / cos
+	const verticalCrossSection = sw / cos
 
 	const outerCenter = pt(0, 1024)
 
 	const innerCenterY = 1024
 	const innerCenterX =
-		(innerCenterY - (2048 - verticalCrossSectionH)) / slope + width
+		(innerCenterY - (2048 - verticalCrossSection)) / slope + width
 	const innerCenter = pt(innerCenterX, outerCenter[1])
+
+	const horizontalCrossSection = innerCenterX / 2
 
 	const middleCenter = pt(innerCenterX / 2, 1024)
 
-	const outerTop = pt(width, 0)
-	const innerTop = pt(width, verticalCrossSectionH)
-	const middleTop = pt(width, verticalCrossSectionH / 2)
+	const topTipLeft = pt(width, 0)
+	const topTip = pt(width + horizontalCrossSection, 0)
+	const topTipRight = pt(
+		width + horizontalCrossSection,
+		verticalCrossSection / 2
+	)
 
 	const [outerBottom, middleBottom, innerBottom] = mirrorPtsV(1024, [
-		outerTop,
-		middleTop,
-		innerTop,
+		topTipLeft,
+		topTip,
+		topTipRight,
 	])
 
 	return [
-		horizontal(sw, width),
+		horizontal(sw, width + sw),
 
-		[outerCenter, outerTop, middleTop, middleCenter],
-		[middleCenter, middleTop, innerTop, innerCenter],
+		[outerCenter, topTipLeft, topTip, middleCenter],
+		[middleCenter, topTip, topTipRight, innerCenter],
 
 		[middleCenter, innerCenter, innerBottom, middleBottom],
 		[outerCenter, middleCenter, middleBottom, outerBottom],
