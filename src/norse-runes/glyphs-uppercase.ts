@@ -1,4 +1,4 @@
-import {f, l, n} from './glyphs-lowercase'
+import {f, l, n, o} from './glyphs-lowercase'
 import {gt, horizontal, tail, tip, vertical} from './stroke-components'
 import {
 	getYFromXOnLine,
@@ -122,10 +122,53 @@ export const D = (sw: number): IPts[] => {
 	return [verticalPts, mirrorPtsH(midX, CPts)]
 }
 
-export const E = (sw: number): IPts[] => {
-	const CPts = C(sw)
+const dot = (sw, pt: IPt): IPts => {
+	const sw4 = sw / 4
 
-	return [...CPts, horizontal(sw, pts2MaxX(CPts.flat()) + sw / 2)]
+	return [
+		translatePts([-sw4, -sw4], [pt])[0],
+		translatePts([sw4, -sw4], [pt])[0],
+		translatePts([sw4, sw4], [pt])[0],
+		translatePts([-sw4, sw4], [pt])[0],
+	]
+}
+
+export const E = (sw: number): IPts[] => {
+	const oPts = o(sw)
+	const width = pts2MidX(oPts.flat())
+
+	const slope = 1024 / width
+	const cos = 1 / Math.sqrt(1 + slope ** 2)
+	const verticalCrossSectionH = sw / cos
+
+	const outerCenter = pt(0, 1024)
+
+	const innerCenterY = 1024
+	const innerCenterX =
+		(innerCenterY - (2048 - verticalCrossSectionH)) / slope + width
+	const innerCenter = pt(innerCenterX, outerCenter[1])
+
+	const middleCenter = pt(innerCenterX / 2, 1024)
+
+	const outerTop = pt(width, 0)
+	const innerTop = pt(width, verticalCrossSectionH)
+	const middleTop = pt(width, verticalCrossSectionH / 2)
+
+	const [outerBottom, middleBottom, innerBottom] = mirrorPtsV(1024, [
+		outerTop,
+		middleTop,
+		innerTop,
+	])
+
+	return [
+		horizontal(sw, width),
+
+		[outerCenter, outerTop, middleTop, middleCenter],
+		[middleCenter, middleTop, innerTop, innerCenter],
+
+		[middleCenter, innerCenter, innerBottom, middleBottom],
+		[outerCenter, middleCenter, middleBottom, outerBottom],
+	]
 }
 
 export const FOld = (sw: number): IPts[] => {
