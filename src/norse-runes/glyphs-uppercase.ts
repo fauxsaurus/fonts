@@ -212,29 +212,35 @@ export const F = (sw: number): IPts[] => {
 }
 
 export const G = (sw: number): IPts[] => {
-	const sw2 = sw / 2 // offset width
-	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
-
-	const maxX = 1024
-
-	const tipInnerMinX = swD45 + sw2 * 3
-	const tipInner = translatePts(
-		[tipInnerMinX - sw / 2, 1024 - sw2],
-		tip(sw, 270)
-	).reverse()
-	// const tipInner = translatePts([tipInnerMinX, 1024 - sw2], tipW)
-
-	const _Shape: IPts = [...tipInner, [maxX, 1024 + sw2], [maxX, 1024 - sw2]]
+	const EPts = E(sw).slice(1)
+	const w = pts2MaxX(EPts.flat())
 
 	const vertical: IPts = [
-		[maxX - sw, 1024],
-		[maxX, 1024],
+		[w - sw, 1024],
+		[w, 1024],
 
-		[maxX, 2048 - sw],
-		[maxX - sw, 2048 - sw],
+		[w, 2048 - sw],
+		[w - sw, 2048 - sw],
 	]
 
-	return [...C(sw), _Shape, vertical]
+	const dash = [
+		pt(w - sw * 1.5, 1024),
+
+		pt(w - sw, 1024 - sw / 2),
+		pt(w, 1024 - sw / 2),
+
+		pt(w, 1024 + sw / 2),
+		pt(w - sw, 1024 + sw / 2),
+	]
+
+	const overHang: IPts = [
+		[w - sw, sw],
+		[w, sw],
+
+		...translatePts([w - sw, 1024 - sw * 2], tip(sw, 180)),
+	]
+
+	return [overHang, dash, vertical, ...EPts]
 }
 
 export const H = (sw: number): IPts[] => {
