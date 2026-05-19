@@ -646,7 +646,7 @@ export const m = (sw: number): IPts[] => {
 	const {
 		topTipLeft: topLeftTipLeft,
 		topTip: topLeftTip,
-		diagonalTopRight: upperCenter,
+		diagonalTopRight: upperCenterTmp,
 
 		diagonalLowerLeft: innerLeft,
 
@@ -654,6 +654,8 @@ export const m = (sw: number): IPts[] => {
 		leftTipLeft: lowerLeftTipLeft,
 		leftTipRight: lowerLeftTipRight,
 	} = geometry
+
+	const [upperCenter] = translatePts([-sw, -sw], [upperCenterTmp])
 
 	const [lowerCenter] = translatePtsY(swD45, [upperCenter])
 
