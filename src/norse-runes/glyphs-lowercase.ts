@@ -679,7 +679,32 @@ export const m = (sw: number): IPts[] => {
 		innerLeft,
 	])
 
+	const {
+		topTip,
+		topTipLeft,
+		topTipInset,
+
+		leftTip,
+		// wrong names in nGeometry
+		leftTipLeft: leftTipRight,
+		leftTipRight: leftTipLeft,
+		leftTipInset,
+
+		rightTip,
+		rightTipLeft,
+		rightTipRight,
+		rightTipInset,
+
+		diagonalTopRight,
+		diagonalLowerLeft,
+		diagonalLowerRight,
+		bottomRightDiagonalInset,
+	} = geometry
+
+	const middleCenter = avgPts([upperCenter, lowerCenter])
+
 	return [
+		// top left tip
 		[
 			topLeftTipLeft,
 			topLeftTip,
@@ -703,6 +728,48 @@ export const m = (sw: number): IPts[] => {
 			lowerLeftTip,
 			lowerLeftTipLeft,
 		],
+
+		[topTipLeft, topTip, topTipInset],
+
+		// upper \
+		[topLeftTip, upperCenter, middleCenter, topTipInset],
+		// upper /
+		mirrorPtsH(lowerCenter[0], [
+			topLeftTip,
+			upperCenter,
+			middleCenter,
+			topTipInset,
+		]),
+		// right vertical
+		mirrorPtsH(lowerCenter[0], [topTipLeft, topTip, topTipInset]),
+		mirrorPtsH(lowerCenter[0], [
+			topTipLeft,
+			topTipInset,
+			leftTipInset,
+			leftTipRight,
+		]),
+		mirrorPtsH(lowerCenter[0], [leftTipRight, leftTipInset, leftTip]),
+		mirrorPtsH(lowerCenter[0], [leftTipInset, leftTipLeft, leftTip]),
+		mirrorPtsH(lowerCenter[0], [
+			topTipInset,
+			diagonalLowerLeft,
+			leftTipLeft,
+			leftTipInset,
+		]),
+		// lower /
+		mirrorPtsH(lowerCenter[0], [
+			topTipInset,
+			middleCenter,
+			lowerCenter,
+			diagonalLowerLeft,
+		]),
+		// lower \
+		[topTipInset, middleCenter, lowerCenter, diagonalLowerLeft],
+		// left vertical
+		[topTipInset, diagonalLowerLeft, leftTipLeft, leftTipInset],
+		[leftTipInset, leftTipLeft, leftTip],
+		[leftTipRight, leftTipInset, leftTip],
+		[topTipLeft, topTipInset, leftTipInset, leftTipRight],
 	]
 }
 
