@@ -274,8 +274,23 @@ export const F = (sw: number): IPts[] => {
 }
 
 export const G = (sw: number): IPts[] => {
-	const EPts = E(sw).slice(1)
-	const w = pts2MaxX(EPts.flat())
+	const geo = CGeometry(sw)
+
+	const {
+		outerTop,
+		middleTop,
+		innerTop,
+
+		outerCenter,
+		middleCenter,
+		innerCenter,
+
+		innerBottom,
+		middleBottom,
+		outerBottom,
+	} = geo
+
+	const w = pts2MaxX(Object.values(geo))
 
 	const vertical: IPts = [
 		[w - sw, 1024],
@@ -286,23 +301,43 @@ export const G = (sw: number): IPts[] => {
 	]
 
 	const dash = [
-		pt(w - sw * 1.5, 1024),
+		pt(w - sw * 2, 1024),
 
-		pt(w - sw, 1024 - sw / 2),
+		pt(w - sw * 1.5, 1024 - sw / 2),
 		pt(w, 1024 - sw / 2),
 
 		pt(w, 1024 + sw / 2),
-		pt(w - sw, 1024 + sw / 2),
+		pt(w - sw * 1.5, 1024 + sw / 2),
 	]
 
 	const overHang: IPts = [
-		[w - sw, sw],
-		[w, sw],
+		[w - sw, sw * 0.75],
+		[w, sw * 0.75],
 
 		...translatePts([w - sw, 1024 - sw * 2], tip(sw, 180)),
 	]
 
-	return [overHang, dash, vertical, ...EPts]
+	return [
+		[
+			outerCenter,
+			outerTop,
+			middleTop,
+			innerTop,
+			innerCenter,
+			innerBottom,
+			middleBottom,
+			outerBottom,
+		],
+
+		// upper /
+		// dot(sw, outerCenter),
+		// dot(sw, outerTop),
+		// dot(sw, middleTop),
+
+		overHang,
+		vertical,
+		dash,
+	]
 }
 
 export const H = (sw: number): IPts[] => {
