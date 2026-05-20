@@ -1,6 +1,7 @@
 import {f, l, n, o} from './glyphs-lowercase'
 import {gt, horizontal, tail, tip, vertical} from './stroke-components'
 import {
+	avgPts,
 	getYFromXOnLine,
 	lines2intersectionPt,
 	mirrorPtsH,
@@ -82,6 +83,13 @@ export const C_old = (sw: number): IPts[] => {
 	return [
 		[...tipTop.reverse(), [0, 1024], ...tipBottom.reverse(), [swD45, 1024]],
 	]
+}
+
+const CBasedGlyphSlope = (sw: number) => {
+	const oPts = o(sw)
+	const width = pts2MidX(oPts.flat()) + sw * 0.5
+
+	return -1024 / width
 }
 
 const CGeometry = (sw: number) => {
@@ -292,51 +300,176 @@ export const G = (sw: number): IPts[] => {
 
 	const w = pts2MaxX(Object.values(geo))
 
-	const vertical: IPts = [
-		[w - sw, 1024],
-		[w, 1024],
-
-		[w, 2048 - sw],
-		[w - sw, 2048 - sw],
-	]
-
-	const dash = [
+	const [leftTip, leftTipRight, leftTipLeft] = [
 		pt(w - sw * 2, 1024),
-
 		pt(w - sw * 1.5, 1024 - sw / 2),
-		pt(w, 1024 - sw / 2),
-
-		pt(w, 1024 + sw / 2),
 		pt(w - sw * 1.5, 1024 + sw / 2),
 	]
+	const leftTipInset = translatePt([sw, 0], leftTip)
 
-	const overHang: IPts = [
-		[w - sw, sw * 0.75],
-		[w, sw * 0.75],
+	const outerRightDashInterSection = pt(w, 1024 - sw / 2)
 
-		...translatePts([w - sw, 1024 - sw * 2], tip(sw, 180)),
-	]
+	const [upperTipLeft, upperTip, upperTipRight] = translatePts(
+		[w - sw, 1024 - sw * 2],
+		tip(sw, 180)
+	)
+	const upperTipInset = translatePt([0, -sw], upperTip)
+
+	const slope = CBasedGlyphSlope(sw)
+
+	const innerUpperIntersection = pt(
+		upperTipRight[0],
+		getYFromXOnLine(innerCenter, slope, upperTipRight[0])
+	)
+
+	const [innerLowerIntersection] = mirrorPtsV(1024, [innerUpperIntersection])
+
+	const innerLeftDashIntersection = pt(
+		innerLowerIntersection[0],
+		leftTipLeft[1]
+	)
+
+	// const upperMiddleIntersection = avgPts([innerUpperIntersection, middleTop])
+	// const [lowerMiddleIntersection] = mirrorPtsV(1024, [
+	// 	upperMiddleIntersection,
+	// ])
+
+	const middleDashIntersection = avgPts([
+		outerRightDashInterSection,
+		innerLeftDashIntersection,
+	])
+
+	const lowerMiddleIntersection = pt(
+		middleDashIntersection[0],
+		getYFromXOnLine(middleCenter, -slope, middleDashIntersection[0])
+	)
+
+	const [upperMiddleIntersection] = mirrorPtsV(1024, [
+		lowerMiddleIntersection,
+	])
 
 	return [
+		// [
+		// 	outerCenter,
+		// 	outerTop,
+		// 	middleTop,
+
+		// 	upperTipLeft,
+		// 	upperTip,
+		// 	upperTipRight,
+
+		// 	innerUpperIntersection,
+
+		// 	innerCenter,
+
+		// 	innerLowerIntersection,
+		// 	innerLeftDashIntersection,
+
+		// 	leftTipLeft,
+		// 	leftTip,
+		// 	leftTipRight,
+
+		// 	outerRightDashInterSection,
+
+		// 	innerBottom,
+		// 	middleBottom,
+		// 	outerBottom,
+		// ],
+
+		// upper vertical (outer)
+		// [upperMiddleIntersection, outerTop, upperTipLeft, upperTipInset],
+
+		// upper tip
+		// [upperTipInset, upperTipLeft, upperTip],
+		// [upperTipInset, upperTip, upperTipRight],
+
+		// // upper vertical (inner)
+		// [
+		// 	innerUpperIntersection,
+		// 	upperMiddleIntersection,
+		// 	upperTipInset,
+		// 	upperTipRight,
+		// ],
+		// outer upper /
+		[outerCenter, outerTop, upperMiddleIntersection, middleCenter],
+
+		// upper right tip
+		[outerTop, middleTop, upperMiddleIntersection],
+
+		// outer upper vertical |
+		[upperMiddleIntersection, middleTop, upperTipLeft, upperTipInset],
+
+		// upper tip
+		[upperTipInset, upperTipLeft, upperTip],
+		[upperTipRight, upperTipInset, upperTip],
+
+		// inner upper vertical |
 		[
-			outerCenter,
-			outerTop,
-			middleTop,
-			innerTop,
-			innerCenter,
-			innerBottom,
-			middleBottom,
-			outerBottom,
+			upperTipRight,
+			innerUpperIntersection,
+			upperMiddleIntersection,
+			upperTipInset,
 		],
 
-		// upper /
-		// dot(sw, outerCenter),
-		// dot(sw, outerTop),
-		// dot(sw, middleTop),
+		// inner upper diagonal /
+		[
+			middleCenter,
+			upperMiddleIntersection,
+			innerUpperIntersection,
+			innerCenter,
+		],
 
-		overHang,
-		vertical,
-		dash,
+		// inner lower diagonal \
+		[
+			middleCenter,
+			innerCenter,
+			innerLowerIntersection,
+			lowerMiddleIntersection,
+		],
+
+		// inner lower vertical
+		[
+			innerLowerIntersection,
+			innerLeftDashIntersection,
+			middleDashIntersection,
+			lowerMiddleIntersection,
+		],
+
+		// lower dash
+		[
+			leftTipLeft,
+			leftTipInset,
+			middleDashIntersection,
+			innerLeftDashIntersection,
+		],
+
+		// left tip
+		[leftTip, leftTipInset, leftTipLeft],
+		[leftTip, leftTipRight, leftTipInset],
+
+		// upper dash
+		[
+			leftTipRight,
+			outerRightDashInterSection,
+			middleDashIntersection,
+			leftTipInset,
+		],
+
+		// outer right lower vertical
+		[
+			middleDashIntersection,
+			outerRightDashInterSection,
+			middleBottom,
+			lowerMiddleIntersection,
+		],
+
+		// lower right corner
+		[outerBottom, lowerMiddleIntersection, middleBottom],
+
+		// outer lower diagonal \
+		[outerCenter, middleCenter, lowerMiddleIntersection, outerBottom],
+
+		// dot(sw, lowerMiddleIntersection),
 	]
 }
 
