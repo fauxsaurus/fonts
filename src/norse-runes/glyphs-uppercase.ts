@@ -2,6 +2,7 @@ import {f, l, n, o} from './glyphs-lowercase'
 import {gt, horizontal, tail, tip, vertical} from './stroke-components'
 import {
 	getYFromXOnLine,
+	lines2intersectionPt,
 	mirrorPtsH,
 	mirrorPtsHOnCenter,
 	mirrorPtsV,
@@ -83,6 +84,53 @@ export const C_old = (sw: number): IPts[] => {
 	]
 }
 
+const CGeometry = (sw: number) => {
+	const oPts = o(sw)
+	const width = pts2MidX(oPts.flat()) + sw * 0.5
+
+	const slope = 1024 / width
+	const cos = 1 / Math.sqrt(1 + slope ** 2)
+	const verticalCrossSection = sw / cos
+
+	const outerCenter = pt(0, 1024)
+
+	const innerCenterY = 1024
+	const innerCenterX =
+		(innerCenterY - (2048 - verticalCrossSection)) / slope + width
+	const innerCenter = pt(innerCenterX, outerCenter[1])
+
+	const horizontalCrossSection = innerCenterX / 2
+
+	const middleCenter = pt(innerCenterX / 2, 1024)
+
+	const outerTop = pt(width, 0)
+	const middleTop = pt(width + horizontalCrossSection, 0)
+	const innerTop = pt(
+		width + horizontalCrossSection,
+		verticalCrossSection / 2
+	)
+
+	const [outerBottom, middleBottom, innerBottom] = mirrorPtsV(1024, [
+		outerTop,
+		middleTop,
+		innerTop,
+	])
+
+	return {
+		outerTop,
+		middleTop,
+		innerTop,
+
+		outerCenter,
+		middleCenter,
+		innerCenter,
+
+		innerBottom,
+		middleBottom,
+		outerBottom,
+	}
+}
+
 export const C = (sw: number): IPts[] => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
@@ -135,43 +183,57 @@ const dot = (sw, pt: IPt): IPts => {
 
 export const E = (sw: number): IPts[] => {
 	const oPts = o(sw)
-	const width = pts2MidX(oPts.flat())
+	const width = pts2MidX(oPts.flat()) + sw * 0.5
+
+	const {
+		outerTop,
+		middleTop,
+		innerTop,
+
+		outerCenter,
+		middleCenter,
+		innerCenter,
+
+		innerBottom,
+		middleBottom,
+		outerBottom,
+	} = CGeometry(sw)
 
 	const slope = 1024 / width
 	const cos = 1 / Math.sqrt(1 + slope ** 2)
 	const verticalCrossSection = sw / cos
 
-	const outerCenter = pt(0, 1024)
-
 	const innerCenterY = 1024
 	const innerCenterX =
 		(innerCenterY - (2048 - verticalCrossSection)) / slope + width
-	const innerCenter = pt(innerCenterX, outerCenter[1])
 
 	const horizontalCrossSection = innerCenterX / 2
 
-	const middleCenter = pt(innerCenterX / 2, 1024)
+	const rightTip = pt(width + sw, 1024)
+	const rightTipLeft = pt(width + sw / 2, 1024 - sw / 2)
+	const rightTipRight = pt(width + sw / 2, 1024 + sw / 2)
+	const rightTipInset = pt(width, 1024)
 
-	const topTipLeft = pt(width, 0)
-	const topTip = pt(width + horizontalCrossSection, 0)
-	const topTipRight = pt(
-		width + horizontalCrossSection,
-		verticalCrossSection / 2
+	const upperLeftHorizontal = lines2intersectionPt(
+		innerCenter,
+		-slope,
+		rightTipLeft,
+		0
 	)
-
-	const [outerBottom, middleBottom, innerBottom] = mirrorPtsV(1024, [
-		topTipLeft,
-		topTip,
-		topTipRight,
-	])
+	const [lowerLeftHorizontal] = mirrorPtsV(1024, [upperLeftHorizontal])
 
 	return [
-		horizontal(sw, width + sw),
+		[outerCenter, outerTop, middleTop, middleCenter],
+		[middleCenter, middleTop, innerTop, upperLeftHorizontal, middleCenter],
 
-		[outerCenter, topTipLeft, topTip, middleCenter],
-		[middleCenter, topTip, topTipRight, innerCenter],
+		[middleCenter, upperLeftHorizontal, rightTipLeft, rightTipInset],
 
-		[middleCenter, innerCenter, innerBottom, middleBottom],
+		[rightTipInset, rightTipLeft, rightTip],
+		[rightTipInset, rightTip, rightTipRight],
+
+		[middleCenter, rightTipInset, rightTipRight, lowerLeftHorizontal],
+
+		[middleCenter, lowerLeftHorizontal, innerBottom, middleBottom],
 		[outerCenter, middleCenter, middleBottom, outerBottom],
 	]
 }

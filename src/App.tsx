@@ -6,7 +6,7 @@ function App() {
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
 	const fontSizeLarge = 64
-	const fontSizeSmall = 37
+	const fontSizeSmall = 36
 
 	return (
 		<>
