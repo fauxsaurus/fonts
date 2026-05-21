@@ -1,4 +1,4 @@
-import {gt, horizontal, lt, tail, tip, vertical} from './stroke-components'
+import {dot, gt, horizontal, lt, tail, tip, vertical} from './stroke-components'
 import {
 	avgPts,
 	mirrorPtsH,
@@ -473,8 +473,7 @@ export const h = (sw: number): IPts[] => {
 }
 
 export const i = (sw: number): IPts[] => {
-	const dotMinY = 1024 - sw * 3.5
-	const dotH = sw * 2
+	const dotGeometry = dot(sw)
 
 	const verticalMinY = 1024 - sw / 2
 
@@ -503,27 +502,6 @@ export const i = (sw: number): IPts[] => {
 		]
 	)
 
-	const [
-		topDotLeft,
-		topDot,
-		topDotRight,
-		bottomDotLeft,
-		bottomDot,
-		bottomDotRight,
-	] = vertical(sw, dotMinY, dotMinY + dotH)
-
-	const dotInset = pt(topDot[0], topDot[1] + sw)
-	const topDotInset = dotInset // pt(topDot[0], topDot[1] + sw)
-	const bottomDotInset = dotInset // pt(bottomDot[0], bottomDot[1] - sw)
-
-	const outlineDot = [
-		topDotLeft,
-		topDot,
-		topDotRight,
-		bottomDotLeft,
-		bottomDot,
-		bottomDotRight,
-	]
 	const outlineStem = [
 		topTipLeft,
 		topTip,
@@ -537,23 +515,10 @@ export const i = (sw: number): IPts[] => {
 	]
 
 	return [
-		outlineDot,
+		dotGeometry.outline,
 		outlineStem,
 
-		[
-			// dot
-			topDotLeft,
-			topDot,
-			topDotInset,
-		],
-		[topDot, topDotRight, topDotInset],
-
-		[topDotInset, topDotRight, bottomDotLeft],
-
-		[bottomDotInset, bottomDotLeft, bottomDot],
-		[bottomDotInset, bottomDot, bottomDotRight],
-
-		[topDotLeft, topDotInset, bottomDotRight],
+		...dotGeometry.faces,
 
 		// vertical
 		[topTipLeft, topTip, topTipInset],

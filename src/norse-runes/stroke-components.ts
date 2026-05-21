@@ -21,6 +21,45 @@ import {
  * DESCENDER LINE
  */
 
+// stroke component
+export const dot = (sw: number) => {
+	const dotMinY = 1024 - sw * 3.5
+	const dotHeight = sw * 2
+
+	const [
+		topDotLeft,
+		topDot,
+		topDotRight,
+		bottomDotLeft,
+		bottomDot,
+		bottomDotRight,
+	] = vertical(sw, dotMinY, dotMinY + dotHeight)
+
+	const dotInset = pt(topDot[0], topDot[1] + sw)
+	const topDotInset = dotInset // pt(topDot[0], topDot[1] + sw)
+	const bottomDotInset = dotInset // pt(bottomDot[0], bottomDot[1] - sw)
+
+	const outline = [
+		topDotLeft,
+		topDot,
+		topDotRight,
+		bottomDotLeft,
+		bottomDot,
+		bottomDotRight,
+	]
+
+	const faces = [
+		[topDotLeft, topDot, topDotInset],
+		[topDot, topDotRight, topDotInset],
+		[topDotInset, topDotRight, bottomDotLeft],
+		[bottomDotInset, bottomDotLeft, bottomDot],
+		[bottomDotInset, bottomDot, bottomDotRight],
+		[topDotLeft, topDotInset, bottomDotRight],
+	]
+
+	return {outline, faces}
+}
+
 export const getLowercaseMidline = (sw: number) => {
 	const sw2 = sw / 2
 
