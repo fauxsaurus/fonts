@@ -610,7 +610,33 @@ export const N = (sw: number): IPts[] => {
 		])
 	)
 
+	const outline = [
+		topLeftTipLeft,
+		topLeftTip,
+		topLeftTipRight,
+
+		upperLeftDiagonalIntersection,
+		upperRightDiagonalIntersection,
+
+		topRightTipLeft,
+		topRightTip,
+		topRightTipRight,
+
+		bottomRightTipLeft,
+		bottomRightTip,
+		bottomRightTipRight,
+
+		lowerRightDiagonalIntersection,
+		lowerLeftDiagonalIntersection,
+
+		bottomLeftTipRight, // wrong name
+		bottomLeftTip,
+		bottomLeftTipLeft, // wrong name
+	]
+
 	return [
+		outline,
+
 		// left vertical
 		[topLeftTipLeft, topLeftTip, topLeftTipInset],
 		[topLeftTip, topLeftTipRight, topLeftTipInset],
