@@ -1007,7 +1007,22 @@ export const o = (sw: number): IPts[] => {
 		rightInner,
 	} = oGeometry(sw)
 
+	const outline = [
+		leftInner,
+		topInner,
+		rightInner,
+		bottomInner,
+		bottomOuter,
+		rightOuter,
+		topOuter,
+		leftOuter,
+		bottomOuter,
+		bottomInner,
+	]
+
 	return [
+		outline,
+
 		[topOuter, rightOuter, rightMiddle, topMiddle],
 		[rightMiddle, rightOuter, bottomOuter, bottomMiddle],
 		[leftOuter, leftMiddle, bottomMiddle, bottomOuter],
