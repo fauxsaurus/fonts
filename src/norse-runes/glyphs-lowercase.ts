@@ -516,9 +516,36 @@ export const i = (sw: number): IPts[] => {
 	const topDotInset = dotInset // pt(topDot[0], topDot[1] + sw)
 	const bottomDotInset = dotInset // pt(bottomDot[0], bottomDot[1] - sw)
 
+	const outlineDot = [
+		topDotLeft,
+		topDot,
+		topDotRight,
+		bottomDotLeft,
+		bottomDot,
+		bottomDotRight,
+	]
+	const outlineStem = [
+		topTipLeft,
+		topTip,
+		topTipRight,
+		upperTail_VerticalRight,
+		tailTipLeft,
+		tailTip,
+		tailTipRight,
+		bottomTip,
+		bottomTipLeft,
+	]
+
 	return [
-		// dot
-		[topDotLeft, topDot, topDotInset],
+		outlineDot,
+		outlineStem,
+
+		[
+			// dot
+			topDotLeft,
+			topDot,
+			topDotInset,
+		],
 		[topDot, topDotRight, topDotInset],
 
 		[topDotInset, topDotRight, bottomDotLeft],
