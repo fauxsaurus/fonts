@@ -703,30 +703,32 @@ export const m = (sw: number): IPts[] => {
 
 	const middleCenter = avgPts([upperCenter, lowerCenter])
 
+	const outline = [
+		topLeftTipLeft,
+		topLeftTip,
+
+		upperCenter,
+
+		topRightTip,
+		topRightTipRight,
+
+		bottomRightTipLeft,
+		bottomRightTip,
+		bottomRightTipRight,
+
+		innerRight,
+
+		lowerCenter,
+
+		innerLeft,
+
+		lowerLeftTipRight,
+		lowerLeftTip,
+		lowerLeftTipLeft,
+	]
+
 	return [
-		// [
-		// 	topLeftTipLeft,
-		// 	topLeftTip,
-
-		// 	upperCenter,
-
-		// 	topRightTip,
-		// 	topRightTipRight,
-
-		// 	bottomRightTipLeft,
-		// 	bottomRightTip,
-		// 	bottomRightTipRight,
-
-		// 	innerRight,
-
-		// 	lowerCenter,
-
-		// 	innerLeft,
-
-		// 	lowerLeftTipRight,
-		// 	lowerLeftTip,
-		// 	lowerLeftTipLeft,
-		// ],
+		outline,
 
 		// top left tip
 		[topTipLeft, topTip, topTipInset],
