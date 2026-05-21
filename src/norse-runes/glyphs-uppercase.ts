@@ -374,32 +374,32 @@ export const G = (sw: number): IPts[] => {
 	])
 
 	return [
-		// [
-		// 	outerCenter,
-		// 	outerTop,
-		// 	middleTop,
+		[
+			outerCenter,
+			outerTop,
+			middleTop,
 
-		// 	upperTipLeft,
-		// 	upperTip,
-		// 	upperTipRight,
+			upperTipLeft,
+			upperTip,
+			upperTipRight,
 
-		// 	innerUpperIntersection,
+			innerUpperIntersection,
 
-		// 	innerCenter,
+			innerCenter,
 
-		// 	innerLowerIntersection,
-		// 	innerLeftDashIntersection,
+			innerLowerIntersection,
+			innerLeftDashIntersection,
 
-		// 	leftTipLeft,
-		// 	leftTip,
-		// 	leftTipRight,
+			leftTipLeft,
+			leftTip,
+			leftTipRight,
 
-		// 	outerRightDashInterSection,
+			outerRightDashInterSection,
 
-		// 	innerBottom,
-		// 	middleBottom,
-		// 	outerBottom,
-		// ],
+			innerBottom,
+			middleBottom,
+			outerBottom,
+		],
 
 		// outer upper /
 		[outerCenter, outerTop, upperMiddleIntersection, middleCenter],
