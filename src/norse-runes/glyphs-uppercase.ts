@@ -234,7 +234,24 @@ export const E = (sw: number): IPts[] => {
 	)
 	const [lowerLeftHorizontal] = mirrorPtsV(1024, [upperLeftHorizontal])
 
+	const outline = [
+		outerCenter,
+		outerTop,
+		middleTop,
+		innerTop,
+		upperLeftHorizontal,
+		rightTipLeft,
+		rightTip,
+		rightTipRight,
+		lowerLeftHorizontal,
+		innerBottom,
+		middleBottom,
+		outerBottom,
+	]
+
 	return [
+		outline,
+
 		[outerCenter, outerTop, topInset, middleCenter],
 		[outerTop, middleTop, topInset],
 		[topInset, middleTop, innerTop],
