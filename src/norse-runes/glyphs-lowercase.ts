@@ -433,7 +433,25 @@ export const h = (sw: number): IPts[] => {
 
 	const diagonalUpperLeft = pt(sw, geometry.diagonalLowerLeft[1] - swD45)
 
+	const outline = [
+		topTipLeft,
+		topTip,
+		topTipRight,
+		diagonalUpperLeft,
+		geometry.diagonalTopRight,
+		geometry.rightTipRight, // wrong name
+		geometry.rightTip,
+		geometry.rightTipLeft, // wrong name
+		geometry.diagonalLowerRight,
+		geometry.diagonalLowerLeft,
+		geometry.leftTipRight, // wrong name
+		geometry.leftTip,
+		geometry.leftTipLeft, // wrong name
+	]
+
 	return [
+		outline,
+
 		...n(sw).filter((_, i) => i !== 1 && i < 8),
 
 		[
