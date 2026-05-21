@@ -236,8 +236,27 @@ export const b = (sw: number): IPts[] => {
 		rightMiddle[1] + (rightMiddle[0] - bottomTip[0])
 	)
 
+	const outline = [
+		upperInnerIntersection,
+		lowerInnerIntersection,
+		rightInner,
+		rightOuter,
+		bottomTip,
+		bottomTipRight,
+
+		topTipLeft,
+		topTip,
+		topTipRight,
+		upperOuterIntersection,
+
+		rightOuter,
+		rightInner,
+	]
+
 	return [
-		// vertical
+		outline,
+
+		// // vertical
 		[topTipLeft, topTip, topTipInset],
 		[topTip, topTipRight, topTipInset],
 		[
