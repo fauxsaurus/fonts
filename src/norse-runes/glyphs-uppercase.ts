@@ -128,6 +128,7 @@ const CGeometry = (sw: number) => {
 		outerTop,
 		middleTop,
 		innerTop,
+		topInset: pt(outerTop[0], innerTop[1]),
 
 		outerCenter,
 		middleCenter,
@@ -136,6 +137,7 @@ const CGeometry = (sw: number) => {
 		innerBottom,
 		middleBottom,
 		outerBottom,
+		bottomInset: pt(outerBottom[0], innerBottom[1]),
 	}
 }
 
@@ -197,6 +199,7 @@ export const E = (sw: number): IPts[] => {
 		outerTop,
 		middleTop,
 		innerTop,
+		topInset,
 
 		outerCenter,
 		middleCenter,
@@ -205,6 +208,7 @@ export const E = (sw: number): IPts[] => {
 		innerBottom,
 		middleBottom,
 		outerBottom,
+		bottomInset,
 	} = CGeometry(sw)
 
 	const slope = 1024 / width
@@ -231,8 +235,10 @@ export const E = (sw: number): IPts[] => {
 	const [lowerLeftHorizontal] = mirrorPtsV(1024, [upperLeftHorizontal])
 
 	return [
-		[outerCenter, outerTop, middleTop, middleCenter],
-		[middleCenter, middleTop, innerTop, upperLeftHorizontal, middleCenter],
+		[outerCenter, outerTop, topInset, middleCenter],
+		[outerTop, middleTop, topInset],
+		[topInset, middleTop, innerTop],
+		[middleCenter, topInset, innerTop, upperLeftHorizontal, middleCenter],
 
 		[middleCenter, upperLeftHorizontal, rightTipLeft, rightTipInset],
 
@@ -241,8 +247,10 @@ export const E = (sw: number): IPts[] => {
 
 		[middleCenter, rightTipInset, rightTipRight, lowerLeftHorizontal],
 
-		[middleCenter, lowerLeftHorizontal, innerBottom, middleBottom],
-		[outerCenter, middleCenter, middleBottom, outerBottom],
+		[middleCenter, lowerLeftHorizontal, innerBottom, bottomInset],
+		[bottomInset, innerBottom, middleBottom],
+		[bottomInset, middleBottom, outerBottom],
+		[outerCenter, middleCenter, bottomInset, outerBottom],
 	]
 }
 
@@ -376,20 +384,6 @@ export const G = (sw: number): IPts[] => {
 		// 	outerBottom,
 		// ],
 
-		// upper vertical (outer)
-		// [upperMiddleIntersection, outerTop, upperTipLeft, upperTipInset],
-
-		// upper tip
-		// [upperTipInset, upperTipLeft, upperTip],
-		// [upperTipInset, upperTip, upperTipRight],
-
-		// // upper vertical (inner)
-		// [
-		// 	innerUpperIntersection,
-		// 	upperMiddleIntersection,
-		// 	upperTipInset,
-		// 	upperTipRight,
-		// ],
 		// outer upper /
 		[outerCenter, outerTop, upperMiddleIntersection, middleCenter],
 
