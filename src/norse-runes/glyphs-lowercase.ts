@@ -1229,12 +1229,38 @@ export const t = (sw: number): IPts[] => {
 
 	const [rightTipInset] = translatePtsX(-sw, [rightTip])
 
-	return lPts.concat([
+	const lGeo = lGeometry(sw)
+	const outline = [
+		lGeo.topTipLeft,
+		lGeo.topTip,
+		lGeo.topTipRight,
+
+		pt(lGeo.topTipRight[0], rightTipTop[1]),
+
+		rightTipTop,
+		rightTip,
+		rightTipBottom,
+
+		pt(lGeo.topTipRight[0], rightTipBottom[1]),
+
+		lGeo.upperTail_VerticalRight,
+		lGeo.tailTipLeft,
+		lGeo.tailTip,
+		lGeo.tailTipRight,
+		lGeo.bottomTip,
+		lGeo.bottomTipLeft,
+	]
+
+	return [
+		outline,
+
+		...lPts.slice(1), // discard outline
+
 		[leftTip, leftTipTop, rightTipTop, rightTipInset],
 		[rightTipInset, rightTipTop, rightTip],
 		[rightTipInset, rightTip, rightTipBottom],
 		[leftTip, rightTipInset, rightTipBottom, leftTipBottom],
-	])
+	]
 }
 
 export const u = (sw: number): IPts[] => {
