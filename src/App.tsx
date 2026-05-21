@@ -12,7 +12,7 @@ function App() {
 		<>
 			<div className="cover">
 				<div
-					className="text-title"
+					className="text-title metallic"
 					style={{'--space-width': `${fontSizeSmall / 4}px`}}
 				>
 					<div className="subtitle">

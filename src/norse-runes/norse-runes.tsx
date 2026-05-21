@@ -130,6 +130,7 @@ const Line = (props: IProps) => {
 						<g
 							transform={`translate(${x}, 0)`}
 							key={`${glyph}-${i}`}
+							data-glyph={glyph}
 						>
 							{strokeFn(sw).map((pts, i) => {
 								return (
