@@ -1,3 +1,8 @@
+path {
+	stroke: black;
+	stroke-width: 10 !important;
+}
+
 /* prettier-ignore */
 path:nth-child(18n + 1) {fill: hsl(12,100%,50%); }
 /* prettier-ignore */

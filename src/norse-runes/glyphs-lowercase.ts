@@ -1254,12 +1254,48 @@ export const t = (sw: number): IPts[] => {
 	return [
 		outline,
 
-		...lPts.slice(1), // discard outline
+		[lGeo.topTipLeft, lGeo.topTip, lGeo.topTipInset],
+		[lGeo.topTip, lGeo.topTipRight, lGeo.topTipInset],
+
+		[lGeo.topTipInset, lGeo.topTipRight, leftTipTop, leftTip],
 
 		[leftTip, leftTipTop, rightTipTop, rightTipInset],
+
 		[rightTipInset, rightTipTop, rightTip],
 		[rightTipInset, rightTip, rightTipBottom],
+
 		[leftTip, rightTipInset, rightTipBottom, leftTipBottom],
+
+		[
+			leftTip,
+			leftTipBottom,
+			lGeo.upperTail_VerticalRight,
+			lGeo.tailMiddle_verticalMiddle,
+		],
+
+		[
+			lGeo.upperTail_VerticalRight,
+			lGeo.tailTipLeft,
+			lGeo.tailTipInset,
+			lGeo.tailMiddle_verticalMiddle,
+		],
+		[lGeo.tailTipLeft, lGeo.tailTip, lGeo.tailTipInset],
+		[lGeo.tailTipInset, lGeo.tailTip, lGeo.tailTipRight],
+		[
+			lGeo.tailMiddle_verticalMiddle,
+			lGeo.tailTipInset,
+			lGeo.tailTipRight,
+			lGeo.bottomTip,
+		],
+
+		[lGeo.bottomTipLeft, lGeo.tailMiddle_verticalMiddle, lGeo.bottomTip],
+
+		[
+			lGeo.topTipLeft,
+			lGeo.topTipInset,
+			lGeo.tailMiddle_verticalMiddle,
+			lGeo.bottomTipLeft,
+		],
 	]
 }
 
