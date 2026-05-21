@@ -452,7 +452,7 @@ export const h = (sw: number): IPts[] => {
 	return [
 		outline,
 
-		...n(sw).filter((_, i) => i !== 1 && i < 8),
+		...n(sw).filter((_, i) => i !== 0 && i !== 2 && i < 9),
 
 		[
 			geometry.topTipInset,
@@ -905,7 +905,23 @@ export const n = (sw: number): IPts[] => {
 		bottomRightDiagonalInset,
 	} = nGeometry(sw)
 
+	const outline = [
+		topTipLeft,
+		topTip,
+		diagonalTopRight,
+		rightTipRight, // wrong name
+		rightTip,
+		rightTipLeft, // wrong name
+		diagonalLowerRight,
+		diagonalLowerLeft,
+		leftTipRight, // wrong name
+		leftTip,
+		leftTipLeft, // wrong name
+	]
+
 	return [
+		outline,
+
 		[topTipLeft, topTip, topTipInset],
 		[topTip, diagonalTopRight, bottomRightDiagonalInset, topTipInset],
 		[
