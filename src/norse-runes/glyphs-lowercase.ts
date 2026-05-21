@@ -351,7 +351,24 @@ export const e = (sw: number): IPts[] => {
 	const upperLeftDashIntersection = pt(centerRight[0] + sw2, dashTipLeft[1])
 	const lowerLeftDashIntersection = pt(centerRight[0] + sw2, dashTipRight[1])
 
+	const outline = [
+		centerLeft,
+		topTipLeft,
+		topTip,
+		topTipRight,
+		upperLeftDashIntersection,
+		dashTipLeft,
+		dashTip,
+		dashTipRight,
+		lowerLeftDashIntersection,
+		bottomTipLeft,
+		bottomTip,
+		bottomTipRight,
+	]
+
 	return [
+		outline,
+
 		[topTipLeft, topTip, topTipInset],
 		[topTip, topTipRight, topTipInset],
 
