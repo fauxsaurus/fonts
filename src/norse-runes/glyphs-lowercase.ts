@@ -96,7 +96,38 @@ export const a = (sw: number): IPts[] => {
 		bottomOuter[1] - (bottomTipRight[0] - bottomOuter[0])
 	)
 
+	const outline = [
+		leftInner,
+		topInner,
+		rightInner,
+		bottomInner,
+		bottomOuter,
+
+		// lower vertical
+		lowerLeftIntersection,
+		bottomTipRight,
+		bottomTip,
+		bottomTipLeft,
+		lowerRightIntersection,
+
+		rightOuter,
+
+		// top intersection
+		upperRightIntersection,
+		topTipRight,
+		topTip,
+		topTipLeft,
+		upperLeftIntersection,
+
+		topOuter,
+		leftOuter,
+		bottomOuter,
+		bottomInner,
+	]
+
 	return [
+		outline,
+
 		// top left circle
 		[leftOuter, topOuter, topMiddle, leftMiddle],
 		[topOuter, upperLeftIntersection, upperMiddleIntersection, topMiddle],
