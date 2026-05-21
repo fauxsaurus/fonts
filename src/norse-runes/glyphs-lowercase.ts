@@ -628,7 +628,20 @@ export const l = (sw: number): IPts[] => {
 		tailMiddle_verticalMiddle,
 	} = lGeometry(sw)
 
+	const outline = [
+		topTipLeft,
+		topTip,
+		topTipRight,
+		upperTail_VerticalRight,
+		tailTipLeft,
+		tailTip,
+		tailTipRight,
+		bottomTip,
+		bottomTipLeft,
+	]
+
 	return [
+		outline,
 		[topTipLeft, topTip, topTipInset],
 		[topTip, topTipRight, topTipInset],
 
