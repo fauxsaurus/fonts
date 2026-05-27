@@ -116,6 +116,74 @@ const Line = (props: IProps) => {
 				width: `${proportionalWidth}px`,
 			}}
 		>
+			<defs>
+				<linearGradient
+					id="css-grad-1"
+					x1="0%"
+					y1="0%"
+					x2="0%"
+					y2="4.5%"
+					spreadMethod="repeat"
+				>
+					<stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+					<stop
+						offset="66.67%"
+						stop-color="#ffffff"
+						stop-opacity="0"
+					/>
+					<stop
+						offset="100%"
+						stop-color="#ffffff"
+						stop-opacity="0.1"
+					/>
+				</linearGradient>
+
+				<linearGradient
+					id="css-grad-2"
+					x1="0%"
+					y1="0%"
+					x2="0%"
+					y2="2.5%"
+					spreadMethod="repeat"
+				>
+					<stop offset="0%" stop-color="#000000" stop-opacity="0" />
+					<stop offset="80%" stop-color="#000000" stop-opacity="0" />
+					<stop
+						offset="100%"
+						stop-color="#000000"
+						stop-opacity="0.03"
+					/>
+				</linearGradient>
+
+				<linearGradient
+					id="css-grad-3"
+					x1="0%"
+					y1="0%"
+					x2="0%"
+					y2="1.2%"
+					spreadMethod="repeat"
+				>
+					<stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+					<stop offset="50%" stop-color="#ffffff" stop-opacity="0" />
+					<stop
+						offset="100%"
+						stop-color="#ffffff"
+						stop-opacity="0.15"
+					/>
+				</linearGradient>
+
+				<pattern
+					id="stacked-repeating-gradient"
+					width="100%"
+					height="100%"
+					patternUnits="userSpaceOnUse"
+				>
+					<rect width="100%" height="100%" fill="silver" />
+					<rect width="100%" height="100%" fill="url(#css-grad-1)" />
+					<rect width="100%" height="100%" fill="url(#css-grad-2)" />
+					<rect width="100%" height="100%" fill="url(#css-grad-3)" />
+				</pattern>
+			</defs>
 			{debug && <style>{DEBUG_STYLES}</style>}
 			<g stroke="none">
 				{glyphs.map((glyph, i) => {
@@ -137,6 +205,12 @@ const Line = (props: IProps) => {
 									<path
 										key={`${glyph}-stroke-${i}`}
 										d={`M${pts2svg(pts)}z`}
+										{...(i === 0 ||
+										(['i', ':'].includes(glyph) && i === 1)
+											? {
+													fill: `url(#stacked-repeating-gradient)`,
+												}
+											: {})}
 									/>
 								)
 							})}

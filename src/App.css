@@ -46,14 +46,25 @@
 			display: inline-block;
 			filter: drop-shadow(0 0 0.05rem #000);
 
-			path {
+			[data-glyph]:not(path:first-child) {
 				fill: transparent;
 			}
 
+			[data-glyph] path {
+				stroke: #000;
+				stroke-width: 1;
+			}
+
 			[data-glyph='a'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
+
+				/* path:nth-child(2),
+				path:nth-child(4),
+				path:nth-child(5) {
+					fill: transparent;
+				} */
 
 				path:nth-child(3),
 				path:nth-child(6),
@@ -71,9 +82,9 @@
 				}
 			}
 			[data-glyph='b'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -89,9 +100,9 @@
 				}
 			}
 			[data-glyph='d'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(2),
 				path:nth-child(8),
@@ -106,9 +117,9 @@
 				}
 			}
 			[data-glyph='E'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -125,9 +136,9 @@
 				}
 			}
 			[data-glyph='e'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(2),
 				path:nth-child(3),
@@ -146,9 +157,9 @@
 				}
 			}
 			[data-glyph='f'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(6),
 				path:nth-child(7),
@@ -167,9 +178,9 @@
 				}
 			}
 			[data-glyph='G'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -190,9 +201,9 @@
 				}
 			}
 			[data-glyph='h'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(8),
@@ -212,10 +223,10 @@
 				}
 			}
 			[data-glyph='i'] {
-				path:nth-child(1),
+				/* path:nth-child(1),
 				path:nth-child(2) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -236,9 +247,9 @@
 				}
 			}
 			[data-glyph='l'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -254,9 +265,9 @@
 				}
 			}
 			[data-glyph='m'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -275,9 +286,9 @@
 				}
 			}
 			[data-glyph='N'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -297,9 +308,9 @@
 				}
 			}
 			[data-glyph='n'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -316,9 +327,9 @@
 				}
 			}
 			[data-glyph='o'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(2),
 				path:nth-child(9) {
@@ -331,9 +342,9 @@
 				}
 			}
 			[data-glyph='p'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(4),
 				path:nth-child(6),
@@ -348,9 +359,9 @@
 				}
 			}
 			[data-glyph='r'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -367,9 +378,9 @@
 				}
 			}
 			[data-glyph='s'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(2),
 				path:nth-child(3),
@@ -388,9 +399,9 @@
 				}
 			}
 			[data-glyph='t'] {
-				path:nth-child(1) {
+				/* path:nth-child(1) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
@@ -412,10 +423,10 @@
 			}
 
 			[data-glyph=':'] {
-				path:nth-child(1),
+				/* path:nth-child(1),
 				path:nth-child(2) {
 					fill: var(--color);
-				}
+				} */
 
 				path:nth-child(3),
 				path:nth-child(4),
