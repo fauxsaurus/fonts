@@ -34,8 +34,8 @@
 		text-align: center;
 
 		--color: red;
-		--color-darken: #00000066;
-		--color-lighten: #ffffff99;
+		--color-darken: rgb(21 21 21);
+		--color-lighten: #ffffff;
 
 		.subtitle {
 			position: relative;
@@ -75,7 +75,9 @@
 					fill: var(--color-lighten);
 				}
 
+				path:nth-child(4),
 				path:nth-child(12),
+				path:nth-child(13),
 				path:nth-child(15),
 				path:nth-child(17) {
 					fill: var(--color-darken);
@@ -270,7 +272,6 @@
 				} */
 
 				path:nth-child(3),
-				path:nth-child(4),
 				path:nth-child(5),
 				path:nth-child(6),
 				path:nth-child(12) {
