@@ -1,5 +1,5 @@
 import * as glyphs from './glyphs'
-import {pts2MaxX, pts2MaxY, type IPt} from './util'
+import {pts2MaxX, pts2MaxY, translatePtsX, type IPt} from './util'
 
 type IProps = {
 	children: string
@@ -195,16 +195,12 @@ const Line = (props: IProps) => {
 						sum(glyphGaps.slice(0, i + 1))
 
 					return (
-						<g
-							transform={`translate(${x}, 0)`}
-							key={`${glyph}-${i}`}
-							data-glyph={glyph}
-						>
+						<g key={`${glyph}-${i}`} data-glyph={glyph}>
 							{strokeFn(sw).map((pts, i) => {
 								return (
 									<path
 										key={`${glyph}-stroke-${i}`}
-										d={`M${pts2svg(pts)}z`}
+										d={`M${pts2svg(translatePtsX(x, pts))}z`}
 										{...(i === 0 ||
 										(['i', ':'].includes(glyph) && i === 1)
 											? {
