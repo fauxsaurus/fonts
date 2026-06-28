@@ -413,49 +413,64 @@ export const b = (sw: number) => {
 		rightInner,
 	]
 
-	return returnWrapper([
-		outline,
-
-		// // vertical
-		[topTipLeft, topTip, topTipInset],
-		[topTip, topTipRight, topTipInset],
+	return returnWrapper(
 		[
-			topTipInset,
+			outline,
+
+			// vertical
+			[topTipLeft, topTip, topTipInset],
+			[topTip, topTipRight, topTipInset],
+			[
+				topTipInset,
+				topTipRight,
+				upperOuterIntersection,
+				upperMiddleIntersection,
+			],
+			// loop (outer)
+			[
+				upperMiddleIntersection,
+				upperOuterIntersection,
+				rightOuter,
+				rightMiddle,
+			],
+			[rightMiddle, rightOuter, bottomTip, lowerMiddleIntersection],
+			// vertical (left)
+			[bottomTipRight, lowerMiddleIntersection, bottomTip],
+			[topTipLeft, topTipInset, lowerMiddleIntersection, bottomTipRight],
+			// loop (inner)
+			[
+				upperMiddleIntersection,
+				rightMiddle,
+				rightInner,
+				upperInnerIntersection,
+			],
+			[
+				lowerInnerIntersection,
+				rightInner,
+				rightMiddle,
+				lowerMiddleIntersection,
+			],
+			[
+				upperMiddleIntersection,
+				upperInnerIntersection,
+				lowerInnerIntersection,
+				lowerMiddleIntersection,
+			],
+		],
+		{
+			upperInnerIntersection,
+			lowerInnerIntersection,
+			rightInner,
+			rightOuter,
+			bottomTip,
+			bottomTipRight,
+
+			topTipLeft,
+			topTip,
 			topTipRight,
 			upperOuterIntersection,
-			upperMiddleIntersection,
-		],
-		// loop (outer)
-		[
-			upperMiddleIntersection,
-			upperOuterIntersection,
-			rightOuter,
-			rightMiddle,
-		],
-		[rightMiddle, rightOuter, bottomTip, lowerMiddleIntersection],
-		// vertical (left)
-		[bottomTipRight, lowerMiddleIntersection, bottomTip],
-		[topTipLeft, topTipInset, lowerMiddleIntersection, bottomTipRight],
-		// loop (inner)
-		[
-			upperMiddleIntersection,
-			rightMiddle,
-			rightInner,
-			upperInnerIntersection,
-		],
-		[
-			lowerInnerIntersection,
-			rightInner,
-			rightMiddle,
-			lowerMiddleIntersection,
-		],
-		[
-			upperMiddleIntersection,
-			upperInnerIntersection,
-			lowerInnerIntersection,
-			lowerMiddleIntersection,
-		],
-	])
+		}
+	)
 }
 
 const cGeometry = (sw: number) => {
@@ -509,6 +524,22 @@ export const c = (sw: number) => {
 
 	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
 
+	const points = {
+		topTipLeft: topOuter,
+		topTip: translatePt([sw2D45, 0], topOuter),
+		topTipRight: translatePt([sw2D45, sw2D45], topOuter),
+		topTipInset: translatePt([0, sw2D45], topOuter),
+
+		centerLeft: outerCenter,
+		centerMiddle: avgPts([outerCenter, innerCenter]),
+		centerRight: innerCenter,
+
+		bottomTipLeft: translatePt([sw2D45, -sw2D45], bottomOuter),
+		bottomTip: translatePt([sw2D45, 0], bottomOuter),
+		bottomTipRight: bottomOuter,
+		bottomTipInset: translatePt([0, -sw2D45], bottomOuter),
+	}
+
 	const pts = [
 		outerCenter,
 
@@ -523,7 +554,26 @@ export const c = (sw: number) => {
 		bottomOuter,
 	]
 
-	return returnWrapper([pts])
+	return returnWrapper(
+		[pts],
+		points,
+		// outline
+		[
+			[
+				'topTipLeft',
+				'topTip',
+				'topTipRight',
+
+				'centerLeft',
+				'centerRight',
+
+				'bottomTipLeft',
+				'bottomTip',
+				'bottomTipRight',
+			],
+		]
+		// @todo faces
+	)
 }
 
 export const d = (sw: number) => {
@@ -552,6 +602,7 @@ export const e = (sw: number) => {
 		bottomTipRight,
 		bottomTipInset,
 	} = cGeometry(sw)
+	/** @todo remove `cGeometry()` */
 
 	const dashTip = pt(topTip[0] + sw2, centerLeft[1])
 	const dashTipLeft = pt(topTip[0], centerLeft[1] - sw2)
@@ -576,6 +627,7 @@ export const e = (sw: number) => {
 		bottomTipRight,
 	]
 
+	/** @todo add c faces when overhauling this */
 	return returnWrapper([
 		outline,
 

@@ -16,7 +16,7 @@ export const returnWrapper = <O extends Record<string, IPt>, K extends keyof O>(
 	points: O = {} as O,
 	ridges: K[][] = [],
 	outlines: K[][] = [],
-	faces: K[][] = []
+	faces: K[][] = outlines
 ) => {
 	/** @todo add outlines 3rd z coord as sw (make that the first param or upstream that to the glyphs themselves? Nah, do it here to reduce unnecessary complexity upstream) */
 
