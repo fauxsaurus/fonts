@@ -25,6 +25,18 @@ import {
 	o as oFlat,
 } from './glyphs-lowercase-flat'
 
+const ascenderLine = (sw: number) => 0
+const midLine = (sw: number) => 1024 - sw / 2
+
+const baseLine = (sw: number) => 2048
+
+/** @todo confirm that this is accurate */
+/** @returns the "top" (now bottom) of a b/d flipped upside-down around the center of the lobe when forming a p/q */
+// const descenderLine = (sw: number) =>
+// 	baseLine(sw) + (ascenderLine(sw) - midLine(sw))
+
+const xHeight = (sw: number) => baseLine(sw) - midLine(sw)
+
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
 
