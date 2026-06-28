@@ -76,7 +76,7 @@ export const a = (sw: number) => {
 		rightOuter,
 		rightMiddle,
 		rightInner,
-	} = oGeometry(sw)
+	} = o(sw).points
 
 	const upperLeftIntersection = pt(
 		topTipLeft[0],
@@ -1158,7 +1158,7 @@ export const n = (sw: number) => {
 	])
 }
 
-const oGeometry = (sw: number) => {
+export const o = (sw: number) => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 	const ltPts = lt(sw)
@@ -1197,7 +1197,7 @@ const oGeometry = (sw: number) => {
 	// 	midLine(sw) === maxX
 	// )
 
-	return {
+	const points = {
 		topOuter,
 		topMiddle,
 		topInner,
@@ -1214,28 +1214,6 @@ const oGeometry = (sw: number) => {
 		rightMiddle,
 		rightInner,
 	}
-}
-
-export const o = (sw: number) => {
-	const points = oGeometry(sw)
-
-	const {
-		topOuter,
-		topMiddle,
-		topInner,
-
-		bottomOuter,
-		bottomMiddle,
-		bottomInner,
-
-		leftOuter,
-		leftMiddle,
-		leftInner,
-
-		rightOuter,
-		rightMiddle,
-		rightInner,
-	} = points
 
 	const outline = [
 		leftInner,
