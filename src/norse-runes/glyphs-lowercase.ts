@@ -137,70 +137,218 @@ export const a = (sw: number) => {
 		bottomInner,
 	]
 
-	return returnWrapper([
-		outline,
+	return returnWrapper(
+		[
+			outline,
 
-		// top left circle
-		[leftOuter, topOuter, topMiddle, leftMiddle],
-		[topOuter, upperLeftIntersection, upperMiddleIntersection, topMiddle],
+			// top left circle
+			[leftOuter, topOuter, topMiddle, leftMiddle],
+			[
+				topOuter,
+				upperLeftIntersection,
+				upperMiddleIntersection,
+				topMiddle,
+			],
 
-		// # upper vertical
-		[
-			topTipLeft,
-			topTipInset,
-			upperMiddleIntersection,
-			upperLeftIntersection,
+			// # upper vertical
+			[
+				topTipLeft,
+				topTipInset,
+				upperMiddleIntersection,
+				upperLeftIntersection,
+			],
+			[topTipLeft, topTip, topTipInset],
+			[topTip, topTipRight, topTipInset],
+			[
+				topTipInset,
+				topTipRight,
+				upperRightIntersection,
+				upperMiddleIntersection,
+			],
+			// # right corner
+			[
+				upperMiddleIntersection,
+				upperRightIntersection,
+				rightOuter,
+				rightMiddle,
+			],
+			[
+				rightMiddle,
+				rightOuter,
+				lowerRightIntersection,
+				lowerMiddleIntersection,
+			],
+			// lower vertical
+			[
+				lowerMiddleIntersection,
+				lowerRightIntersection,
+				bottomTipLeft,
+				bottomTipInset,
+			],
+			[bottomTipInset, bottomTipLeft, bottomTip],
+			[bottomTipInset, bottomTip, bottomTipRight],
+			[
+				lowerLeftIntersection,
+				lowerMiddleIntersection,
+				bottomTipInset,
+				bottomTipRight,
+			],
+			// rest of circle
+			[
+				bottomMiddle,
+				lowerMiddleIntersection,
+				lowerLeftIntersection,
+				bottomOuter,
+			],
+			[leftOuter, leftMiddle, bottomMiddle, bottomOuter],
+
+			[leftMiddle, topMiddle, topInner, leftInner],
+			[topMiddle, rightMiddle, rightInner, topInner],
+			[rightInner, rightMiddle, bottomMiddle, bottomInner],
+			[leftMiddle, leftInner, bottomInner, bottomMiddle],
 		],
-		[topTipLeft, topTip, topTipInset],
-		[topTip, topTipRight, topTipInset],
-		[
-			topTipInset,
-			topTipRight,
-			upperRightIntersection,
-			upperMiddleIntersection,
-		],
-		// # right corner
-		[
-			upperMiddleIntersection,
-			upperRightIntersection,
-			rightOuter,
-			rightMiddle,
-		],
-		[
-			rightMiddle,
-			rightOuter,
-			lowerRightIntersection,
-			lowerMiddleIntersection,
-		],
-		// lower vertical
-		[
-			lowerMiddleIntersection,
-			lowerRightIntersection,
-			bottomTipLeft,
-			bottomTipInset,
-		],
-		[bottomTipInset, bottomTipLeft, bottomTip],
-		[bottomTipInset, bottomTip, bottomTipRight],
-		[
-			lowerLeftIntersection,
-			lowerMiddleIntersection,
-			bottomTipInset,
-			bottomTipRight,
-		],
-		// rest of circle
-		[
-			bottomMiddle,
-			lowerMiddleIntersection,
-			lowerLeftIntersection,
+		// points
+		{
+			topOuter,
+			topMiddle,
+			topInner,
+
 			bottomOuter,
-		],
-		[leftOuter, leftMiddle, bottomMiddle, bottomOuter],
+			bottomMiddle,
+			bottomInner,
 
-		[leftMiddle, topMiddle, topInner, leftInner],
-		[topMiddle, rightMiddle, rightInner, topInner],
-		[rightInner, rightMiddle, bottomMiddle, bottomInner],
-		[leftMiddle, leftInner, bottomInner, bottomMiddle],
-	])
+			leftOuter,
+			leftMiddle,
+			leftInner,
+
+			rightOuter,
+			rightMiddle,
+			rightInner,
+
+			// lower vertical
+			lowerLeftIntersection,
+			bottomTipRight,
+			bottomTip,
+			bottomTipLeft,
+			lowerRightIntersection,
+
+			// top intersection
+			upperRightIntersection,
+			topTipRight,
+			topTip,
+			topTipLeft,
+			upperLeftIntersection,
+
+			topTipInset,
+			upperMiddleIntersection,
+			bottomTipInset,
+			lowerMiddleIntersection,
+		},
+		// ridges
+		[
+			['leftMiddle', 'topMiddle', 'rightMiddle', 'bottomMiddle'],
+			['topTipInset', 'upperMiddleIntersection'],
+			['bottomTipInset', 'lowerMiddleIntersection'],
+		],
+		// outline
+		[
+			[
+				'leftInner',
+				'topInner',
+				'rightInner',
+				'bottomInner',
+				'bottomOuter',
+
+				// lower vertical
+				'lowerLeftIntersection',
+				'bottomTipRight',
+				'bottomTip',
+				'bottomTipLeft',
+				'lowerRightIntersection',
+
+				'rightOuter',
+
+				// top intersection
+				'upperRightIntersection',
+				'topTipRight',
+				'topTip',
+				'topTipLeft',
+				'upperLeftIntersection',
+
+				'topOuter',
+				'leftOuter',
+				'bottomOuter',
+				'bottomInner',
+			],
+		],
+		[
+			// top left circle
+			['leftOuter', 'topOuter', 'topMiddle', 'leftMiddle'],
+			[
+				'topOuter',
+				'upperLeftIntersection',
+				'upperMiddleIntersection',
+				'topMiddle',
+			],
+
+			// # upper vertical
+			[
+				'topTipLeft',
+				'topTipInset',
+				'upperMiddleIntersection',
+				'upperLeftIntersection',
+			],
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTip', 'topTipRight', 'topTipInset'],
+			[
+				'topTipInset',
+				'topTipRight',
+				'upperRightIntersection',
+				'upperMiddleIntersection',
+			],
+			// # right corner
+			[
+				'upperMiddleIntersection',
+				'upperRightIntersection',
+				'rightOuter',
+				'rightMiddle',
+			],
+			[
+				'rightMiddle',
+				'rightOuter',
+				'lowerRightIntersection',
+				'lowerMiddleIntersection',
+			],
+			// lower vertical
+			[
+				'lowerMiddleIntersection',
+				'lowerRightIntersection',
+				'bottomTipLeft',
+				'bottomTipInset',
+			],
+			['bottomTipInset', 'bottomTipLeft', 'bottomTip'],
+			['bottomTipInset', 'bottomTip', 'bottomTipRight'],
+			[
+				'lowerLeftIntersection',
+				'lowerMiddleIntersection',
+				'bottomTipInset',
+				'bottomTipRight',
+			],
+			// rest of circle
+			[
+				'bottomMiddle',
+				'lowerMiddleIntersection',
+				'lowerLeftIntersection',
+				'bottomOuter',
+			],
+			['leftOuter', 'leftMiddle', 'bottomMiddle', 'bottomOuter'],
+
+			['leftMiddle', 'topMiddle', 'topInner', 'leftInner'],
+			['topMiddle', 'rightMiddle', 'rightInner', 'topInner'],
+			['rightInner', 'rightMiddle', 'bottomMiddle', 'bottomInner'],
+			['leftMiddle', 'leftInner', 'bottomInner', 'bottomMiddle'],
+		]
+	)
 }
 
 export const b = (sw: number) => {
