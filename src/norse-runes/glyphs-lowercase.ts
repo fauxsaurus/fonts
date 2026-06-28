@@ -11,11 +11,11 @@ import {
 	pts2MidY,
 	pts2MinX,
 	pts2MinY,
+	returnWrapper,
 	translatePt,
 	translatePts,
 	translatePtsX,
 	translatePtsY,
-	type IPts,
 } from './util'
 
 import {
@@ -38,9 +38,9 @@ const baseLine = (sw: number) => 2048
 const xHeight = (sw: number) => baseLine(sw) - midLine(sw)
 
 // @todo use this in `gt()` to simplify calculations?
-const getLowercaseMidY = (sw: number) => c(sw)[0].find(([x]) => x === 0)![1]
+const getLowercaseMidY = (sw: number) => c(sw).tmp[0].find(([x]) => x === 0)![1]
 
-export const a = (sw: number): IPts[] => {
+export const a = (sw: number) => {
 	const oPts = oFlat(sw)
 	const [_, gtPts] = oPts
 
@@ -137,7 +137,7 @@ export const a = (sw: number): IPts[] => {
 		bottomInner,
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
 		// top left circle
@@ -200,10 +200,10 @@ export const a = (sw: number): IPts[] => {
 		[topMiddle, rightMiddle, rightInner, topInner],
 		[rightInner, rightMiddle, bottomMiddle, bottomInner],
 		[leftMiddle, leftInner, bottomInner, bottomMiddle],
-	]
+	])
 }
 
-export const b = (sw: number): IPts[] => {
+export const b = (sw: number) => {
 	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
 
 	// vertical
@@ -265,7 +265,7 @@ export const b = (sw: number): IPts[] => {
 		rightInner,
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
 		// // vertical
@@ -307,7 +307,7 @@ export const b = (sw: number): IPts[] => {
 			lowerInnerIntersection,
 			lowerMiddleIntersection,
 		],
-	]
+	])
 }
 
 const cGeometry = (sw: number) => {
@@ -344,7 +344,7 @@ const cGeometry = (sw: number) => {
 	}
 }
 
-export const c = (sw: number): IPts[] => {
+export const c = (sw: number) => {
 	const ltPts = lt(sw)
 
 	const maxX = pts2MaxX(ltPts)
@@ -375,18 +375,18 @@ export const c = (sw: number): IPts[] => {
 		bottomOuter,
 	]
 
-	return [pts]
+	return returnWrapper([pts])
 }
 
-export const d = (sw: number): IPts[] => {
-	const bPts = b(sw)
+export const d = (sw: number) => {
+	const bPts = b(sw).tmp
 	const maxX = pts2MaxX(bPts.flat())
 	const yAxis = maxX / 2
 
-	return bPts.map((face) => mirrorPtsH(yAxis, face))
+	return returnWrapper(bPts.map((face) => mirrorPtsH(yAxis, face)))
 }
 
-export const e = (sw: number): IPts[] => {
+export const e = (sw: number) => {
 	const sw2 = sw / 2
 
 	const {
@@ -428,7 +428,7 @@ export const e = (sw: number): IPts[] => {
 		bottomTipRight,
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
 		[topTipLeft, topTip, topTipInset],
@@ -454,27 +454,29 @@ export const e = (sw: number): IPts[] => {
 
 		[bottomTipInset, bottomTipLeft, bottomTip],
 		[bottomTipInset, bottomTip, bottomTipRight],
-	]
+	])
 }
 
-export const f = (sw: number): IPts[] => {
-	return t(sw).map((stroke) => mirrorPtsV(1024, stroke))
+export const f = (sw: number) => {
+	return returnWrapper(t(sw).tmp.map((stroke) => mirrorPtsV(1024, stroke)))
 }
 
-export const g = (sw: number): IPts[] => {
-	const qPts = q(sw)
+export const g = (sw: number) => {
+	const qPts = q(sw).tmp
 
 	const tailPts = tail(sw)
 
 	const offsetX = pts2MaxX(qPts.flat()) - sw
 	const offsetY = pts2MaxY(qPts.flat()) - sw / 2 - pts2MaxY(tailPts)
 
-	return qPts.concat([
-		translatePts([offsetX, offsetY], mirrorPtsH(sw / 2, tailPts)),
-	])
+	return returnWrapper(
+		qPts.concat([
+			translatePts([offsetX, offsetY], mirrorPtsH(sw / 2, tailPts)),
+		])
+	)
 }
 
-export const h = (sw: number): IPts[] => {
+export const h = (sw: number) => {
 	// vertical
 	const topTipLeft = pt(0, sw / 2)
 	const topTip = pt(sw / 2, 0)
@@ -511,10 +513,10 @@ export const h = (sw: number): IPts[] => {
 		geometry.leftTipLeft, // wrong name
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
-		...n(sw).filter((_, i) => i !== 0 && i !== 2 && i < 9),
+		...n(sw).tmp.filter((_, i) => i !== 0 && i !== 2 && i < 9),
 
 		[
 			geometry.topTipInset,
@@ -531,10 +533,10 @@ export const h = (sw: number): IPts[] => {
 		[bottomTipLeft, bottomTipInset, bottomTip],
 
 		[topTipLeft, topTipInset, bottomTipInset, bottomTipLeft],
-	]
+	])
 }
 
-export const i = (sw: number): IPts[] => {
+export const i = (sw: number) => {
 	const dotGeometry = dot(sw)
 
 	const verticalMinY = 1024 - sw / 2
@@ -576,7 +578,7 @@ export const i = (sw: number): IPts[] => {
 		bottomTipLeft,
 	]
 
-	return [
+	return returnWrapper([
 		dotGeometry.outline,
 		outlineStem,
 
@@ -606,12 +608,12 @@ export const i = (sw: number): IPts[] => {
 		[bottomTipLeft, tailMiddle_verticalMiddle, bottomTip],
 
 		[topTipLeft, topTipInset, tailMiddle_verticalMiddle, bottomTipLeft],
-	]
+	])
 }
 
-export const j = (sw: number): IPts[] => {
-	const [verticalPts, _ltPts, tailPts] = g(sw)
-	const [dot] = i(sw)
+export const j = (sw: number) => {
+	const [verticalPts, _ltPts, tailPts] = g(sw).tmp
+	const [dot] = i(sw).tmp
 
 	const maxX = pts2MaxX(verticalPts) - sw
 
@@ -619,16 +621,19 @@ export const j = (sw: number): IPts[] => {
 
 	const minX = pts2MinX(strokes.flat())
 
-	return strokes.map((pts) => translatePtsX(-minX, pts))
+	return returnWrapper(strokes.map((pts) => translatePtsX(-minX, pts)))
 }
 
-export const k = (sw: number): IPts[] => {
-	const [cPts] = c(sw)
+export const k = (sw: number) => {
+	const [cPts] = c(sw).tmp
 
 	const minY = pts2MinY(cPts)
 	const maxY = pts2MaxY(cPts)
 
-	return [translatePtsX(sw / 2, vertical(sw, minY, maxY)), cPts]
+	return returnWrapper([
+		translatePtsX(sw / 2, vertical(sw, minY, maxY)),
+		cPts,
+	])
 }
 
 const lGeometry = (sw: number) => {
@@ -637,7 +642,7 @@ const lGeometry = (sw: number) => {
 	const topTip = pt(sw / 2, 0)
 	const topTipRight = pt(sw, sw / 2)
 
-	const bottomTipRight = pt(sw, 2048 - sw / 2)
+	// const bottomTipRight = pt(sw, 2048 - sw / 2)
 	const bottomTip = pt(sw / 2, 2048)
 	const bottomTipLeft = pt(0, 2048 - sw / 2)
 
@@ -681,7 +686,7 @@ const lGeometry = (sw: number) => {
 	}
 }
 
-export const l = (sw: number): IPts[] => {
+export const l = (sw: number) => {
 	const {
 		topTip,
 		topTipLeft,
@@ -712,7 +717,7 @@ export const l = (sw: number): IPts[] => {
 		bottomTipLeft,
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 		[topTipLeft, topTip, topTipInset],
 		[topTip, topTipRight, topTipInset],
@@ -737,10 +742,10 @@ export const l = (sw: number): IPts[] => {
 		[bottomTipLeft, tailMiddle_verticalMiddle, bottomTip],
 
 		[topTipLeft, topTipInset, tailMiddle_verticalMiddle, bottomTipLeft],
-	]
+	])
 }
 
-export const m = (sw: number): IPts[] => {
+export const m = (sw: number) => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 	const geometry = nGeometry(sw)
@@ -792,15 +797,15 @@ export const m = (sw: number): IPts[] => {
 		leftTipRight: leftTipLeft,
 		leftTipInset,
 
-		rightTip,
-		rightTipLeft,
-		rightTipRight,
-		rightTipInset,
+		// rightTip,
+		// rightTipLeft,
+		// rightTipRight,
+		// rightTipInset,
 
-		diagonalTopRight,
+		// diagonalTopRight,
 		diagonalLowerLeft,
-		diagonalLowerRight,
-		bottomRightDiagonalInset,
+		// diagonalLowerRight,
+		// bottomRightDiagonalInset,
 	} = geometry
 
 	const middleCenter = avgPts([upperCenter, lowerCenter])
@@ -829,7 +834,7 @@ export const m = (sw: number): IPts[] => {
 		lowerLeftTipLeft,
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
 		// top left tip
@@ -874,7 +879,7 @@ export const m = (sw: number): IPts[] => {
 		[leftTipInset, leftTipLeft, leftTip],
 		[leftTipRight, leftTipInset, leftTip],
 		[topTipLeft, topTipInset, leftTipInset, leftTipRight],
-	]
+	])
 }
 
 const nGeometry = (sw: number) => {
@@ -937,7 +942,7 @@ const nGeometry = (sw: number) => {
 	}
 }
 
-export const n = (sw: number): IPts[] => {
+export const n = (sw: number) => {
 	const {
 		topTip,
 		topTipLeft,
@@ -973,7 +978,7 @@ export const n = (sw: number): IPts[] => {
 		leftTipLeft, // wrong name
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
 		[topTipLeft, topTip, topTipInset],
@@ -1002,7 +1007,7 @@ export const n = (sw: number): IPts[] => {
 		[leftTipInset, leftTipRight, leftTip],
 		[leftTipLeft, leftTipInset, leftTip],
 		[topTipLeft, topTipInset, leftTipInset, leftTipLeft],
-	]
+	])
 }
 
 const oGeometry = (sw: number) => {
@@ -1031,6 +1036,19 @@ const oGeometry = (sw: number) => {
 	const rightMiddle = pt(maxX - swD45 / 2, centerY)
 	const rightInner = pt(maxX - swD45, centerY)
 
+	// console.log(
+	// 	'midline equals top of "o":',
+	// 	midLine(sw) === topOuter[1],
+	// 	midLine(sw),
+	// 	topOuter[1]
+	// )
+	// console.log(
+	// 	'midline equals maxX of "o":',
+	// 	midLine(sw),
+	// 	maxX,
+	// 	midLine(sw) === maxX
+	// )
+
 	return {
 		topOuter,
 		topMiddle,
@@ -1050,7 +1068,9 @@ const oGeometry = (sw: number) => {
 	}
 }
 
-export const o = (sw: number): IPts[] => {
+export const o = (sw: number) => {
+	const points = oGeometry(sw)
+
 	const {
 		topOuter,
 		topMiddle,
@@ -1067,7 +1087,7 @@ export const o = (sw: number): IPts[] => {
 		rightOuter,
 		rightMiddle,
 		rightInner,
-	} = oGeometry(sw)
+	} = points
 
 	const outline = [
 		leftInner,
@@ -1082,41 +1102,73 @@ export const o = (sw: number): IPts[] => {
 		bottomInner,
 	]
 
-	return [
-		outline,
+	return returnWrapper(
+		[
+			outline,
 
-		[topOuter, rightOuter, rightMiddle, topMiddle],
-		[rightMiddle, rightOuter, bottomOuter, bottomMiddle],
-		[leftOuter, leftMiddle, bottomMiddle, bottomOuter],
-		[leftOuter, topOuter, topMiddle, leftMiddle],
+			[topOuter, rightOuter, rightMiddle, topMiddle],
+			[rightMiddle, rightOuter, bottomOuter, bottomMiddle],
+			[leftOuter, leftMiddle, bottomMiddle, bottomOuter],
+			[leftOuter, topOuter, topMiddle, leftMiddle],
 
-		[leftMiddle, topMiddle, topInner, leftInner],
-		[topMiddle, rightMiddle, rightInner, topInner],
-		[rightInner, rightMiddle, bottomMiddle, bottomInner],
-		[leftMiddle, leftInner, bottomInner, bottomMiddle],
-	]
+			[leftMiddle, topMiddle, topInner, leftInner],
+			[topMiddle, rightMiddle, rightInner, topInner],
+			[rightInner, rightMiddle, bottomMiddle, bottomInner],
+			[leftMiddle, leftInner, bottomInner, bottomMiddle],
+		],
+		points,
+		// ridges
+		[['leftMiddle', 'topMiddle', 'rightMiddle', 'bottomMiddle']],
+		// outline
+		[
+			[
+				'leftInner',
+				'topInner',
+				'rightInner',
+				'bottomInner',
+				'bottomOuter',
+				'rightOuter',
+				'topOuter',
+				'leftOuter',
+				'bottomOuter',
+				'bottomInner',
+			],
+		],
+		// faces
+		[
+			['topOuter', 'rightOuter', 'rightMiddle', 'topMiddle'],
+			['rightMiddle', 'rightOuter', 'bottomOuter', 'bottomMiddle'],
+			['leftOuter', 'leftMiddle', 'bottomMiddle', 'bottomOuter'],
+			['leftOuter', 'topOuter', 'topMiddle', 'leftMiddle'],
+
+			['leftMiddle', 'topMiddle', 'topInner', 'leftInner'],
+			['topMiddle', 'rightMiddle', 'rightInner', 'topInner'],
+			['rightInner', 'rightMiddle', 'bottomMiddle', 'bottomInner'],
+			['leftMiddle', 'leftInner', 'bottomInner', 'bottomMiddle'],
+		]
+	)
 }
 
-export const p = (sw: number): IPts[] => {
-	const bPts = b(sw)
+export const p = (sw: number) => {
+	const bPts = b(sw).tmp
 	const maxX = pts2MaxX(bPts.flat())
 	const midPt = bPts.flat().find((pt) => pt[0] === maxX)!
 
-	return bPts.map((face) => mirrorPtsV(midPt[1], face))
+	return returnWrapper(bPts.map((face) => mirrorPtsV(midPt[1], face)))
 }
 
-export const q = (sw: number): IPts[] => {
-	const pPts = p(sw)
+export const q = (sw: number) => {
+	const pPts = p(sw).tmp
 	const centerX = pts2MaxX(pPts.flat()) / 2
 
-	return p(sw).map((stroke) => mirrorPtsH(centerX, stroke))
+	return returnWrapper(p(sw).tmp.map((stroke) => mirrorPtsH(centerX, stroke)))
 }
 
-export const r = (sw: number): IPts[] => {
+export const r = (sw: number) => {
 	const sw2 = sw / 2
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const [cPts] = c(sw)
+	const [cPts] = c(sw).tmp
 	const diagonalEndPt = translatePt([0, swD45], cPts[0])
 	const diagonalPts = cPts.slice(0, 4).concat([diagonalEndPt])
 
@@ -1160,7 +1212,7 @@ export const r = (sw: number): IPts[] => {
 		bottomTipRight,
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
 		[topTipLeft, topTip, topTipInset],
@@ -1194,10 +1246,10 @@ export const r = (sw: number): IPts[] => {
 		[bottomTipInset, bottomTipLeft, bottomTip],
 		[bottomTipRight, bottomTipInset, bottomTip],
 		[topTipLeft, topTipInset, bottomTipInset, bottomTipRight],
-	]
+	])
 }
 
-export const s = (sw: number): IPts[] => {
+export const s = (sw: number) => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
 	const [cPts, _pts] = flatE(sw)
@@ -1269,7 +1321,7 @@ export const s = (sw: number): IPts[] => {
 		leftTipLeft,
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
 		// dash,
@@ -1313,11 +1365,11 @@ export const s = (sw: number): IPts[] => {
 		],
 
 		[leftTip, leftTipInset, leftTipLeft],
-	]
+	])
 }
 
-export const t = (sw: number): IPts[] => {
-	const lPts = l(sw)
+export const t = (sw: number) => {
+	const lPts = l(sw).tmp
 
 	const sw2 = sw / 2
 	const dashWidth = pts2MaxX(lPts.flat()) - sw2
@@ -1354,7 +1406,7 @@ export const t = (sw: number): IPts[] => {
 		lGeo.bottomTipLeft,
 	]
 
-	return [
+	return returnWrapper([
 		outline,
 
 		[lGeo.topTipLeft, lGeo.topTip, lGeo.topTipInset],
@@ -1399,10 +1451,10 @@ export const t = (sw: number): IPts[] => {
 			lGeo.tailMiddle_verticalMiddle,
 			lGeo.bottomTipLeft,
 		],
-	]
+	])
 }
 
-export const u = (sw: number): IPts[] => {
+export const u = (sw: number) => {
 	const [nPts] = flatN(sw)
 
 	const left = vertical(sw, pts2MinY(nPts), 2048)
@@ -1412,54 +1464,57 @@ export const u = (sw: number): IPts[] => {
 
 	const _ = translatePts([0, 1024 - sw], horizontal(sw, width))
 
-	return [left, _, translatePtsX(-sw, right)]
+	return returnWrapper([left, _, translatePtsX(-sw, right)])
 }
 
-export const v = (sw: number): IPts[] => {
+export const v = (sw: number) => {
 	const [nPts] = flatN(sw)
 
 	const midX = pts2MidX(nPts)
 	const midY = pts2MidY(nPts)
 
-	return [mirrorPtsH(midX, mirrorPtsV(midY, nPts))]
+	return returnWrapper([mirrorPtsH(midX, mirrorPtsV(midY, nPts))])
 }
 
-export const w = (sw: number): IPts[] => {
-	return m(sw).map(mirrorPtsVOnCenter)
+export const w = (sw: number) => {
+	return returnWrapper(m(sw).tmp.map(mirrorPtsVOnCenter))
 }
 
 /** @todo +pts2MidX/Y */
-export const x = (sw: number): IPts[] => {
+export const x = (sw: number) => {
 	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
 
-	const [cPts] = c(sw)
+	const [cPts] = c(sw).tmp
 
 	const maxX = pts2MaxX(cPts)
 	const midX = maxX / 2
 
-	return [mirrorPtsH(midX, cPts), translatePtsX(maxX - sw2D45 * 3.5, cPts)]
+	return returnWrapper([
+		mirrorPtsH(midX, cPts),
+		translatePtsX(maxX - sw2D45 * 3.5, cPts),
+	])
 }
 
-export const y = (sw: number): IPts[] => {
-	const [uPts] = v(sw)
-	const [verticalPts, tailPts] = j(sw)
+export const y = (sw: number) => {
+	const [uPts] = v(sw).tmp
+	const [verticalPts, tailPts] = j(sw).tmp
 
 	const uMaxX = pts2MaxX(uPts)
 	const jMaxX = pts2MaxX(verticalPts)
 
 	const offsetX = uMaxX - jMaxX
 
-	return [
+	return returnWrapper([
 		uPts,
 		translatePtsX(offsetX, verticalPts),
 		translatePtsX(offsetX, tailPts),
-	]
+	])
 }
 
-export const z = (sw: number): IPts[] => {
-	const sPts = s(sw)
+export const z = (sw: number) => {
+	const sPts = s(sw).tmp
 
 	const midX = pts2MaxX(sPts.flat()) / 2
 
-	return sPts.map((stroke) => mirrorPtsH(midX, stroke))
+	return returnWrapper(sPts.map((stroke) => mirrorPtsH(midX, stroke)))
 }

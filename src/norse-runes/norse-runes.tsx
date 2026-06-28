@@ -77,7 +77,7 @@ const Line = (props: IProps) => {
 		const strokeFn = GLYPH_STROKES?.[glyph]
 		if (!strokeFn) return kerning
 
-		return pts2MaxX(strokeFn(sw).flat())
+		return pts2MaxX(strokeFn(sw).tmp.flat())
 	})
 
 	const height = Math.max(
@@ -85,7 +85,7 @@ const Line = (props: IProps) => {
 			const strokeFn = GLYPH_STROKES?.[glyph]
 			if (!strokeFn) return kerning
 
-			return pts2MaxY(strokeFn(sw).flat())
+			return pts2MaxY(strokeFn(sw).tmp.flat())
 		})
 	)
 
@@ -196,7 +196,7 @@ const Line = (props: IProps) => {
 
 					return (
 						<g key={`${glyph}-${i}`} data-glyph={glyph}>
-							{strokeFn(sw).map((pts, i) => {
+							{strokeFn(sw).tmp.map((pts, i) => {
 								return (
 									<path
 										key={`${glyph}-stroke-${i}`}

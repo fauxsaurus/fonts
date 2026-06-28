@@ -2,6 +2,27 @@
 export type IPt = [number, number]
 export type IPts = IPt[]
 
+/**
+ * A simple function to centralize overhauls to the glyph return types.
+ * @todo rename function
+ * @param tmp
+ * @param ridges
+ * @param outlines
+ * @param faces
+ * @returns
+ */
+export const returnWrapper = <O extends Record<string, IPt>, K extends keyof O>(
+	tmp: IPts[],
+	points: O = {} as O,
+	ridges: K[][] = [],
+	outlines: K[][] = [],
+	faces: K[][] = []
+) => {
+	/** @todo add outlines 3rd z coord as sw (make that the first param or upstream that to the glyphs themselves? Nah, do it here to reduce unnecessary complexity upstream) */
+
+	return {tmp, points, ridges, outlines, faces}
+}
+
 export const avgPts = (pts: IPts) => {
 	const sum = pts.reduce(
 		(sum, pt) => {
