@@ -490,6 +490,8 @@ export const c = (sw: number) => {
 	return returnWrapper(
 		[pts],
 		points,
+		// ridges
+		[['topTipInset', 'centerMiddle', 'bottomTipInset']],
 		// outline
 		[
 			[
