@@ -281,6 +281,7 @@ export const a = (sw: number) => {
 				'bottomInner',
 			],
 		],
+		//faces
 		[
 			// top left circle
 			['leftOuter', 'topOuter', 'topMiddle', 'leftMiddle'],
@@ -351,6 +352,7 @@ export const a = (sw: number) => {
 	)
 }
 
+/** @todo Make these point names orientation agnostic to reuse them on bdpq without issue (e.g., topTip suddenly referring to the bottom for p/q). */
 export const b = (sw: number) => {
 	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
 
@@ -457,6 +459,7 @@ export const b = (sw: number) => {
 				lowerMiddleIntersection,
 			],
 		],
+		// points
 		{
 			upperInnerIntersection,
 			lowerInnerIntersection,
@@ -468,8 +471,94 @@ export const b = (sw: number) => {
 			topTipLeft,
 			topTip,
 			topTipRight,
+			topTipInset,
 			upperOuterIntersection,
-		}
+
+			rightMiddle,
+
+			upperMiddleIntersection,
+			lowerMiddleIntersection,
+		},
+		// ridges
+		[
+			[
+				'topTipInset',
+				'lowerInnerIntersection',
+				'rightInner',
+				'upperMiddleIntersection',
+			],
+		],
+		// outlines
+		[
+			[
+				'upperInnerIntersection',
+				'lowerInnerIntersection',
+				'rightInner',
+				'rightOuter',
+				'bottomTip',
+				'bottomTipRight',
+
+				'topTipLeft',
+				'topTip',
+				'topTipRight',
+				'upperOuterIntersection',
+
+				'rightOuter',
+				'rightMiddle',
+				'rightInner',
+			],
+		],
+		// faces
+		[
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTip', 'topTipRight', 'topTipInset'],
+			[
+				'topTipInset',
+				'topTipRight',
+				'upperOuterIntersection',
+				'upperMiddleIntersection',
+			],
+			// loop (outer)
+			[
+				'upperMiddleIntersection',
+				'upperOuterIntersection',
+				'rightOuter',
+				'rightMiddle',
+			],
+			[
+				'rightMiddle',
+				'rightOuter',
+				'bottomTip',
+				'lowerMiddleIntersection',
+			],
+			// vertical (left)
+			['bottomTipRight', 'lowerMiddleIntersection', 'bottomTip'],
+			[
+				'topTipLeft',
+				'topTipInset',
+				'lowerMiddleIntersection',
+				'bottomTipRight',
+			],
+			// loop (inner)
+			[
+				'upperMiddleIntersection',
+				'rightMiddle',
+				'rightInner',
+				'upperInnerIntersection',
+			],
+			[
+				'lowerInnerIntersection',
+				'rightInner',
+				'rightMiddle',
+				'lowerMiddleIntersection',
+			],
+			[
+				'upperMiddleIntersection',
+				'upperInnerIntersection',
+				'lowerInnerIntersection',
+				'lowerMiddleIntersection',
+			],
+		]
 	)
 }
 
