@@ -837,62 +837,108 @@ const lGeometry = (sw: number) => {
 }
 
 export const l = (sw: number) => {
-	const {
-		topTip,
-		topTipLeft,
-		topTipRight,
-		topTipInset,
+	// outline
+	const topTipLeft = pt(0, sw / 2)
+	const topTip = pt(sw / 2, 0)
+	const topTipRight = pt(sw, sw / 2)
 
-		bottomTip,
-		bottomTipLeft,
+	// const bottomTipRight = pt(sw, 2048 - sw / 2)
+	const bottomTip = pt(sw / 2, 2048)
+	const bottomTipLeft = pt(0, 2048 - sw / 2)
 
-		tailTip,
-		tailTipLeft,
-		tailTipRight,
-		tailTipInset,
+	const [tailTipLeft, tailTip, tailTipRight] = tail(sw).filter(
+		([x]) => x > sw
+	)
 
-		upperTail_VerticalRight,
-		tailMiddle_verticalMiddle,
-	} = lGeometry(sw)
+	// inset
+	const topTipInset = translatePt([0, sw], topTip)
+	const tailTipInset = pt(tailTipLeft[0], tailTipRight[1])
 
-	const outline = [
-		topTipLeft,
-		topTip,
-		topTipRight,
-		upperTail_VerticalRight,
-		tailTipLeft,
-		tailTip,
-		tailTipRight,
-		bottomTip,
-		bottomTipLeft,
-	]
+	// intersections
+	// upper tail diagonal intersecting the eastern vertical
+	const upperTail_VerticalRight = pt(
+		topTipRight[0],
+		tailTipLeft[1] - (topTipRight[0] - tailTipLeft[0])
+	)
 
-	return returnWrapper([
-		outline,
-		[topTipLeft, topTip, topTipInset],
-		[topTip, topTipRight, topTipInset],
+	// center tail diagonal intersecting the central vertical
+	const tailMiddle_verticalMiddle = pt(
+		topTip[0],
+		tailTip[1] - (topTip[0] - tailTip[0])
+	)
 
-		[
+	return returnWrapper(
+		[],
+		// points
+		{
+			topTipLeft,
+			topTip,
 			topTipInset,
 			topTipRight,
 			upperTail_VerticalRight,
 			tailMiddle_verticalMiddle,
-		],
 
-		[
-			upperTail_VerticalRight,
 			tailTipLeft,
 			tailTipInset,
-			tailMiddle_verticalMiddle,
+			tailTip,
+			tailTipRight,
+			bottomTip,
+
+			bottomTipLeft,
+		},
+		// ridges
+		[['topTipInset', 'tailMiddle_verticalMiddle', 'tailTipInset']],
+		// outlines
+		[
+			[
+				'topTipLeft',
+				'topTip',
+				'topTipRight',
+				'upperTail_VerticalRight',
+				'tailTipLeft',
+				'tailTip',
+				'tailTipRight',
+				'bottomTip',
+				'bottomTipLeft',
+			],
 		],
-		[tailTipLeft, tailTip, tailTipInset],
-		[tailTipInset, tailTip, tailTipRight],
-		[tailMiddle_verticalMiddle, tailTipInset, tailTipRight, bottomTip],
+		// faces
+		[
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTip', 'topTipRight', 'topTipInset'],
 
-		[bottomTipLeft, tailMiddle_verticalMiddle, bottomTip],
+			[
+				'topTipInset',
+				'topTipRight',
+				'upperTail_VerticalRight',
+				'tailMiddle_verticalMiddle',
+			],
 
-		[topTipLeft, topTipInset, tailMiddle_verticalMiddle, bottomTipLeft],
-	])
+			[
+				'upperTail_VerticalRight',
+				'tailTipLeft',
+				'tailTipInset',
+				'tailMiddle_verticalMiddle',
+			],
+			['tailTipLeft', 'tailTip', 'tailTipInset'],
+			['tailTipInset', 'tailTip', 'tailTipRight'],
+			[
+				'tailMiddle_verticalMiddle',
+				'tailTipInset',
+				'tailTipRight',
+				'bottomTip',
+			],
+
+			['bottomTipLeft', 'tailMiddle_verticalMiddle', 'bottomTip'],
+
+			[
+				'topTipLeft',
+				'topTipInset',
+				'tailMiddle_verticalMiddle',
+				'bottomTipLeft',
+			],
+		]
+	)
 }
 
 export const m = (sw: number) => {
