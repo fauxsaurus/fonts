@@ -2,6 +2,21 @@
 export type IPt = [number, number]
 export type IPts = IPt[]
 
+export type FN<I extends unknown[] = [], O = void> = (...args: I) => O
+
+export const objectMap = <O extends Record<string, unknown>, R>(
+	object: O,
+	map: FN<[O[keyof O], keyof O, O], R>
+): Record<string, R> => {
+	const entries = Object.entries(object) as [keyof O, O[keyof O]][]
+	const entriesMapped = entries.map<[keyof O, R]>(([key, value]) => [
+		key,
+		map(value, key, object),
+	])
+
+	return Object.fromEntries(entriesMapped)
+}
+
 /**
  * A simple function to centralize overhauls to the glyph return types.
  * @todo rename function
