@@ -691,7 +691,7 @@ export const i = (sw: number) => {
 
 	const verticalMinY = 1024 - sw / 2
 
-	const geometry = lGeometry(sw)
+	const geometry = l(sw).points
 
 	const {
 		bottomTip,
@@ -784,56 +784,6 @@ export const k = (sw: number) => {
 		translatePtsX(sw / 2, vertical(sw, minY, maxY)),
 		cPts,
 	])
-}
-
-const lGeometry = (sw: number) => {
-	// outline
-	const topTipLeft = pt(0, sw / 2)
-	const topTip = pt(sw / 2, 0)
-	const topTipRight = pt(sw, sw / 2)
-
-	// const bottomTipRight = pt(sw, 2048 - sw / 2)
-	const bottomTip = pt(sw / 2, 2048)
-	const bottomTipLeft = pt(0, 2048 - sw / 2)
-
-	const [tailTipLeft, tailTip, tailTipRight] = tail(sw).filter(
-		([x]) => x > sw
-	)
-
-	// inset
-	const topTipInset = translatePt([0, sw], topTip)
-	const tailTipInset = pt(tailTipLeft[0], tailTipRight[1])
-
-	// intersections
-	// upper tail diagonal intersecting the eastern vertical
-	const upperTail_VerticalRight = pt(
-		topTipRight[0],
-		tailTipLeft[1] - (topTipRight[0] - tailTipLeft[0])
-	)
-
-	// center tail diagonal intersecting the central vertical
-	const tailMiddle_verticalMiddle = pt(
-		topTip[0],
-		tailTip[1] - (topTip[0] - tailTip[0])
-	)
-
-	return {
-		topTip,
-		topTipLeft,
-		topTipRight,
-		topTipInset,
-
-		bottomTip,
-		bottomTipLeft,
-
-		tailTip,
-		tailTipLeft,
-		tailTipRight,
-		tailTipInset,
-
-		upperTail_VerticalRight,
-		tailMiddle_verticalMiddle,
-	}
 }
 
 export const l = (sw: number) => {
@@ -1517,7 +1467,7 @@ export const t = (sw: number) => {
 
 	const [rightTipInset] = translatePtsX(-sw, [rightTip])
 
-	const lGeo = lGeometry(sw)
+	const lGeo = l(sw).points
 	const outline = [
 		lGeo.topTipLeft,
 		lGeo.topTip,
