@@ -495,11 +495,12 @@ export const c = (sw: number) => {
 		// outline
 		[
 			[
+				'centerLeft',
+
 				'topTipLeft',
 				'topTip',
 				'topTipRight',
 
-				'centerLeft',
 				'centerRight',
 
 				'bottomTipLeft',
