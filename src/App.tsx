@@ -39,8 +39,15 @@ function App() {
 						<NorseRunes key="capital" fontSize={fontSizeLarge}>
 							Ghost Giant
 						</NorseRunes>
+						<NorseRunes
+							key="unused-dependencies"
+							fontSize={fontSizeLarge}
+						>
+							c
+						</NorseRunes>
 					</div>
 				</div>
+
 				<div className="text-author">
 					<Braille>Andrew R. H. Quinn</Braille>
 				</div>
