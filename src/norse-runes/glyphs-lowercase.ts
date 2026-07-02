@@ -473,22 +473,8 @@ export const c = (sw: number) => {
 		bottomTipInset: translatePt([0, -sw2D45], bottomOuter),
 	}
 
-	const pts = [
-		outerCenter,
-
-		topOuter,
-		translatePt([sw2D45, 0], topOuter),
-		translatePt([sw2D45, sw2D45], topOuter),
-
-		innerCenter,
-
-		translatePt([sw2D45, -sw2D45], bottomOuter),
-		translatePt([sw2D45, 0], bottomOuter),
-		bottomOuter,
-	]
-
 	return returnWrapper(
-		[pts],
+		[],
 		points,
 		// ridges
 		[['topTipInset', 'centerMiddle', 'bottomTipInset']],
