@@ -198,6 +198,7 @@
 				path:nth-child(10),
 				path:nth-child(11),
 				path:nth-child(12),
+				path:nth-child(16),
 				path:nth-child(17) {
 					fill: var(--color-darken);
 				}
