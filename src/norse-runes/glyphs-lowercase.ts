@@ -406,40 +406,6 @@ export const b = (sw: number) => {
 	)
 }
 
-const cGeometry = (sw: number) => {
-	const ltPts = lt(sw)
-
-	const maxX = pts2MaxX(ltPts)
-	const maxY = pts2MaxY(ltPts)
-	const minY = pts2MinY(ltPts)
-
-	/**
-	 * @note 4 the straightest line possible, filter out uncapped inner edge pts
-	 * so that nothing will be between the inner center pt and the inner tip pts
-	 */
-	const [topOuter, outerCenter, bottomOuter, innerCenter] = ltPts.filter(
-		([x, y]) => x !== maxX || [minY, maxY].includes(y)
-	)
-
-	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
-
-	return {
-		topTipLeft: topOuter,
-		topTip: translatePt([sw2D45, 0], topOuter),
-		topTipRight: translatePt([sw2D45, sw2D45], topOuter),
-		topTipInset: translatePt([0, sw2D45], topOuter),
-
-		centerLeft: outerCenter,
-		centerMiddle: avgPts([outerCenter, innerCenter]),
-		centerRight: innerCenter,
-
-		bottomTipLeft: translatePt([sw2D45, -sw2D45], bottomOuter),
-		bottomTip: translatePt([sw2D45, 0], bottomOuter),
-		bottomTipRight: bottomOuter,
-		bottomTipInset: translatePt([0, -sw2D45], bottomOuter),
-	}
-}
-
 export const c = (sw: number) => {
 	const ltPts = lt(sw)
 
@@ -535,8 +501,7 @@ export const e = (sw: number) => {
 		bottomTip,
 		bottomTipRight,
 		bottomTipInset,
-	} = cGeometry(sw)
-	/** @todo remove `cGeometry()` */
+	} = c(sw).points
 
 	const dashTip = pt(topTip[0] + sw2, centerLeft[1])
 	const dashTipLeft = pt(topTip[0], centerLeft[1] - sw2)
@@ -546,49 +511,92 @@ export const e = (sw: number) => {
 	const upperLeftDashIntersection = pt(centerRight[0] + sw2, dashTipLeft[1])
 	const lowerLeftDashIntersection = pt(centerRight[0] + sw2, dashTipRight[1])
 
-	const outline = [
-		centerLeft,
-		topTipLeft,
-		topTip,
-		topTipRight,
-		upperLeftDashIntersection,
-		dashTipLeft,
-		dashTip,
-		dashTipRight,
-		lowerLeftDashIntersection,
-		bottomTipLeft,
-		bottomTip,
-		bottomTipRight,
-	]
-
-	/** @todo add c faces when overhauling this */
-	return returnWrapper([
-		outline,
-
-		[topTipLeft, topTip, topTipInset],
-		[topTip, topTipRight, topTipInset],
-
-		[centerLeft, topTipLeft, topTipInset, centerMiddle],
-		[centerMiddle, topTipInset, topTipRight, upperLeftDashIntersection],
-
-		[centerMiddle, upperLeftDashIntersection, dashTipLeft, dashTipInset],
-
-		[dashTipInset, dashTipLeft, dashTip],
-		[dashTipInset, dashTip, dashTipRight],
-
-		[centerMiddle, dashTipInset, dashTipRight, lowerLeftDashIntersection],
-
-		[
-			centerMiddle,
+	return returnWrapper(
+		[],
+		// points
+		{
+			centerLeft,
+			topTipLeft,
+			topTip,
+			topTipRight,
+			upperLeftDashIntersection,
+			dashTipLeft,
+			dashTip,
+			dashTipRight,
 			lowerLeftDashIntersection,
 			bottomTipLeft,
-			bottomTipInset,
-		],
-		[centerLeft, centerMiddle, bottomTipInset, bottomTipRight],
+			bottomTip,
+			bottomTipRight,
 
-		[bottomTipInset, bottomTipLeft, bottomTip],
-		[bottomTipInset, bottomTip, bottomTipRight],
-	])
+			topTipInset,
+			centerMiddle,
+
+			dashTipInset,
+			bottomTipInset,
+		},
+		// ridges
+		[
+			['topTipInset', 'centerMiddle', 'bottomTipInset'],
+			['centerMiddle', 'dashTipInset'],
+		],
+		// outline
+		[
+			[
+				'centerLeft',
+				'topTipLeft',
+				'topTip',
+				'topTipRight',
+				'upperLeftDashIntersection',
+				'dashTipLeft',
+				'dashTip',
+				'dashTipRight',
+				'lowerLeftDashIntersection',
+				'bottomTipLeft',
+				'bottomTip',
+				'bottomTipRight',
+			],
+		],
+		[
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTip', 'topTipRight', 'topTipInset'],
+
+			['centerLeft', 'topTipLeft', 'topTipInset', 'centerMiddle'],
+			[
+				'centerMiddle',
+				'topTipInset',
+				'topTipRight',
+				'upperLeftDashIntersection',
+			],
+
+			[
+				'centerMiddle',
+				'upperLeftDashIntersection',
+				'dashTipLeft',
+				'dashTipInset',
+			],
+
+			['dashTipInset', 'dashTipLeft', 'dashTip'],
+			['dashTipInset', 'dashTip', 'dashTipRight'],
+
+			[
+				'centerMiddle',
+				'dashTipInset',
+				'dashTipRight',
+				'lowerLeftDashIntersection',
+			],
+
+			[
+				'centerMiddle',
+				'lowerLeftDashIntersection',
+				'bottomTipLeft',
+				'bottomTipInset',
+			],
+			['centerLeft', 'centerMiddle', 'bottomTipInset', 'bottomTipRight'],
+
+			['bottomTipInset', 'bottomTipLeft', 'bottomTip'],
+			['bottomTipInset', 'bottomTip', 'bottomTipRight'],
+		]
+	)
 }
 
 export const f = (sw: number) => {
