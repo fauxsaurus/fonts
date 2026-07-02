@@ -6,6 +6,7 @@ export type IPts = IPt[]
  * A simple function to centralize overhauls to the glyph return types.
  * @todo rename function
  * @param tmp
+ * @param points
  * @param ridges
  * @param outlines
  * @param faces
@@ -19,6 +20,11 @@ export const returnWrapper = <O extends Record<string, IPt>, K extends keyof O>(
 	faces: K[][] = outlines
 ) => {
 	/** @todo add outlines 3rd z coord as sw (make that the first param or upstream that to the glyphs themselves? Nah, do it here to reduce unnecessary complexity upstream)--can't really do it elsewhere as the order of the outline and the ridges matters (also, can't repeat coords for seamless 2D rendering). */
+
+	if (!tmp.length)
+		tmp = outlines
+			.concat(faces)
+			.map((face) => face.map((key) => points[key]))
 
 	return {tmp, points, ridges, outlines, faces}
 }
