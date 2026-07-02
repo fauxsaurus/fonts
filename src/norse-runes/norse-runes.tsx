@@ -190,12 +190,19 @@ const Line = (props: IProps) => {
 					const strokeFn = GLYPH_STROKES?.[glyph]
 					if (!strokeFn) return <></>
 
+					const usesOldDataFormat =
+						Object.keys(strokeFn(sw).points).length === 0
+
 					const x =
 						sum(glyphWidths.slice(0, i)) +
 						sum(glyphGaps.slice(0, i + 1))
 
 					return (
-						<g key={`${glyph}-${i}`} data-glyph={glyph}>
+						<g
+							key={`${glyph}-${i}`}
+							data-glyph={glyph}
+							opacity={usesOldDataFormat ? 0.1 : 1}
+						>
 							{strokeFn(sw).tmp.map((pts, i) => {
 								return (
 									<path
