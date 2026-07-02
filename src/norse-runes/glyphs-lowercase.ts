@@ -504,8 +504,20 @@ export const c = (sw: number) => {
 				'bottomTip',
 				'bottomTipRight',
 			],
+		],
+		// faces
+		[
+			// upper diagonal
+			['centerLeft', 'topTipLeft', 'topTipInset', 'centerMiddle'],
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTipInset', 'topTip', 'topTipRight'],
+			['centerMiddle', 'topTipInset', 'topTipRight', 'centerRight'],
+			// lower diagonal
+			['centerMiddle', 'centerRight', 'bottomTipLeft', 'bottomTipInset'],
+			['bottomTipInset', 'bottomTipLeft', 'bottomTip'],
+			['bottomTipInset', 'bottomTip', 'bottomTipRight'],
+			['centerLeft', 'centerMiddle', 'bottomTipInset', 'bottomTipRight'],
 		]
-		// @todo faces
 	)
 }
 
