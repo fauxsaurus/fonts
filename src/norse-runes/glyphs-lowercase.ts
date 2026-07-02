@@ -301,67 +301,8 @@ export const b = (sw: number) => {
 		rightMiddle[1] + (rightMiddle[0] - bottomTip[0])
 	)
 
-	const outline = [
-		upperInnerIntersection,
-		lowerInnerIntersection,
-		rightInner,
-		rightOuter,
-		bottomTip,
-		bottomTipRight,
-
-		topTipLeft,
-		topTip,
-		topTipRight,
-		upperOuterIntersection,
-
-		rightOuter,
-		rightInner,
-	]
-
 	return returnWrapper(
-		[
-			outline,
-
-			// vertical
-			[topTipLeft, topTip, topTipInset],
-			[topTip, topTipRight, topTipInset],
-			[
-				topTipInset,
-				topTipRight,
-				upperOuterIntersection,
-				upperMiddleIntersection,
-			],
-			// loop (outer)
-			[
-				upperMiddleIntersection,
-				upperOuterIntersection,
-				rightOuter,
-				rightMiddle,
-			],
-			[rightMiddle, rightOuter, bottomTip, lowerMiddleIntersection],
-			// vertical (left)
-			[bottomTipRight, lowerMiddleIntersection, bottomTip],
-			[topTipLeft, topTipInset, lowerMiddleIntersection, bottomTipRight],
-			// loop (inner)
-			[
-				upperMiddleIntersection,
-				rightMiddle,
-				rightInner,
-				upperInnerIntersection,
-			],
-			[
-				lowerInnerIntersection,
-				rightInner,
-				rightMiddle,
-				lowerMiddleIntersection,
-			],
-			[
-				upperMiddleIntersection,
-				upperInnerIntersection,
-				lowerInnerIntersection,
-				lowerMiddleIntersection,
-			],
-		],
+		[],
 		// points
 		{
 			upperInnerIntersection,
