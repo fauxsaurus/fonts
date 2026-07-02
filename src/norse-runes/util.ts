@@ -18,7 +18,7 @@ export const returnWrapper = <O extends Record<string, IPt>, K extends keyof O>(
 	outlines: K[][] = [],
 	faces: K[][] = outlines
 ) => {
-	/** @todo add outlines 3rd z coord as sw (make that the first param or upstream that to the glyphs themselves? Nah, do it here to reduce unnecessary complexity upstream) */
+	/** @todo add outlines 3rd z coord as sw (make that the first param or upstream that to the glyphs themselves? Nah, do it here to reduce unnecessary complexity upstream). NO. Do that outside this function to eliminate ridges and outlines. Outlines can be determined by those with a lower z coord. Ridges are those with a higher sw coord. thus you could do `pts2ridges(a(sw).points)` or `pts2outline(a(sw).points)` without duplicating data. */
 
 	return {tmp, points, ridges, outlines, faces}
 }
