@@ -1309,22 +1309,6 @@ export const o = (sw: number) => {
 	const minY = pts2MinY(ltPts)
 	const centerY = (2048 - minY) / 2 + minY
 
-	const topOuter = pt(centerX, minY)
-	const topMiddle = pt(centerX, minY + swD45 / 2)
-	const topInner = pt(centerX, minY + swD45)
-
-	const bottomOuter = pt(centerX, 2048)
-	const bottomMiddle = pt(centerX, 2048 - swD45 / 2)
-	const bottomInner = pt(centerX, 2048 - swD45)
-
-	const leftOuter = pt(0, centerY)
-	const leftMiddle = pt(swD45 / 2, centerY)
-	const leftInner = pt(swD45, centerY)
-
-	const rightOuter = pt(maxX, centerY)
-	const rightMiddle = pt(maxX - swD45 / 2, centerY)
-	const rightInner = pt(maxX - swD45, centerY)
-
 	// console.log(
 	// 	'midline equals top of "o":',
 	// 	midLine(sw) === topOuter[1],
@@ -1339,50 +1323,25 @@ export const o = (sw: number) => {
 	// )
 
 	const points = {
-		topOuter,
-		topMiddle,
-		topInner,
+		topOuter: pt(centerX, minY),
+		topMiddle: pt(centerX, minY + swD45 / 2),
+		topInner: pt(centerX, minY + swD45),
 
-		bottomOuter,
-		bottomMiddle,
-		bottomInner,
+		bottomOuter: pt(centerX, 2048),
+		bottomMiddle: pt(centerX, 2048 - swD45 / 2),
+		bottomInner: pt(centerX, 2048 - swD45),
 
-		leftOuter,
-		leftMiddle,
-		leftInner,
+		leftOuter: pt(0, centerY),
+		leftMiddle: pt(swD45 / 2, centerY),
+		leftInner: pt(swD45, centerY),
 
-		rightOuter,
-		rightMiddle,
-		rightInner,
+		rightOuter: pt(maxX, centerY),
+		rightMiddle: pt(maxX - swD45 / 2, centerY),
+		rightInner: pt(maxX - swD45, centerY),
 	}
 
-	const outline = [
-		leftInner,
-		topInner,
-		rightInner,
-		bottomInner,
-		bottomOuter,
-		rightOuter,
-		topOuter,
-		leftOuter,
-		bottomOuter,
-		bottomInner,
-	]
-
 	return returnWrapper(
-		[
-			outline,
-
-			[topOuter, rightOuter, rightMiddle, topMiddle],
-			[rightMiddle, rightOuter, bottomOuter, bottomMiddle],
-			[leftOuter, leftMiddle, bottomMiddle, bottomOuter],
-			[leftOuter, topOuter, topMiddle, leftMiddle],
-
-			[leftMiddle, topMiddle, topInner, leftInner],
-			[topMiddle, rightMiddle, rightInner, topInner],
-			[rightInner, rightMiddle, bottomMiddle, bottomInner],
-			[leftMiddle, leftInner, bottomInner, bottomMiddle],
-		],
+		[],
 		points,
 		// ridges
 		[['leftMiddle', 'topMiddle', 'rightMiddle', 'bottomMiddle']],
