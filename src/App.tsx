@@ -1,6 +1,7 @@
 import './App.css'
 import {Braille} from './braille'
 import {NorseRunes} from './norse-runes'
+import {Renderer} from './Renderer'
 
 function App() {
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -10,6 +11,7 @@ function App() {
 
 	return (
 		<>
+			<Renderer width={720} height={720} />
 			<div className="cover">
 				<div
 					className="text-title metallic"

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>WebGL Silver Hexagonal Pyramid</title>
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+				background-color: #1a1a1a;
+			}
+			canvas {
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="module">
+			// Import Three.js from a CDN
+			import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js'
+
+			// 1. Setup Scene, Camera, and Renderer
+			const scene = new THREE.Scene()
+			const camera = new THREE.PerspectiveCamera(
+				75,
+				window.innerWidth / window.innerHeight,
+				0.1,
+				1000
+			)
+
+			const renderer = new THREE.WebGLRenderer({antialias: true})
+			renderer.setSize(window.innerWidth, window.innerHeight)
+			document.body.appendChild(renderer.domElement)
+
+			// 2. Define the Geometry based on your points
+			const sw = 100
+			const sw2 = sw / 2
+
+			const pts = [
+				// edges
+				[sw2, 0, 0],
+				[sw, sw2, 0],
+				[sw, 1.5 * sw, 0],
+				[sw2, 2 * sw, 0],
+				[0, 1.5 * sw, 0],
+				[0, sw2, 0],
+				// peaks
+				[sw2, sw, sw2],
+			]
+
+			// Flattened array of your x, y, z coordinates
+			const vertices = new Float32Array(pts.flat())
+
+			// Define the triangular faces using vertex indices
+			const indices = [
+				// Base (facing downwards)
+				0, 5, 4, 0, 4, 3, 0, 3, 2, 0, 2, 1,
+				// Sides (connecting edges to the peak)
+				0, 1, 6, 1, 2, 6, 2, 3, 6, 3, 4, 6, 4, 5, 6, 5, 0, 6,
+			]
+
+			const geometry = new THREE.BufferGeometry()
+			geometry.setAttribute(
+				'position',
+				new THREE.BufferAttribute(vertices, 3)
+			)
+			geometry.setIndex(indices)
+
+			// Crucial for lighting to interact with the surfaces properly
+			geometry.computeVertexNormals()
+
+			// Center the geometry so it rotates around its own axis cleanly
+			geometry.computeBoundingBox()
+			const center = new THREE.Vector3()
+			geometry.boundingBox.getCenter(center)
+			geometry.translate(-center.x, -center.y, -center.z)
+
+			// 3. Apply Silver Material
+			// MeshStandardMaterial reacts physically to light
+			const material = new THREE.MeshStandardMaterial({
+				color: 0xc0c0c0, // Base silver/gray color
+				metalness: 0.9, // Highly metallic
+				roughness: 0.2, // Slightly smooth for a polished look
+				side: THREE.DoubleSide, // Render both inside and outside faces
+			})
+
+			const mesh = new THREE.Mesh(geometry, material)
+			scene.add(mesh)
+
+			// 4. Setup Lighting
+			// Ambient light ensures the dark sides aren't completely pitch black
+			const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
+			scene.add(ambientLight)
+
+			// Directional light coming from the upper right hand side
+			const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5)
+			directionalLight.position.set(200, 200, 100)
+			scene.add(directionalLight)
+
+			// 5. Position Camera
+			camera.position.z = 250
+
+			// 6. Handle Window Resizing
+			window.addEventListener('resize', () => {
+				camera.aspect = window.innerWidth / window.innerHeight
+				camera.updateProjectionMatrix()
+				renderer.setSize(window.innerWidth, window.innerHeight)
+			})
+
+			// 7. Animation Loop (Slowly rotating to show off the lighting)
+			function animate() {
+				// requestAnimationFrame(animate)
+				// mesh.rotation.x += 0.005
+				// mesh.rotation.y += 0.01
+				renderer.render(scene, camera)
+			}
+
+			animate()
+		</script>
+	</body>
+</html>

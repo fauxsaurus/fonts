@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>WebGL Dark Forged Metal Pyramid</title>
+		<style>
+			/* Darker, cinematic background */
+			body {
+				margin: 0;
+				overflow: hidden;
+				background-color: #050a0d;
+			}
+			canvas {
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="module">
+			import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js'
+
+			// --- 1. Procedural Texture Generation ---
+			// Creates a "hammered metal" texture map entirely in code
+			function createHammeredTexture() {
+				const canvas = document.createElement('canvas')
+				const size = 512
+				canvas.width = size
+				canvas.height = size
+				const ctx = canvas.getContext('2d')
+
+				// Base grey background
+				// ctx.fillStyle = '#666666'
+				ctx.fillStyle = '#fff'
+				ctx.fillRect(0, 0, size, size)
+
+				// Simulate hundreds of random hammer dents and pitting
+				// for (let i = 0; i < 3000; i++) {
+				// 	const x = Math.random() * size
+				// 	const y = Math.random() * size
+				// 	const r = Math.random() * 12 + 2 // Varying dent sizes
+
+				// 	// Create a radial gradient to simulate depth
+				// 	const grad = ctx.createRadialGradient(x, y, 0, x, y, r)
+				// 	grad.addColorStop(0, 'rgba(0, 0, 0, 0.6)') // Deep center
+				// 	grad.addColorStop(0.8, 'rgba(100, 100, 100, 0.1)') // Sloping sides
+				// 	grad.addColorStop(1, 'rgba(255, 255, 255, 0.2)') // Raised lip
+
+				// 	ctx.fillStyle = grad
+				// 	ctx.beginPath()
+				// 	ctx.arc(x, y, r, 0, Math.PI * 2)
+				// 	ctx.fill()
+				// }
+
+				canvas.toBlob((blob) => {
+					// Create a local URL for the blob object
+					const url = URL.createObjectURL(blob)
+
+					// Open the URL in a new tab
+					window.open(url, '_blank')
+
+					// Optional: Revoke the URL later to free memory,
+					// but ensure it has finished loading in the new tab first.
+				}, 'image/png')
+
+				const texture = new THREE.CanvasTexture(canvas)
+				texture.wrapS = THREE.RepeatWrapping
+				texture.wrapT = THREE.RepeatWrapping
+				return texture
+			}
+
+			const forgedTexture = createHammeredTexture()
+
+			// --- 2. Scene & Camera Setup ---
+			const scene = new THREE.Scene()
+			const camera = new THREE.PerspectiveCamera(
+				75,
+				window.innerWidth / window.innerHeight,
+				0.1,
+				1000
+			)
+			const renderer = new THREE.WebGLRenderer({antialias: true})
+			renderer.setSize(window.innerWidth, window.innerHeight)
+			// Tone mapping helps prevent blown-out bright spots, giving a cinematic look
+			renderer.toneMapping = THREE.ACESFilmicToneMapping
+			document.body.appendChild(renderer.domElement)
+
+			// --- 3. Geometry (Your Hexagonal Pyramid) ---
+			const sw = 100
+			const sw2 = sw / 2
+			const pts = [
+				// edges
+				[sw2, 0, 0],
+				[sw, sw2, 0],
+				[sw, 1.5 * sw, 0],
+				[sw2, 2 * sw, 0],
+				[0, 1.5 * sw, 0],
+				[0, sw2, 0],
+				// peaks
+				[sw2, sw, sw2],
+			]
+
+			// Flattened array of your x, y, z coordinates
+			const vertices = new Float32Array(pts.flat())
+			const indices = [
+				0, 5, 4, 0, 4, 3, 0, 3, 2, 0, 2, 1, 0, 1, 6, 1, 2, 6, 2, 3, 6,
+				3, 4, 6, 4, 5, 6, 5, 0, 6,
+			]
+
+			const geometry = new THREE.BufferGeometry()
+			geometry.setAttribute(
+				'position',
+				new THREE.BufferAttribute(vertices, 3)
+			)
+			geometry.setIndex(indices)
+			geometry.computeVertexNormals()
+
+			// Center it
+			geometry.computeBoundingBox()
+			const center = new THREE.Vector3()
+			geometry.boundingBox.getCenter(center)
+			geometry.translate(-center.x, -center.y, -center.z)
+
+			// --- 4. The Half-Blood Prince Material ---
+			// Upgrading to MeshPhysicalMaterial for maximum realism
+			const material = new THREE.MeshPhysicalMaterial({
+				color: 0x162126, // Dark, cool-toned teal/grey base
+				metalness: 0.95, // Highly metallic
+				roughness: 0.7, // High base roughness...
+				roughnessMap: forgedTexture, // ...modulated by the dented map
+				bumpMap: forgedTexture, // Use the map to create fake physical depth
+				bumpScale: 1.5, // How deep the hammer marks look
+				clearcoat: 0.1, // A tiny bit of an outer sheen
+				clearcoatRoughness: 0.4,
+				side: THREE.DoubleSide,
+			})
+
+			const mesh = new THREE.Mesh(geometry, material)
+			scene.add(mesh)
+
+			// --- 5. Cinematic Lighting ---
+			// Cool-toned ambient light to simulate a night/castle environment
+			const ambientLight = new THREE.AmbientLight(0x3a4f59, 1.0)
+			scene.add(ambientLight)
+
+			// Sharp, bright primary light (Key light) from upper right
+			const directionalLight = new THREE.DirectionalLight(0xaaccff, 5.0)
+			directionalLight.position.set(200, 200, 100)
+			scene.add(directionalLight)
+
+			// A secondary dim blue rim-light from the bottom left to outline the shape
+			const rimLight = new THREE.DirectionalLight(0x224488, 2.0)
+			rimLight.position.set(-200, -150, -50)
+			scene.add(rimLight)
+
+			// --- 6. Camera & Render Loop ---
+			camera.position.z = 220
+
+			window.addEventListener('resize', () => {
+				camera.aspect = window.innerWidth / window.innerHeight
+				camera.updateProjectionMatrix()
+				renderer.setSize(window.innerWidth, window.innerHeight)
+			})
+
+			function animate() {
+				// requestAnimationFrame(animate)
+				// mesh.rotation.x += 0.004
+				// mesh.rotation.y += 0.008
+				renderer.render(scene, camera)
+			}
+
+			animate()
+		</script>
+	</body>
+</html>
