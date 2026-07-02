@@ -4,6 +4,7 @@ import {
 	mirrorPtsH,
 	mirrorPtsV,
 	mirrorPtsVOnCenter,
+	objectMap,
 	pt,
 	pts2MaxX,
 	pts2MaxY,
@@ -477,11 +478,18 @@ export const c = (sw: number) => {
 }
 
 export const d = (sw: number) => {
-	const bPts = b(sw).tmp
-	const maxX = pts2MaxX(bPts.flat())
+	const {points, ridges, outlines, faces} = b(sw)
+	const maxX = pts2MaxX(Object.values(points))
 	const yAxis = maxX / 2
 
-	return returnWrapper(bPts.map((face) => mirrorPtsH(yAxis, face)))
+	return returnWrapper(
+		[],
+		// points
+		objectMap(points, (pt) => mirrorPtsH(yAxis, [pt])[0]),
+		ridges,
+		outlines,
+		faces
+	)
 }
 
 export const e = (sw: number) => {
