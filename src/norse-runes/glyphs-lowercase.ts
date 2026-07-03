@@ -1452,10 +1452,10 @@ export const s = (sw: number) => {
 }
 
 export const t = (sw: number) => {
-	const lPts = l(sw).tmp
+	const {points, ridges} = l(sw)
 
 	const sw2 = sw / 2
-	const dashWidth = pts2MaxX(lPts.flat()) - sw2
+	const dashWidth = pts2MaxX(Object.values(points)) - sw2
 	const [
 		leftTipBottom,
 		leftTip,
@@ -1467,74 +1467,89 @@ export const t = (sw: number) => {
 
 	const [rightTipInset] = translatePtsX(-sw, [rightTip])
 
-	const lGeo = l(sw).points
-	const outline = [
-		lGeo.topTipLeft,
-		lGeo.topTip,
-		lGeo.topTipRight,
+	return returnWrapper(
+		[],
+		// points
+		{
+			...points,
 
-		pt(lGeo.topTipRight[0], rightTipTop[1]),
-
-		rightTipTop,
-		rightTip,
-		rightTipBottom,
-
-		pt(lGeo.topTipRight[0], rightTipBottom[1]),
-
-		lGeo.upperTail_VerticalRight,
-		lGeo.tailTipLeft,
-		lGeo.tailTip,
-		lGeo.tailTipRight,
-		lGeo.bottomTip,
-		lGeo.bottomTipLeft,
-	]
-
-	return returnWrapper([
-		outline,
-
-		[lGeo.topTipLeft, lGeo.topTip, lGeo.topTipInset],
-		[lGeo.topTip, lGeo.topTipRight, lGeo.topTipInset],
-
-		[lGeo.topTipInset, lGeo.topTipRight, leftTipTop, leftTip],
-
-		[leftTip, leftTipTop, rightTipTop, rightTipInset],
-
-		[rightTipInset, rightTipTop, rightTip],
-		[rightTipInset, rightTip, rightTipBottom],
-
-		[leftTip, rightTipInset, rightTipBottom, leftTipBottom],
-
-		[
+			leftTipTop,
 			leftTip,
+			rightTipTop,
+			rightTipInset,
+			rightTip,
+
 			leftTipBottom,
-			lGeo.upperTail_VerticalRight,
-			lGeo.tailMiddle_verticalMiddle,
-		],
 
+			rightTipBottom,
+		},
+		// ridges
+		[ridges[0], ['leftTip', 'rightTipInset']],
+		// outlines
 		[
-			lGeo.upperTail_VerticalRight,
-			lGeo.tailTipLeft,
-			lGeo.tailTipInset,
-			lGeo.tailMiddle_verticalMiddle,
+			[
+				'topTipLeft',
+				'topTip',
+				'topTipRight',
+				'leftTipTop',
+				'rightTipTop',
+				'rightTip',
+				'rightTipBottom',
+				'leftTipBottom',
+				'upperTail_VerticalRight',
+				'tailTipLeft',
+				'tailTip',
+				'tailTipRight',
+				'bottomTip',
+				'bottomTipLeft',
+			],
 		],
-		[lGeo.tailTipLeft, lGeo.tailTip, lGeo.tailTipInset],
-		[lGeo.tailTipInset, lGeo.tailTip, lGeo.tailTipRight],
+		// faces
 		[
-			lGeo.tailMiddle_verticalMiddle,
-			lGeo.tailTipInset,
-			lGeo.tailTipRight,
-			lGeo.bottomTip,
-		],
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTip', 'topTipRight', 'topTipInset'],
 
-		[lGeo.bottomTipLeft, lGeo.tailMiddle_verticalMiddle, lGeo.bottomTip],
+			['topTipInset', 'topTipRight', 'leftTipTop', 'leftTip'],
 
-		[
-			lGeo.topTipLeft,
-			lGeo.topTipInset,
-			lGeo.tailMiddle_verticalMiddle,
-			lGeo.bottomTipLeft,
-		],
-	])
+			['leftTip', 'leftTipTop', 'rightTipTop', 'rightTipInset'],
+
+			['rightTipInset', 'rightTipTop', 'rightTip'],
+			['rightTipInset', 'rightTip', 'rightTipBottom'],
+
+			['leftTip', 'rightTipInset', 'rightTipBottom', 'leftTipBottom'],
+
+			[
+				'leftTip',
+				'leftTipBottom',
+				'upperTail_VerticalRight',
+				'tailMiddle_verticalMiddle',
+			],
+
+			[
+				'upperTail_VerticalRight',
+				'tailTipLeft',
+				'tailTipInset',
+				'tailMiddle_verticalMiddle',
+			],
+			['tailTipLeft', 'tailTip', 'tailTipInset'],
+			['tailTipInset', 'tailTip', 'tailTipRight'],
+			[
+				'tailMiddle_verticalMiddle',
+				'tailTipInset',
+				'tailTipRight',
+				'bottomTip',
+			],
+
+			['bottomTipLeft', 'tailMiddle_verticalMiddle', 'bottomTip'],
+
+			[
+				'topTipLeft',
+				'topTipInset',
+				'tailMiddle_verticalMiddle',
+				'bottomTipLeft',
+			],
+		]
+	)
 }
 
 export const u = (sw: number) => {
