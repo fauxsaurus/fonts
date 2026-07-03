@@ -636,6 +636,8 @@ export const g = (sw: number) => {
 }
 
 export const h = (sw: number) => {
+	const {points, ridges} = n(sw)
+
 	// vertical
 	const topTipLeft = pt(0, sw / 2)
 	const topTip = pt(sw / 2, 0)
@@ -652,47 +654,128 @@ export const h = (sw: number) => {
 	// arch
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const geometry = n(sw).points
+	// where the right side of the vertical meets the top of the diagonal
+	const diagonalUpperLeft = pt(sw, points.diagonalLowerLeft[1] - swD45)
 
-	const diagonalUpperLeft = pt(sw, geometry.diagonalLowerLeft[1] - swD45)
+	const {
+		diagonalTopRight,
+		bottomRightDiagonalInset,
 
-	const outline = [
-		topTipLeft,
-		topTip,
-		topTipRight,
-		diagonalUpperLeft,
-		geometry.diagonalTopRight,
-		geometry.rightTipRight, // wrong name
-		geometry.rightTip,
-		geometry.rightTipLeft, // wrong name
-		geometry.diagonalLowerRight,
-		geometry.diagonalLowerLeft,
-		geometry.leftTipRight, // wrong name
-		geometry.leftTip,
-		geometry.leftTipLeft, // wrong name
-	]
+		rightTipRight,
+		rightTip,
+		rightTipLeft,
+		diagonalLowerRight,
+		diagonalLowerLeft,
+		leftTipRight,
+		leftTip,
+		leftTipLeft,
+	} = points
 
-	return returnWrapper([
-		outline,
+	const diagonalLeftMiddle = points.topTipInset
 
-		...n(sw).tmp.filter((_, i) => i !== 0 && i !== 2 && i < 9),
+	return returnWrapper(
+		[],
+		//points
+		{
+			// @todo remove unused n points
+			...points,
 
-		[
-			geometry.topTipInset,
+			topTipInset,
 			diagonalUpperLeft,
-			geometry.diagonalTopRight,
-			geometry.bottomRightDiagonalInset,
+			diagonalLeftMiddle,
+			diagonalTopRight,
+			bottomRightDiagonalInset,
+
+			topTipLeft,
+			topTip,
+			topTipRight,
+
+			bottomTipInset,
+			bottomTipRight,
+			bottomTip,
+			bottomTipLeft,
+
+			rightTipRight,
+			rightTip,
+			rightTipLeft,
+			diagonalLowerRight,
+			diagonalLowerLeft,
+			leftTipRight,
+			leftTip,
+			leftTipLeft,
+		},
+		// ridges
+		[['topTipInset'], ridges[0]],
+		// outlines
+		[
+			[
+				'topTipLeft',
+				'topTip',
+				'topTipRight',
+				'diagonalUpperLeft',
+				'diagonalTopRight',
+				'rightTipRight', // wrong name
+				'rightTip',
+				'rightTipLeft', // wrong name
+				'diagonalLowerRight',
+				'diagonalLowerLeft',
+				'leftTipRight', // wrong name
+				'leftTip',
+				'leftTipLeft',
+			],
 		],
+		// faces
+		[
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTip', 'topTipRight', 'topTipInset'],
 
-		[topTipLeft, topTip, topTipInset],
-		[topTipInset, topTipRight, diagonalUpperLeft, geometry.topTipInset],
-		[topTip, topTipRight, topTipInset],
-
-		[bottomTipInset, bottomTipRight, bottomTip],
-		[bottomTipLeft, bottomTipInset, bottomTip],
-
-		[topTipLeft, topTipInset, bottomTipInset, bottomTipLeft],
-	])
+			[
+				'topTipInset',
+				'topTipRight',
+				'diagonalUpperLeft',
+				'diagonalLeftMiddle',
+			],
+			[
+				'diagonalLeftMiddle',
+				'diagonalUpperLeft',
+				'diagonalTopRight',
+				'bottomRightDiagonalInset',
+			],
+			[
+				'bottomRightDiagonalInset',
+				'diagonalTopRight',
+				'rightTipRight', // wrong name from n
+				'rightTipInset',
+			],
+			[
+				'rightTipInset',
+				'rightTipRight', // wrong name from n
+				'rightTip',
+			],
+			['rightTipLeft', 'rightTipInset', 'rightTip'],
+			[
+				'diagonalLowerRight',
+				'bottomRightDiagonalInset',
+				'rightTipInset',
+				'rightTipLeft',
+			],
+			[
+				'diagonalLeftMiddle',
+				'bottomRightDiagonalInset',
+				'diagonalLowerRight',
+				'diagonalLowerLeft',
+			],
+			[
+				'diagonalLeftMiddle',
+				'diagonalLowerLeft',
+				'leftTipRight',
+				'leftTipInset',
+			],
+			['leftTipInset', 'leftTipRight', 'leftTip'],
+			['leftTipLeft', 'leftTipInset', 'leftTip'],
+			['topTipLeft', 'topTipInset', 'leftTipInset', 'leftTipLeft'],
+		]
+	)
 }
 
 export const i = (sw: number) => {
@@ -1110,14 +1193,14 @@ export const n = (sw: number) => {
 				'topTipLeft',
 				'topTip',
 				'diagonalTopRight',
-				'rightTipRight', // 'wrong' 'name'
+				'rightTipRight', // wrong name
 				'rightTip',
-				'rightTipLeft', // 'wrong' 'name'
+				'rightTipLeft', // wrong name
 				'diagonalLowerRight',
 				'diagonalLowerLeft',
-				'leftTipRight', // 'wrong' 'name'
+				'leftTipRight', // wrong name
 				'leftTip',
-				'leftTipLeft', // 'wrong' 'name'
+				'leftTipLeft', // wrong name
 			],
 		],
 		// faces
