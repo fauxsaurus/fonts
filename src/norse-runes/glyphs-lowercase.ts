@@ -619,6 +619,7 @@ export const f = (sw: number) => {
 	)
 }
 
+/** @todo update */
 export const g = (sw: number) => {
 	const qPts = q(sw).tmp
 
@@ -651,7 +652,7 @@ export const h = (sw: number) => {
 	// arch
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const geometry = nGeometry(sw)
+	const geometry = n(sw).points
 
 	const diagonalUpperLeft = pt(sw, geometry.diagonalLowerLeft[1] - swD45)
 
@@ -902,7 +903,7 @@ export const l = (sw: number) => {
 export const m = (sw: number) => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
-	const geometry = nGeometry(sw)
+	const geometry = n(sw).points
 
 	const {
 		topTipLeft: topLeftTipLeft,
@@ -946,7 +947,7 @@ export const m = (sw: number) => {
 		topTipInset,
 
 		leftTip,
-		// wrong names in nGeometry
+		// wrong names in `n(sw).points`
 		leftTipLeft: leftTipRight,
 		leftTipRight: leftTipLeft,
 		leftTipInset,
@@ -1036,7 +1037,7 @@ export const m = (sw: number) => {
 	])
 }
 
-const nGeometry = (sw: number) => {
+export const n = (sw: number) => {
 	const sw2 = sw / 2 // half stroke width
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)
 
@@ -1074,94 +1075,91 @@ const nGeometry = (sw: number) => {
 		diagonalLowerRight,
 	])
 
-	return {
-		topTip,
-		topTipLeft,
-		topTipInset,
-
-		leftTip,
-		leftTipLeft,
-		leftTipRight,
-		leftTipInset,
-
-		rightTip,
-		rightTipLeft,
-		rightTipRight,
-		rightTipInset,
-
-		diagonalTopRight,
-		diagonalLowerLeft,
-		diagonalLowerRight,
-		bottomRightDiagonalInset,
-	}
-}
-
-export const n = (sw: number) => {
-	const {
-		topTip,
-		topTipLeft,
-		topTipInset,
-
-		leftTip,
-		leftTipLeft,
-		leftTipRight,
-		leftTipInset,
-
-		rightTip,
-		rightTipLeft,
-		rightTipRight,
-		rightTipInset,
-
-		diagonalTopRight,
-		diagonalLowerLeft,
-		diagonalLowerRight,
-		bottomRightDiagonalInset,
-	} = nGeometry(sw)
-
-	const outline = [
-		topTipLeft,
-		topTip,
-		diagonalTopRight,
-		rightTipRight, // wrong name
-		rightTip,
-		rightTipLeft, // wrong name
-		diagonalLowerRight,
-		diagonalLowerLeft,
-		leftTipRight, // wrong name
-		leftTip,
-		leftTipLeft, // wrong name
-	]
-
-	return returnWrapper([
-		outline,
-
-		[topTipLeft, topTip, topTipInset],
-		[topTip, diagonalTopRight, bottomRightDiagonalInset, topTipInset],
-		[
-			bottomRightDiagonalInset,
+	return returnWrapper(
+		[],
+		// points
+		{
+			topTipLeft,
+			topTip,
+			topTipInset,
 			diagonalTopRight,
+			bottomRightDiagonalInset,
 			rightTipRight,
 			rightTipInset,
-		],
-		[rightTipInset, rightTipRight, rightTip],
-		[rightTipLeft, rightTipInset, rightTip],
-		[
-			diagonalLowerRight,
-			bottomRightDiagonalInset,
-			rightTipInset,
+			rightTip,
 			rightTipLeft,
-		],
-		[
-			topTipInset,
-			bottomRightDiagonalInset,
 			diagonalLowerRight,
 			diagonalLowerLeft,
+			leftTipRight,
+			leftTipInset,
+			leftTip,
+			leftTipLeft,
+		},
+		// ridges
+		[
+			[
+				'leftTipInset',
+				'topTipInset',
+				'bottomRightDiagonalInset', // @todo is this the right pt?
+				'rightTipInset',
+			],
 		],
-		[topTipInset, diagonalLowerLeft, leftTipRight, leftTipInset],
-		[leftTipInset, leftTipRight, leftTip],
-		[leftTipLeft, leftTipInset, leftTip],
-		[topTipLeft, topTipInset, leftTipInset, leftTipLeft],
-	])
+		// outline
+		[
+			[
+				'topTipLeft',
+				'topTip',
+				'diagonalTopRight',
+				'rightTipRight', // 'wrong' 'name'
+				'rightTip',
+				'rightTipLeft', // 'wrong' 'name'
+				'diagonalLowerRight',
+				'diagonalLowerLeft',
+				'leftTipRight', // 'wrong' 'name'
+				'leftTip',
+				'leftTipLeft', // 'wrong' 'name'
+			],
+		],
+		// faces
+		[
+			['topTipLeft', 'topTip', 'topTipInset'],
+			[
+				'topTip',
+				'diagonalTopRight',
+				'bottomRightDiagonalInset',
+				'topTipInset',
+			],
+			[
+				'bottomRightDiagonalInset',
+				'diagonalTopRight',
+				'rightTipRight',
+				'rightTipInset',
+			],
+			['rightTipInset', 'rightTipRight', 'rightTip'],
+			['rightTipLeft', 'rightTipInset', 'rightTip'],
+			[
+				'diagonalLowerRight',
+				'bottomRightDiagonalInset',
+				'rightTipInset',
+				'rightTipLeft',
+			],
+			[
+				'topTipInset',
+				'bottomRightDiagonalInset',
+				'diagonalLowerRight',
+				'diagonalLowerLeft',
+			],
+			[
+				'topTipInset',
+				'diagonalLowerLeft',
+				'leftTipRight',
+				'leftTipInset',
+			],
+			['leftTipInset', 'leftTipRight', 'leftTip'],
+			['leftTipLeft', 'leftTipInset', 'leftTip'],
+			['topTipLeft', 'topTipInset', 'leftTipInset', 'leftTipLeft'],
+		]
+	)
 }
 
 export const o = (sw: number) => {
