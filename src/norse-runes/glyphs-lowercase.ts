@@ -608,7 +608,15 @@ export const e = (sw: number) => {
 }
 
 export const f = (sw: number) => {
-	return returnWrapper(t(sw).tmp.map((stroke) => mirrorPtsV(1024, stroke)))
+	const {points, ridges, outlines, faces} = t(sw)
+
+	return returnWrapper(
+		[],
+		objectMap(points, (pt) => mirrorPtsV(1024, [pt])[0]),
+		ridges,
+		outlines,
+		faces
+	)
 }
 
 export const g = (sw: number) => {
