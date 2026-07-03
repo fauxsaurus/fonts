@@ -635,6 +635,7 @@ export const g = (sw: number) => {
 	)
 }
 
+/** @todo fix 2D shading (*if* necessary--3D will likely make it obsolete) */
 export const h = (sw: number) => {
 	const {points, ridges} = n(sw)
 
