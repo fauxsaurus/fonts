@@ -6,6 +6,7 @@ import {
 	pts2MaxX,
 	pts2MinX,
 	pts2MinY,
+	returnWrapper,
 	rotatePts,
 	translatePt,
 	translatePts,
@@ -23,6 +24,61 @@ import {
 
 // stroke component
 export const dot = (sw: number) => {
+	const dotMinY = 1024 - sw * 3.5
+	const dotHeight = sw * 2
+
+	const [
+		topDotLeft,
+		topDot,
+		topDotRight,
+		bottomDotLeft,
+		bottomDot,
+		bottomDotRight,
+	] = vertical(sw, dotMinY, dotMinY + dotHeight)
+
+	const dotInset = pt(topDot[0], topDot[1] + sw)
+	const topDotInset = dotInset // pt(topDot[0], topDot[1] + sw)
+	const bottomDotInset = dotInset // pt(bottomDot[0], bottomDot[1] - sw)
+
+	return returnWrapper(
+		[],
+		// points
+		{
+			topDotLeft,
+			topDot,
+			topDotRight,
+			bottomDotLeft,
+			bottomDot,
+			bottomDotRight,
+			topDotInset,
+			bottomDotInset,
+		},
+		// outline
+		[
+			[
+				'topDotLeft',
+				'topDot',
+				'topDotRight',
+				'bottomDotLeft',
+				'bottomDot',
+				'bottomDotRight',
+			],
+		],
+		// ridges (these are probably the same...)
+		[['topDotInset', 'bottomDotInset']],
+		// faces
+		[
+			['topDotLeft', 'topDot', 'topDotInset'],
+			['topDot', 'topDotRight', 'topDotInset'],
+			['topDotInset', 'topDotRight', 'bottomDotLeft'],
+			['bottomDotInset', 'bottomDotLeft', 'bottomDot'],
+			['bottomDotInset', 'bottomDot', 'bottomDotRight'],
+			['topDotLeft', 'topDotInset', 'bottomDotRight'],
+		]
+	)
+}
+
+export const dotOld = (sw: number) => {
 	const dotMinY = 1024 - sw * 3.5
 	const dotHeight = sw * 2
 

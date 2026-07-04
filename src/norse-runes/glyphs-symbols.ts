@@ -1,9 +1,9 @@
 import {o} from './glyphs-lowercase'
-import {dot} from './stroke-components'
+import {dotOld} from './stroke-components'
 import {mirrorPtsV, pts2MinY, returnWrapper, translatePtsY} from './util'
 
 export const colon = (sw: number) => {
-	const {outline, faces} = dot(sw) // positioned at the height it appears in i
+	const {outline, faces} = dotOld(sw) // positioned at the height it appears in i
 
 	const minY = pts2MinY(o(sw).tmp.flat())
 	const midY = (2048 - minY) / 2 + minY

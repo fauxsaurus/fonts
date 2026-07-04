@@ -809,49 +809,84 @@ export const i = (sw: number) => {
 		]
 	)
 
-	const outlineStem = [
-		topTipLeft,
-		topTip,
-		topTipRight,
-		upperTail_VerticalRight,
-		tailTipLeft,
-		tailTip,
-		tailTipRight,
-		bottomTip,
-		bottomTipLeft,
-	]
+	return returnWrapper(
+		[],
+		//points
+		{
+			...dotGeometry.points,
 
-	return returnWrapper([
-		dotGeometry.outline,
-		outlineStem,
-
-		...dotGeometry.faces,
-
-		// vertical
-		[topTipLeft, topTip, topTipInset],
-		[topTip, topTipRight, topTipInset],
-
-		[
-			topTipInset,
+			topTipLeft,
+			topTip,
 			topTipRight,
 			upperTail_VerticalRight,
-			tailMiddle_verticalMiddle,
-		],
-
-		[
-			upperTail_VerticalRight,
 			tailTipLeft,
-			tailTipInset,
+			tailTip,
+			tailTipRight,
+			bottomTip,
+			bottomTipLeft,
+
+			topTipInset,
 			tailMiddle_verticalMiddle,
+			tailTipInset,
+		},
+		// ridges
+		[
+			dotGeometry.ridges[0],
+			['topTipInset', 'tailMiddle_verticalMiddle', 'tailTipInset'],
 		],
-		[tailTipLeft, tailTip, tailTipInset],
-		[tailTipInset, tailTip, tailTipRight],
-		[tailMiddle_verticalMiddle, tailTipInset, tailTipRight, bottomTip],
+		// outlines
+		[
+			dotGeometry.outlines[0],
+			[
+				'topTipLeft',
+				'topTip',
+				'topTipRight',
+				'upperTail_VerticalRight',
+				'tailTipLeft',
+				'tailTip',
+				'tailTipRight',
+				'bottomTip',
+				'bottomTipLeft',
+			],
+		],
+		// faces
+		[
+			...dotGeometry.faces,
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTip', 'topTipRight', 'topTipInset'],
 
-		[bottomTipLeft, tailMiddle_verticalMiddle, bottomTip],
+			[
+				'topTipInset',
+				'topTipRight',
+				'upperTail_VerticalRight',
+				'tailMiddle_verticalMiddle',
+			],
 
-		[topTipLeft, topTipInset, tailMiddle_verticalMiddle, bottomTipLeft],
-	])
+			[
+				'upperTail_VerticalRight',
+				'tailTipLeft',
+				'tailTipInset',
+				'tailMiddle_verticalMiddle',
+			],
+			['tailTipLeft', 'tailTip', 'tailTipInset'],
+			['tailTipInset', 'tailTip', 'tailTipRight'],
+			[
+				'tailMiddle_verticalMiddle',
+				'tailTipInset',
+				'tailTipRight',
+				'bottomTip',
+			],
+
+			['bottomTipLeft', 'tailMiddle_verticalMiddle', 'bottomTip'],
+
+			[
+				'topTipLeft',
+				'topTipInset',
+				'tailMiddle_verticalMiddle',
+				'bottomTipLeft',
+			],
+		]
+	)
 }
 
 export const j = (sw: number) => {
