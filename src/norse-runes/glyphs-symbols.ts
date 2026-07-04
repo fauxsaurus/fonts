@@ -1,23 +1,66 @@
 import {o} from './glyphs-lowercase'
-import {dotOld} from './stroke-components'
+import {dot} from './stroke-components'
 import {mirrorPtsV, pts2MinY, returnWrapper, translatePtsY} from './util'
 
 export const colon = (sw: number) => {
-	const {outline, faces} = dotOld(sw) // positioned at the height it appears in i
+	const dotGeometry = dot(sw)
 
-	const minY = pts2MinY(o(sw).tmp.flat())
+	// @todo replace this with one of the line (ascenderLine, baseLine) functions instead of relying on a reconstruction of "o"
+	const minY = pts2MinY(Object.values(o(sw).points))
 	const midY = (2048 - minY) / 2 + minY
 
 	// amount to move dot down to be in line with lower case letters
-	const adjValue = minY - pts2MinY(faces.flat())
+	const adjValue = minY - pts2MinY(Object.values(dotGeometry.points))
 
-	const loweredDotFaces = faces.map((face) => translatePtsY(adjValue, face))
+	/** @note returns a camelCasedStringWithAPrefix */
+	const appendPrefix = (prefix: string, key: string) =>
+		`${prefix}${key[0].toLocaleUpperCase() + key.slice(1)}`
 
-	return returnWrapper([
-		translatePtsY(adjValue, outline),
-		mirrorPtsV(midY, translatePtsY(adjValue, outline)),
+	const lowerDotPts = Object.fromEntries(
+		Object.entries(dotGeometry.points).map(([key, pt]) => [
+			appendPrefix('lower', key),
+			translatePtsY(adjValue, [pt])[0],
+		])
+	)
 
-		...loweredDotFaces,
-		...loweredDotFaces.map((face) => mirrorPtsV(midY, face)),
-	])
+	const upperDotPts = Object.fromEntries(
+		Object.entries(lowerDotPts).map(([key, pt]) => {
+			const newKey = key.replace(/^lower/, 'upper')
+
+			return [newKey, mirrorPtsV(midY, [pt])[0]]
+		})
+	)
+
+	return returnWrapper(
+		[],
+		// points
+		{...lowerDotPts, ...upperDotPts},
+		// ridges
+		[
+			...dotGeometry.ridges.map((ridge) =>
+				ridge.map((key) => appendPrefix('lower', key))
+			),
+			...dotGeometry.ridges.map((ridge) =>
+				ridge.map((key) => appendPrefix('upper', key))
+			),
+		],
+		// outlines
+		[
+			...dotGeometry.outlines.map((ridge) =>
+				ridge.map((key) => appendPrefix('lower', key))
+			),
+			...dotGeometry.outlines.map((ridge) =>
+				ridge.map((key) => appendPrefix('upper', key))
+			),
+		],
+		// faces
+		[
+			...dotGeometry.faces.map((ridge) =>
+				ridge.map((key) => appendPrefix('lower', key))
+			),
+			...dotGeometry.faces.map((ridge) =>
+				ridge.map((key) => appendPrefix('upper', key))
+			),
+		]
+	)
 }
