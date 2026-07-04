@@ -889,6 +889,7 @@ export const i = (sw: number) => {
 	)
 }
 
+/** @todo update */
 export const j = (sw: number) => {
 	const [verticalPts, _ltPts, tailPts] = g(sw).tmp
 	const [dot] = i(sw).tmp
@@ -902,6 +903,7 @@ export const j = (sw: number) => {
 	return returnWrapper(strokes.map((pts) => translatePtsX(-minX, pts)))
 }
 
+/** @todo update */
 export const k = (sw: number) => {
 	const [cPts] = c(sw).tmp
 
@@ -1365,6 +1367,7 @@ export const p = (sw: number) => {
 	return returnWrapper(bPts.map((face) => mirrorPtsV(midPt[1], face)))
 }
 
+/** @todo update */
 export const q = (sw: number) => {
 	const pPts = p(sw).tmp
 	const centerX = pts2MaxX(pPts.flat()) / 2
@@ -1677,6 +1680,7 @@ export const t = (sw: number) => {
 	)
 }
 
+/** @todo update */
 export const u = (sw: number) => {
 	const [nPts] = flatN(sw)
 
@@ -1690,6 +1694,7 @@ export const u = (sw: number) => {
 	return returnWrapper([left, _, translatePtsX(-sw, right)])
 }
 
+/** @todo update */
 export const v = (sw: number) => {
 	const [nPts] = flatN(sw)
 
@@ -1699,10 +1704,12 @@ export const v = (sw: number) => {
 	return returnWrapper([mirrorPtsH(midX, mirrorPtsV(midY, nPts))])
 }
 
+/** @todo update */
 export const w = (sw: number) => {
 	return returnWrapper(m(sw).tmp.map(mirrorPtsVOnCenter))
 }
 
+/** @todo update */
 /** @todo +pts2MidX/Y */
 export const x = (sw: number) => {
 	const sw2D45 = sw / Math.SQRT2 // half diagonal stroke width (@ 45 deg angle)
@@ -1718,6 +1725,7 @@ export const x = (sw: number) => {
 	])
 }
 
+/** @todo update */
 export const y = (sw: number) => {
 	const [uPts] = v(sw).tmp
 	const [verticalPts, tailPts] = j(sw).tmp
@@ -1734,6 +1742,7 @@ export const y = (sw: number) => {
 	])
 }
 
+/** @todo update */
 export const z = (sw: number) => {
 	const sPts = s(sw).tmp
 
