@@ -1548,69 +1548,92 @@ export const s = (sw: number) => {
 		leftTipLeft[1]
 	)
 
-	const outline = [
-		leftTip,
-		topTipLeft,
-		topTip,
-		topTipRight,
-
-		upperDiagonalLowerIntersection,
-		rightTipLeft,
-
-		rightTip,
-		bottomTipLeft,
-		bottomTip,
-		bottomTipRight,
-
-		lowerDiagonalUpperIntersection,
-		leftTipLeft,
-	]
-
-	return returnWrapper([
-		outline,
-
-		// dash,
-
-		[leftTip, topTipLeft, topTipInset, leftTipInset],
-
-		[topTipLeft, topTip, topTipInset],
-		[topTipInset, topTip, topTipRight],
-
-		[
-			leftTipInset,
+	return returnWrapper(
+		[],
+		//points
+		{
+			leftTip,
+			topTipLeft,
 			topTipInset,
-			topTipRight,
-			upperDiagonalLowerIntersection,
-		],
-
-		[
 			leftTipInset,
+			topTip,
+			topTipRight,
 			upperDiagonalLowerIntersection,
 			rightTipLeft,
 			rightTipInset,
-		],
-
-		[rightTipInset, rightTipLeft, rightTip],
-		[bottomTipInset, rightTipInset, rightTip, bottomTipLeft],
-
-		[bottomTip, bottomTipInset, bottomTipLeft],
-		[bottomTipRight, bottomTipInset, bottomTip],
-		[
+			rightTip,
+			bottomTipInset,
+			bottomTipLeft,
+			bottomTip,
 			bottomTipRight,
 			lowerDiagonalUpperIntersection,
-			rightTipInset,
-			bottomTipInset,
-		],
-
-		[
 			leftTipLeft,
-			leftTipInset,
-			rightTipInset,
-			lowerDiagonalUpperIntersection,
-		],
+		},
+		// ridges
+		[['topTipInset', 'leftTipInset', 'rightTipInset', 'bottomTipInset']],
+		// outlines
+		[
+			[
+				'leftTip',
+				'topTipLeft',
+				'topTip',
+				'topTipRight',
 
-		[leftTip, leftTipInset, leftTipLeft],
-	])
+				'upperDiagonalLowerIntersection',
+				'rightTipLeft',
+
+				'rightTip',
+				'bottomTipLeft',
+				'bottomTip',
+				'bottomTipRight',
+
+				'lowerDiagonalUpperIntersection',
+				'leftTipLeft',
+			],
+		],
+		// faces
+		[
+			['leftTip', 'topTipLeft', 'topTipInset', 'leftTipInset'],
+
+			['topTipLeft', 'topTip', 'topTipInset'],
+			['topTipInset', 'topTip', 'topTipRight'],
+
+			[
+				'leftTipInset',
+				'topTipInset',
+				'topTipRight',
+				'upperDiagonalLowerIntersection',
+			],
+
+			[
+				'leftTipInset',
+				'upperDiagonalLowerIntersection',
+				'rightTipLeft',
+				'rightTipInset',
+			],
+
+			['rightTipInset', 'rightTipLeft', 'rightTip'],
+			['bottomTipInset', 'rightTipInset', 'rightTip', 'bottomTipLeft'],
+
+			['bottomTip', 'bottomTipInset', 'bottomTipLeft'],
+			['bottomTipRight', 'bottomTipInset', 'bottomTip'],
+			[
+				'bottomTipRight',
+				'lowerDiagonalUpperIntersection',
+				'rightTipInset',
+				'bottomTipInset',
+			],
+
+			[
+				'leftTipLeft',
+				'leftTipInset',
+				'rightTipInset',
+				'lowerDiagonalUpperIntersection',
+			],
+
+			['leftTip', 'leftTipInset', 'leftTipLeft'],
+		]
+	)
 }
 
 export const t = (sw: number) => {
