@@ -39,12 +39,6 @@ function App() {
 						<NorseRunes key="capital" fontSize={fontSizeLarge}>
 							Ghost Giant
 						</NorseRunes>
-						<NorseRunes
-							key="unused-dependencies"
-							fontSize={fontSizeLarge}
-						>
-							c
-						</NorseRunes>
 					</div>
 				</div>
 
