@@ -1086,76 +1086,157 @@ export const m = (sw: number) => {
 
 	const middleCenter = avgPts([upperCenter, lowerCenter])
 
-	const outline = [
-		topLeftTipLeft,
+	// mirrored points
+	const [
+		rightTopLeftTip,
+		rightTopTipInset,
+		rightTopTipLeft,
+		rightTopTip,
+
+		rightLeftTipInset,
+
+		rightLeftTipRight,
+		rightLeftTip,
+		rightLeftTipLeft,
+		rightDiagonalLowerLeft,
+	] = mirrorPtsH(lowerCenter[0], [
 		topLeftTip,
+		topTipInset,
+		topTipLeft,
+		topTip,
 
-		upperCenter,
+		leftTipInset,
 
-		topRightTip,
-		topRightTipRight,
+		leftTipRight,
+		leftTip,
+		leftTipLeft,
+		diagonalLowerLeft,
+	])
 
-		bottomRightTipLeft,
-		bottomRightTip,
-		bottomRightTipRight,
-
-		innerRight,
-
-		lowerCenter,
-
-		innerLeft,
-
-		lowerLeftTipRight,
-		lowerLeftTip,
-		lowerLeftTipLeft,
-	]
-
-	return returnWrapper([
-		outline,
-
-		// top left tip
-		[topTipLeft, topTip, topTipInset],
-
-		// upper \
-		[topLeftTip, upperCenter, middleCenter, topTipInset],
-		// upper /
-		mirrorPtsH(lowerCenter[0], [
+	return returnWrapper(
+		[],
+		//points
+		{
+			topTipLeft,
+			topTip,
+			topTipInset,
 			topLeftTip,
+
 			upperCenter,
 			middleCenter,
-			topTipInset,
-		]),
-		// right vertical
-		mirrorPtsH(lowerCenter[0], [topTipLeft, topTip, topTipInset]),
-		mirrorPtsH(lowerCenter[0], [
-			topTipLeft,
-			topTipInset,
-			leftTipInset,
-			leftTipRight,
-		]),
-		mirrorPtsH(lowerCenter[0], [leftTipRight, leftTipInset, leftTip]),
-		mirrorPtsH(lowerCenter[0], [leftTipInset, leftTipLeft, leftTip]),
-		mirrorPtsH(lowerCenter[0], [
-			topTipInset,
-			diagonalLowerLeft,
-			leftTipLeft,
-			leftTipInset,
-		]),
-		// lower /
-		mirrorPtsH(lowerCenter[0], [
-			topTipInset,
-			middleCenter,
 			lowerCenter,
+
+			rightTopLeftTip,
+			rightTopTipInset,
+			rightTopTipLeft,
+			rightTopTip,
+			rightLeftTipInset,
+			rightLeftTipRight,
+			leftTipInset,
+			rightLeftTip,
+			rightLeftTipLeft,
+			rightDiagonalLowerLeft,
+
 			diagonalLowerLeft,
-		]),
-		// lower \
-		[topTipInset, middleCenter, lowerCenter, diagonalLowerLeft],
-		// left vertical
-		[topTipInset, diagonalLowerLeft, leftTipLeft, leftTipInset],
-		[leftTipInset, leftTipLeft, leftTip],
-		[leftTipRight, leftTipInset, leftTip],
-		[topTipLeft, topTipInset, leftTipInset, leftTipRight],
-	])
+
+			leftTipLeft,
+			leftTip,
+			leftTipRight,
+
+			topLeftTipLeft,
+			topRightTip,
+			topRightTipRight,
+			bottomRightTipLeft,
+			bottomRightTip,
+			bottomRightTipRight,
+			innerRight,
+			innerLeft,
+			lowerLeftTipRight,
+			lowerLeftTip,
+			lowerLeftTipLeft,
+		},
+		// ridges
+		[
+			[
+				'leftTipInset',
+				'topTipInset',
+				'middleCenter',
+				'rightTopTipInset',
+				'rightLeftTipInset',
+			],
+		],
+		// outlines
+		[
+			[
+				'topLeftTipLeft',
+				'topLeftTip',
+
+				'upperCenter',
+
+				'topRightTip',
+				'topRightTipRight',
+
+				'bottomRightTipLeft',
+				'bottomRightTip',
+				'bottomRightTipRight',
+
+				'innerRight',
+
+				'lowerCenter',
+
+				'innerLeft',
+
+				'lowerLeftTipRight',
+				'lowerLeftTip',
+				'lowerLeftTipLeft',
+			],
+		],
+		// faces
+		[
+			// top left tip
+			['topTipLeft', 'topTip', 'topTipInset'],
+
+			// upper \
+			['topLeftTip', 'upperCenter', 'middleCenter', 'topTipInset'],
+			// upper /
+			[
+				'rightTopLeftTip',
+				'upperCenter',
+				'middleCenter',
+				'rightTopTipInset',
+			],
+			// right vertical
+			['rightTopTipLeft', 'rightTopTip', 'rightTopTipInset'],
+			[
+				'rightTopTipLeft',
+				'rightTopTipInset',
+				'rightLeftTipInset',
+				'rightLeftTipRight',
+			],
+			['rightLeftTipRight', 'rightLeftTipInset', 'rightLeftTip'],
+			['rightLeftTipInset', 'rightLeftTipLeft', 'rightLeftTip'],
+			[
+				'rightTopTipInset',
+				'rightDiagonalLowerLeft',
+				'rightLeftTipLeft',
+				'rightLeftTipInset',
+			],
+			// lower /
+			[
+				'rightTopTipInset',
+				'middleCenter',
+				'lowerCenter',
+				'rightDiagonalLowerLeft',
+			],
+			// lower \
+			['topTipInset', 'middleCenter', 'lowerCenter', 'diagonalLowerLeft'],
+			// left vertical
+			['topTipInset', 'diagonalLowerLeft', 'leftTipLeft', 'leftTipInset'],
+			['leftTipInset', 'leftTipLeft', 'leftTip'],
+			['leftTipRight', 'leftTipInset', 'leftTip'],
+			['topTipLeft', 'topTipInset', 'leftTipInset', 'leftTipRight'],
+		]
+	)
 }
 
 export const n = (sw: number) => {
