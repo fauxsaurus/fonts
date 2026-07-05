@@ -193,8 +193,7 @@ export const D = (sw: number) => {
 // }
 
 export const E = (sw: number) => {
-	const oPts = o(sw).tmp
-	const width = pts2MidX(oPts.flat()) + sw * 0.5
+	const width = pts2MidX(Object.values(o(sw).points)) + sw * 0.5
 
 	const {
 		outerTop,
@@ -250,26 +249,112 @@ export const E = (sw: number) => {
 		outerBottom,
 	]
 
-	return returnWrapper([
-		outline,
+	return returnWrapper(
+		[
+			outline,
 
-		[outerCenter, outerTop, topInset, middleCenter],
-		[outerTop, middleTop, topInset],
-		[topInset, middleTop, innerTop],
-		[middleCenter, topInset, innerTop, upperLeftHorizontal, middleCenter],
+			[outerCenter, outerTop, topInset, middleCenter],
+			[outerTop, middleTop, topInset],
+			[topInset, middleTop, innerTop],
+			[
+				middleCenter,
+				topInset,
+				innerTop,
+				upperLeftHorizontal,
+				middleCenter,
+			],
 
-		[middleCenter, upperLeftHorizontal, rightTipLeft, rightTipInset],
+			[middleCenter, upperLeftHorizontal, rightTipLeft, rightTipInset],
 
-		[rightTipInset, rightTipLeft, rightTip],
-		[rightTipInset, rightTip, rightTipRight],
+			[rightTipInset, rightTipLeft, rightTip],
+			[rightTipInset, rightTip, rightTipRight],
 
-		[middleCenter, rightTipInset, rightTipRight, lowerLeftHorizontal],
+			[middleCenter, rightTipInset, rightTipRight, lowerLeftHorizontal],
 
-		[middleCenter, lowerLeftHorizontal, innerBottom, bottomInset],
-		[bottomInset, innerBottom, middleBottom],
-		[bottomInset, middleBottom, outerBottom],
-		[outerCenter, middleCenter, bottomInset, outerBottom],
-	])
+			[middleCenter, lowerLeftHorizontal, innerBottom, bottomInset],
+			[bottomInset, innerBottom, middleBottom],
+			[bottomInset, middleBottom, outerBottom],
+			[outerCenter, middleCenter, bottomInset, outerBottom],
+		],
+		//points
+		{
+			outerCenter,
+			outerTop,
+			topInset,
+			middleCenter,
+			middleTop,
+			innerTop,
+			upperLeftHorizontal,
+			rightTipLeft,
+			rightTipInset,
+			rightTip,
+			rightTipRight,
+			lowerLeftHorizontal,
+			innerBottom,
+			bottomInset,
+			middleBottom,
+			outerBottom,
+		},
+		// ridges
+		[['topInset', 'middleCenter', 'bottomInset'], ['rightTipInset']],
+		// outlines
+		[
+			[
+				'outerCenter',
+				'outerTop',
+				'middleTop',
+				'innerTop',
+				'upperLeftHorizontal',
+				'rightTipLeft',
+				'rightTip',
+				'rightTipRight',
+				'lowerLeftHorizontal',
+				'innerBottom',
+				'middleBottom',
+				'outerBottom',
+			],
+		],
+		// faces
+		[
+			['outerCenter', 'outerTop', 'topInset', 'middleCenter'],
+			['outerTop', 'middleTop', 'topInset'],
+			['topInset', 'middleTop', 'innerTop'],
+			[
+				'middleCenter',
+				'topInset',
+				'innerTop',
+				'upperLeftHorizontal',
+				'middleCenter',
+			],
+
+			[
+				'middleCenter',
+				'upperLeftHorizontal',
+				'rightTipLeft',
+				'rightTipInset',
+			],
+
+			['rightTipInset', 'rightTipLeft', 'rightTip'],
+			['rightTipInset', 'rightTip', 'rightTipRight'],
+
+			[
+				'middleCenter',
+				'rightTipInset',
+				'rightTipRight',
+				'lowerLeftHorizontal',
+			],
+
+			[
+				'middleCenter',
+				'lowerLeftHorizontal',
+				'innerBottom',
+				'bottomInset',
+			],
+			['bottomInset', 'innerBottom', 'middleBottom'],
+			['bottomInset', 'middleBottom', 'outerBottom'],
+			['outerCenter', 'middleCenter', 'bottomInset', 'outerBottom'],
+		]
+	)
 }
 
 export const FOld = (sw: number) => {
