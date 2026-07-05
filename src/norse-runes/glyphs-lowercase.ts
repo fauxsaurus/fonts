@@ -1360,11 +1360,18 @@ export const o = (sw: number) => {
 }
 
 export const p = (sw: number) => {
-	const bPts = b(sw).tmp
-	const maxX = pts2MaxX(bPts.flat())
-	const midPt = bPts.flat().find((pt) => pt[0] === maxX)!
+	const {points, ridges, outlines, faces} = b(sw)
+	const maxX = pts2MaxX(Object.values(points))
+	const midPt = Object.values(points).find((pt) => pt[0] === maxX)!
 
-	return returnWrapper(bPts.map((face) => mirrorPtsV(midPt[1], face)))
+	return returnWrapper(
+		[],
+		// points
+		objectMap(points, (pt) => mirrorPtsV(midPt[1], [pt])[0]),
+		ridges,
+		outlines,
+		faces
+	)
 }
 
 /** @todo update */
