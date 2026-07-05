@@ -1073,15 +1073,7 @@ export const m = (sw: number) => {
 		leftTipRight: leftTipLeft,
 		leftTipInset,
 
-		// rightTip,
-		// rightTipLeft,
-		// rightTipRight,
-		// rightTipInset,
-
-		// diagonalTopRight,
 		diagonalLowerLeft,
-		// diagonalLowerRight,
-		// bottomRightDiagonalInset,
 	} = geometry
 
 	const middleCenter = avgPts([upperCenter, lowerCenter])
