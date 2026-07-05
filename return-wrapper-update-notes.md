@@ -15,6 +15,7 @@ copy paste the following after `tmp` in `returnWrapper()`
 Array.from(
 	new Set(
 		``
+			.replace(/\[|\]/g, '')
 			.split(/\n/g)
 			.join(',')
 			.replace(/\t|\s/g, '')
