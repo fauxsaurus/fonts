@@ -701,107 +701,145 @@ export const N = (sw: number) => {
 		])
 	)
 
-	const outline = [
-		topLeftTipLeft,
-		topLeftTip,
-		topLeftTipRight,
-
-		upperLeftDiagonalIntersection,
-		upperRightDiagonalIntersection,
-
-		topRightTipLeft,
-		topRightTip,
-		topRightTipRight,
-
-		bottomRightTipLeft,
-		bottomRightTip,
-		bottomRightTipRight,
-
-		lowerRightDiagonalIntersection,
-		lowerLeftDiagonalIntersection,
-
-		bottomLeftTipRight, // wrong name
-		bottomLeftTip,
-		bottomLeftTipLeft, // wrong name
-	]
-
-	return returnWrapper([
-		outline,
-
-		// left vertical
-		[topLeftTipLeft, topLeftTip, topLeftTipInset],
-		[topLeftTip, topLeftTipRight, topLeftTipInset],
-
-		[
+	return returnWrapper(
+		[],
+		//points
+		{
+			topLeftTipLeft,
+			topLeftTip,
 			topLeftTipInset,
 			topLeftTipRight,
 			upperLeftDiagonalIntersection,
 			middleLeftDiagonalIntersection,
-		],
-
-		// upper diagonal
-		[
-			middleLeftDiagonalIntersection,
-			upperLeftDiagonalIntersection,
 			upperRightDiagonalIntersection,
 			middleRightDiagonalIntersection,
-		],
-
-		// right vertical
-		[
-			upperRightDiagonalIntersection,
 			topRightTipLeft,
 			topRightTipInset,
-			middleRightDiagonalIntersection,
-		],
-
-		[topRightTipLeft, topRightTip, topRightTipInset],
-		[topRightTip, topRightTipRight, topRightTipInset],
-
-		[
-			topRightTipInset,
+			topRightTip,
 			topRightTipRight,
 			bottomRightTipLeft,
 			bottomRightTipInset,
-		],
-
-		[bottomRightTipInset, bottomRightTipLeft, bottomRightTip],
-		[bottomRightTipInset, bottomRightTip, bottomRightTipRight],
-
-		[
-			lowerRightDiagonalIntersection,
-			middleRightDiagonalIntersection,
-			bottomRightTipInset,
+			bottomRightTip,
 			bottomRightTipRight,
-		],
-
-		// lower diagonal
-		[
-			middleLeftDiagonalIntersection,
-			middleRightDiagonalIntersection,
 			lowerRightDiagonalIntersection,
 			lowerLeftDiagonalIntersection,
-		],
-
-		// left vertical continued
-		[
-			middleLeftDiagonalIntersection,
-			lowerLeftDiagonalIntersection,
-			// @note this name may be incorrect, but everything else relies on the wrong name...
 			bottomLeftTipRight,
 			bottomLeftTipInset,
-		],
-
-		[bottomLeftTipInset, bottomLeftTipRight, bottomLeftTip],
-		[bottomLeftTipInset, bottomLeftTipLeft, bottomLeftTip],
-
-		[
-			topLeftTipLeft,
-			topLeftTipInset,
-			bottomLeftTipInset,
+			bottomLeftTip,
 			bottomLeftTipLeft,
+		},
+		// ridges
+		[
+			['topLeftTipInset', 'bottomLeftTipInset'],
+			['topRightTipInset', 'bottomLeftTipInset'],
+			[
+				'middleLeftDiagonalIntersection',
+				'middleRightDiagonalIntersection',
+			],
 		],
-	])
+		// outlines
+		[
+			[
+				'topLeftTipLeft',
+				'topLeftTip',
+				'topLeftTipRight',
+
+				'upperLeftDiagonalIntersection',
+				'upperRightDiagonalIntersection',
+
+				'topRightTipLeft',
+				'topRightTip',
+				'topRightTipRight',
+
+				'bottomRightTipLeft',
+				'bottomRightTip',
+				'bottomRightTipRight',
+
+				'lowerRightDiagonalIntersection',
+				'lowerLeftDiagonalIntersection',
+
+				'bottomLeftTipRight', // wrong name
+				'bottomLeftTip',
+				'bottomLeftTipLeft', // wrong name
+			],
+		],
+		// faces
+		[
+			// left vertical
+			['topLeftTipLeft', 'topLeftTip', 'topLeftTipInset'],
+			['topLeftTip', 'topLeftTipRight', 'topLeftTipInset'],
+
+			[
+				'topLeftTipInset',
+				'topLeftTipRight',
+				'upperLeftDiagonalIntersection',
+				'middleLeftDiagonalIntersection',
+			],
+
+			// upper diagonal
+			[
+				'middleLeftDiagonalIntersection',
+				'upperLeftDiagonalIntersection',
+				'upperRightDiagonalIntersection',
+				'middleRightDiagonalIntersection',
+			],
+
+			// right vertical
+			[
+				'upperRightDiagonalIntersection',
+				'topRightTipLeft',
+				'topRightTipInset',
+				'middleRightDiagonalIntersection',
+			],
+
+			['topRightTipLeft', 'topRightTip', 'topRightTipInset'],
+			['topRightTip', 'topRightTipRight', 'topRightTipInset'],
+
+			[
+				'topRightTipInset',
+				'topRightTipRight',
+				'bottomRightTipLeft',
+				'bottomRightTipInset',
+			],
+
+			['bottomRightTipInset', 'bottomRightTipLeft', 'bottomRightTip'],
+			['bottomRightTipInset', 'bottomRightTip', 'bottomRightTipRight'],
+
+			[
+				'lowerRightDiagonalIntersection',
+				'middleRightDiagonalIntersection',
+				'bottomRightTipInset',
+				'bottomRightTipRight',
+			],
+
+			// lower diagonal
+			[
+				'middleLeftDiagonalIntersection',
+				'middleRightDiagonalIntersection',
+				'lowerRightDiagonalIntersection',
+				'lowerLeftDiagonalIntersection',
+			],
+
+			// left vertical continued
+			[
+				'middleLeftDiagonalIntersection',
+				'lowerLeftDiagonalIntersection',
+				// @note this name may be incorrect, but everything else relies on the wrong name...
+				'bottomLeftTipRight',
+				'bottomLeftTipInset',
+			],
+
+			['bottomLeftTipInset', 'bottomLeftTipRight', 'bottomLeftTip'],
+			['bottomLeftTipInset', 'bottomLeftTipLeft', 'bottomLeftTip'],
+
+			[
+				'topLeftTipLeft',
+				'topLeftTipInset',
+				'bottomLeftTipInset',
+				'bottomLeftTipLeft',
+			],
+		]
+	)
 }
 
 export const O = (sw: number) => {
