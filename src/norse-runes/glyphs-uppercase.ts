@@ -459,115 +459,198 @@ export const G = (sw: number) => {
 		lowerMiddleIntersection,
 	])
 
-	return returnWrapper([
-		[
+	return returnWrapper(
+		[],
+		//points
+		{
 			outerCenter,
 			outerTop,
 			middleTop,
-
 			upperTipLeft,
 			upperTip,
 			upperTipRight,
-
 			innerUpperIntersection,
-
 			innerCenter,
-
 			innerLowerIntersection,
 			innerLeftDashIntersection,
-
 			leftTipLeft,
 			leftTip,
 			leftTipRight,
-
 			outerRightDashInterSection,
-
 			innerBottom,
 			middleBottom,
 			outerBottom,
-		],
-
-		// outer upper /
-		[outerCenter, outerTop, upperMiddleIntersection, middleCenter],
-
-		// upper right tip
-		[outerTop, middleTop, upperMiddleIntersection],
-
-		// outer upper vertical |
-		[upperMiddleIntersection, middleTop, upperTipLeft, upperTipInset],
-
-		// upper tip
-		[upperTipInset, upperTipLeft, upperTip],
-		[upperTipRight, upperTipInset, upperTip],
-
-		// inner upper vertical |
-		[
-			upperTipRight,
-			innerUpperIntersection,
 			upperMiddleIntersection,
+			middleCenter,
 			upperTipInset,
-		],
-
-		// inner upper diagonal /
-		[
-			middleCenter,
-			upperMiddleIntersection,
-			innerUpperIntersection,
-			innerCenter,
-		],
-
-		// inner lower diagonal \
-		[
-			middleCenter,
-			innerCenter,
-			innerLowerIntersection,
 			lowerMiddleIntersection,
-		],
-
-		// inner lower vertical
-		[
-			innerLowerIntersection,
-			innerLeftDashIntersection,
-			middleDashIntersection,
-			lowerMiddleIntersection,
-		],
-
-		// lower dash
-		[
-			leftTipLeft,
-			leftTipInset,
-			middleDashIntersection,
-			innerLeftDashIntersection,
-		],
-
-		// left tip
-		[leftTip, leftTipInset, leftTipLeft],
-		[leftTip, leftTipRight, leftTipInset],
-
-		// upper dash
-		[
-			leftTipRight,
-			outerRightDashInterSection,
 			middleDashIntersection,
 			leftTipInset,
-		],
-
-		// outer right lower vertical
+		},
+		// ridges
 		[
-			middleDashIntersection,
-			outerRightDashInterSection,
-			middleBottom,
-			lowerMiddleIntersection,
+			[
+				'upperTipInset',
+				'upperMiddleIntersection',
+				'middleCenter',
+				'innerLowerIntersection',
+				'innerCenter',
+				'leftTipInset',
+			],
 		],
+		// outlines
+		[
+			[
+				'outerCenter',
+				'outerTop',
+				'middleTop',
 
-		// lower right corner
-		[outerBottom, lowerMiddleIntersection, middleBottom],
+				'upperTipLeft',
+				'upperTip',
+				'upperTipRight',
 
-		// outer lower diagonal \
-		[outerCenter, middleCenter, lowerMiddleIntersection, outerBottom],
+				'innerUpperIntersection',
 
-		// dot(sw, lowerMiddleIntersection),
-	])
+				'innerCenter',
+
+				'innerLowerIntersection',
+				'innerLeftDashIntersection',
+
+				'leftTipLeft',
+				'leftTip',
+				'leftTipRight',
+
+				'outerRightDashInterSection',
+
+				'innerBottom',
+				'middleBottom',
+				'outerBottom',
+			],
+		],
+		// faces
+		[
+			[
+				'outerCenter',
+				'outerTop',
+				'middleTop',
+
+				'upperTipLeft',
+				'upperTip',
+				'upperTipRight',
+
+				'innerUpperIntersection',
+
+				'innerCenter',
+
+				'innerLowerIntersection',
+				'innerLeftDashIntersection',
+
+				'leftTipLeft',
+				'leftTip',
+				'leftTipRight',
+
+				'outerRightDashInterSection',
+
+				'innerBottom',
+				'middleBottom',
+				'outerBottom',
+			],
+
+			// outer upper /
+			[
+				'outerCenter',
+				'outerTop',
+				'upperMiddleIntersection',
+				'middleCenter',
+			],
+
+			// upper right tip
+			['outerTop', 'middleTop', 'upperMiddleIntersection'],
+
+			// outer upper vertical |
+			[
+				'upperMiddleIntersection',
+				'middleTop',
+				'upperTipLeft',
+				'upperTipInset',
+			],
+
+			// upper tip
+			['upperTipInset', 'upperTipLeft', 'upperTip'],
+			['upperTipRight', 'upperTipInset', 'upperTip'],
+
+			// inner upper vertical |
+			[
+				'upperTipRight',
+				'innerUpperIntersection',
+				'upperMiddleIntersection',
+				'upperTipInset',
+			],
+
+			// inner upper diagonal /
+			[
+				'middleCenter',
+				'upperMiddleIntersection',
+				'innerUpperIntersection',
+				'innerCenter',
+			],
+
+			// inner lower diagonal \
+			[
+				'middleCenter',
+				'innerCenter',
+				'innerLowerIntersection',
+				'lowerMiddleIntersection',
+			],
+
+			// inner lower vertical
+			[
+				'innerLowerIntersection',
+				'innerLeftDashIntersection',
+				'middleDashIntersection',
+				'lowerMiddleIntersection',
+			],
+
+			// lower dash
+			[
+				'leftTipLeft',
+				'leftTipInset',
+				'middleDashIntersection',
+				'innerLeftDashIntersection',
+			],
+
+			// left tip
+			['leftTip', 'leftTipInset', 'leftTipLeft'],
+			['leftTip', 'leftTipRight', 'leftTipInset'],
+
+			// upper dash
+			[
+				'leftTipRight',
+				'outerRightDashInterSection',
+				'middleDashIntersection',
+				'leftTipInset',
+			],
+
+			// outer right lower vertical
+			[
+				'middleDashIntersection',
+				'outerRightDashInterSection',
+				'middleBottom',
+				'lowerMiddleIntersection',
+			],
+
+			// lower right corner
+			['outerBottom', 'lowerMiddleIntersection', 'middleBottom'],
+
+			// outer lower diagonal \
+			[
+				'outerCenter',
+				'middleCenter',
+				'lowerMiddleIntersection',
+				'outerBottom',
+			],
+		]
+	)
 }
 
 export const H = (sw: number) => {
