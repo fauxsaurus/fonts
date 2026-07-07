@@ -47,32 +47,32 @@ function App() {
 				</div>
 			</div>
 			<br />
-			<NorseRunes key="preview" fontSize={64} debug>
+			<NorseRunes key="preview" strokeWidth={64} debug>
 				JTL
 			</NorseRunes>
 			<div></div>
-			<NorseRunes key="unique glyphs" fontSize={64}>
+			<NorseRunes key="unique glyphs" strokeWidth={64}>
 				theiGsomrlanEbfNp:d
 			</NorseRunes>
-			<NorseRunes key="lower" fontSize={64}>
+			<NorseRunes key="lower" strokeWidth={64}>
 				{alphabet}
 			</NorseRunes>
-			<NorseRunes key="upper" fontSize={64}>
+			<NorseRunes key="upper" strokeWidth={64}>
 				{alphabet.toLocaleUpperCase()}
 			</NorseRunes>
-			<NorseRunes key="series-title" fontSize={64}>
+			<NorseRunes key="series-title" strokeWidth={64}>
 				Embers of the Nephilim:
 			</NorseRunes>
-			<NorseRunes key="b1-title" fontSize={64}>
+			<NorseRunes key="b1-title" strokeWidth={64}>
 				Ghost Girl and the Ghost Giant
 			</NorseRunes>
-			<NorseRunes key="b2-title" fontSize={64}>
+			<NorseRunes key="b2-title" strokeWidth={64}>
 				Ghost Girl and Genie vs Jack and Jill Frost
 			</NorseRunes>
-			<NorseRunes key="b3-title" fontSize={64}>
+			<NorseRunes key="b3-title" strokeWidth={64}>
 				Ghost Girl and the Lab Rats
 			</NorseRunes>
-			<NorseRunes key="b5-title" fontSize={64}>
+			<NorseRunes key="b5-title" strokeWidth={64}>
 				Ghost Girl and the Final Power
 			</NorseRunes>
 			<Braille>{alphabet.toLocaleUpperCase() + '.'}</Braille>

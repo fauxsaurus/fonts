@@ -8,6 +8,7 @@ type IProps = {
 	/** @note height of the <svg> element in rem units */
 	fontSize: number
 	kerning: number
+	/** @note the width of each font segment (a number relative to 2048) */
 	strokeWidth: number
 	twoTone?: boolean
 }
@@ -227,13 +228,23 @@ const Line = (props: IProps) => {
 
 export const NorseRunes = (props: {
 	children: string
-	fontSize: number
+	fontSize?: number
+	strokeWidth?: number
 	debug?: boolean
 }) => {
-	const {children = '', fontSize, debug = false} = props
+	const {
+		children = '',
+		fontSize = 12,
+		strokeWidth = 192,
+		debug = false,
+	} = props
 
 	return (
-		<Line {...{debug, fontSize}} kerning={192 * 2.5} strokeWidth={192}>
+		<Line
+			{...{debug, fontSize}}
+			kerning={192 * 2.5}
+			strokeWidth={strokeWidth}
+		>
 			{children}
 		</Line>
 	)
