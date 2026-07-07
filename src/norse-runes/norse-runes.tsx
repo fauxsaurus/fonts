@@ -1,5 +1,12 @@
 import * as glyphs from './glyphs'
-import {pts2MaxX, pts2MaxY, translatePtsX, type IPt} from './util'
+import {
+	pt,
+	pts2MaxX,
+	pts2MaxY,
+	translatePtsX,
+	type IPt,
+	type IPts,
+} from './util'
 
 type IProps = {
 	children: string
@@ -67,8 +74,14 @@ const calcLetterSpacings = (sw: number) => {
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
 const sum = (numbers: number[]) => numbers.reduce((a, b) => a + b, 0)
 
+const scalePts = (scaleFactor: number, pts: IPts) =>
+	pts.map(([x, y]) => pt(x * scaleFactor, y * scaleFactor))
+
 const Line = (props: IProps) => {
 	const {children, debug = false, kerning, strokeWidth: sw} = props
+
+	/** @note the ratio to adjust pts by to achieve the specified pixel height. */
+	const scaleFactor = props.fontSize / 2048
 
 	const letterSpacings = calcLetterSpacings(sw)
 
@@ -76,17 +89,17 @@ const Line = (props: IProps) => {
 
 	const glyphWidths = glyphs.map((glyph) => {
 		const strokeFn = GLYPH_STROKES?.[glyph]
-		if (!strokeFn) return kerning
+		if (!strokeFn) return kerning * scaleFactor
 
-		return pts2MaxX(strokeFn(sw).tmp.flat())
+		return pts2MaxX(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
 	})
 
 	const height = Math.max(
 		...glyphs.map((glyph) => {
 			const strokeFn = GLYPH_STROKES?.[glyph]
-			if (!strokeFn) return kerning
+			if (!strokeFn) return kerning * scaleFactor
 
-			return pts2MaxY(strokeFn(sw).tmp.flat())
+			return pts2MaxY(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
 		})
 	)
 
@@ -96,7 +109,7 @@ const Line = (props: IProps) => {
 		const prevGlyph = glyphs[i - 1]
 		const glyphPair = prevGlyph + currentGlyph
 
-		return letterSpacings[glyphPair] ?? sw
+		return (letterSpacings[glyphPair] ?? sw) * scaleFactor
 	})
 
 	const width = sum(glyphWidths) + sum(glyphGaps)
@@ -113,8 +126,8 @@ const Line = (props: IProps) => {
 			viewBox={`0 0 ${width} ${height}`}
 			{...{width, height}}
 			style={{
-				height: `${proportionalHeight}px`,
-				width: `${proportionalWidth}px`,
+				height: `${height}px`,
+				width: `${width}px`,
 			}}
 		>
 			<defs>
@@ -205,6 +218,8 @@ const Line = (props: IProps) => {
 							opacity={usesOldDataFormat ? 0.1 : 1}
 						>
 							{strokeFn(sw).tmp.map((pts, i) => {
+								pts = scalePts(scaleFactor, pts)
+
 								return (
 									<path
 										key={`${glyph}-stroke-${i}`}
