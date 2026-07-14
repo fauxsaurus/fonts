@@ -1,5 +1,6 @@
 import './App.css'
 import {Braille} from './braille'
+import {Font} from './font'
 import {NorseRunes} from './norse-runes'
 import {Renderer} from './Renderer'
 
@@ -19,7 +20,7 @@ function App() {
 				>
 					<div className="subtitle">
 						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
-							Embers <span>of the</span> Nephilim:
+							Embers <Font size={10}>of the</Font> Nephilim:
 						</NorseRunes>
 					</div>
 					<div key="title-line-2">

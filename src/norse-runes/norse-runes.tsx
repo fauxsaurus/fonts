@@ -8,6 +8,7 @@ import {
 	type IPt,
 	type IPts,
 } from './util'
+import {Font, type IFontProps} from '../font/'
 
 type IProps = {
 	children: string
@@ -256,21 +257,27 @@ export const NorseRunes = (props: {
 		debug = false,
 	} = props
 
-	const unparsedChildren = Array.isArray(children) ? children : [children]
-	const parsedChildren = unparsedChildren
-		.map((child) =>
-			typeof child === 'string' ? child : child?.props?.children
-		)
-		.join('')
+	const normalizedChildren = (
+		Array.isArray(children) ? children : [children]
+	).map((child) =>
+		typeof child === 'string'
+			? Font({children: child})
+			: (child?.props as IFontProps)
+	)
 
 	return (
-		<Line
-			{...{debug, fontSize}}
-			kerning={192 * 2.5}
-			strokeWidth={strokeWidth}
-		>
-			{parsedChildren}
-		</Line>
+		<>
+			{normalizedChildren.map(({children}, i) => (
+				<Line
+					key={i}
+					{...{debug, fontSize}}
+					kerning={192 * 2.5}
+					strokeWidth={strokeWidth}
+				>
+					{children}
+				</Line>
+			))}
+		</>
 	)
 }
 
