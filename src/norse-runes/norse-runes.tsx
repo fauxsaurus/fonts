@@ -68,6 +68,7 @@ const calcLetterSpacings = (sw: number) => {
 		os: sw2,
 		pq: perpendicularDiagonals,
 		nd: sw2,
+		re: -perpendicularDiagonals,
 		rs: -sw2,
 	}
 }
