@@ -1,3 +1,4 @@
+import type {ReactNode} from 'react'
 import * as glyphs from './glyphs'
 import {
 	pt,
@@ -242,7 +243,7 @@ const Line = (props: IProps) => {
 }
 
 export const NorseRunes = (props: {
-	children: string
+	children: ReactNode
 	fontSize?: number
 	strokeWidth?: number
 	debug?: boolean
@@ -254,13 +255,20 @@ export const NorseRunes = (props: {
 		debug = false,
 	} = props
 
+	const unparsedChildren = Array.isArray(children) ? children : [children]
+	const parsedChildren = unparsedChildren
+		.map((child) =>
+			typeof child === 'string' ? child : child?.props?.children
+		)
+		.join('')
+
 	return (
 		<Line
 			{...{debug, fontSize}}
 			kerning={192 * 2.5}
 			strokeWidth={strokeWidth}
 		>
-			{children}
+			{parsedChildren}
 		</Line>
 	)
 }
