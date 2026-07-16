@@ -100,7 +100,7 @@ const Line = (props: IProps) => {
 	const height = Math.max(
 		...glyphs.map((glyph) => {
 			const strokeFn = GLYPH_STROKES?.[glyph]
-			if (!strokeFn) return kerning * scaleFactor
+			if (!strokeFn) return props.fontSize
 
 			return pts2MaxY(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
 		})
