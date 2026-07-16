@@ -223,16 +223,17 @@ const Line = (props: IProps) => {
 							{strokeFn(sw).tmp.map((pts, i) => {
 								pts = scalePts(scaleFactor, pts)
 
+								const fill =
+									i === 0 ||
+									(['i', ':'].includes(glyph) && i === 1)
+										? `url(#stacked-repeating-gradient)`
+										: undefined
+
 								return (
 									<path
 										key={`${glyph}-stroke-${i}`}
 										d={`M${pts2svg(translatePtsX(x, pts))}z`}
-										{...(i === 0 ||
-										(['i', ':'].includes(glyph) && i === 1)
-											? {
-													fill: `url(#stacked-repeating-gradient)`,
-												}
-											: {})}
+										{...{fill}}
 									/>
 								)
 							})}
