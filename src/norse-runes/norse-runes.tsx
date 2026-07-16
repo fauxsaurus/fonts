@@ -117,12 +117,6 @@ const Line = (props: IProps) => {
 
 	const width = sum(glyphWidths) + sum(glyphGaps)
 
-	/** Adjusts the height of the svg to maintain a base line of `fontSize`px tall (by elongating the height if there were characters below the ) */
-	const proportionalHeight = (height / 2048) * props.fontSize
-
-	// maintain svg aspect ratio
-	const proportionalWidth = (width * props.fontSize) / 2048
-
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
