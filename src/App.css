@@ -46,9 +46,9 @@
 			display: inline-block;
 			filter: drop-shadow(0 0 0.05rem #000);
 
-			[data-glyph]:not(path:first-child) {
+			/* [data-glyph]:not(path:first-child) {
 				fill: transparent;
-			}
+			} */
 
 			[data-glyph] path {
 				stroke: #000;
