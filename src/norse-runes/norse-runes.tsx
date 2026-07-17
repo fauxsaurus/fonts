@@ -204,7 +204,8 @@ const Line = (props: IProps) => {
 							<path
 								key={`${i}-${glyph}-stroke-${ii}`}
 								data-glyph={glyph}
-								data-stroke={ii}
+								// not zero-index-based for legacy reasons
+								data-stroke={ii + 1}
 								d={`M${pts2svg(translatePtsX(x, pts))}z`}
 								{...{fill}}
 							/>
