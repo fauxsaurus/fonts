@@ -174,6 +174,20 @@ const Line = (props: IProps) => {
 
 	const width = sum(glyphWidths) + sum(glyphGaps)
 
+	const tmp = glyphs.flatMap((glyph, i) => {
+		const strokeFn = GLYPH_STROKES?.[glyph]
+		if (!strokeFn) return []
+
+		const x = sum(glyphWidths.slice(0, i)) + sum(glyphGaps.slice(0, i + 1))
+		const strokes = strokeFn(sw).tmp.map((pts, ii) =>
+			translatePtsX(x, scalePts(scaleFactor, pts))
+		)
+
+		return [{glyph, strokes}]
+	})
+
+	// return {glyphs: tmp, width, height}
+
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -184,17 +198,8 @@ const Line = (props: IProps) => {
 			<Tmp2dSvgBasedShading />
 			{debug && <style>{DEBUG_STYLES}</style>}
 			<g stroke="none">
-				{glyphs.map((glyph, i) => {
-					const strokeFn = GLYPH_STROKES?.[glyph]
-					if (!strokeFn) return <></>
-
-					const x =
-						sum(glyphWidths.slice(0, i)) +
-						sum(glyphGaps.slice(0, i + 1))
-
-					return strokeFn(sw).tmp.map((pts, ii) => {
-						pts = scalePts(scaleFactor, pts)
-
+				{tmp.map(({glyph, strokes}, i) => {
+					return strokes.map((stroke, ii) => {
 						const fill =
 							ii === 0 || (['i', ':'].includes(glyph) && ii === 1)
 								? `url(#stacked-repeating-gradient)`
@@ -206,7 +211,7 @@ const Line = (props: IProps) => {
 								data-glyph={glyph}
 								// not zero-index-based for legacy reasons
 								data-stroke={ii + 1}
-								d={`M${pts2svg(translatePtsX(x, pts))}z`}
+								d={`M${pts2svg(stroke)}z`}
 								{...{fill}}
 							/>
 						)
