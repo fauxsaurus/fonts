@@ -137,6 +137,58 @@ const Tmp2dSvgBasedShading = () => {
 	)
 }
 
+const line = (props: IProps) => {
+	const {children: word, kerning, strokeWidth: sw} = props
+
+	/** @note the ratio to adjust pts by to achieve the specified pixel height. */
+	const scaleFactor = props.fontSize / 2048
+
+	const letterSpacings = calcLetterSpacings(sw)
+
+	const glyphs = word.trim().split('')
+
+	const glyphWidths = glyphs.map((glyph) => {
+		const strokeFn = GLYPH_STROKES?.[glyph]
+		if (!strokeFn) return kerning * scaleFactor
+
+		return pts2MaxX(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
+	})
+
+	const height = Math.max(
+		...glyphs.map((glyph) => {
+			const strokeFn = GLYPH_STROKES?.[glyph]
+			if (!strokeFn) return props.fontSize
+
+			return pts2MaxY(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
+		})
+	)
+
+	const glyphGaps = word.split('').map((currentGlyph, i, glyphs) => {
+		if (!i) return 0 // no prior glyph, zero additional spacing
+
+		const prevGlyph = glyphs[i - 1]
+		const glyphPair = prevGlyph + currentGlyph
+
+		return (letterSpacings[glyphPair] ?? sw) * scaleFactor
+	})
+
+	const width = sum(glyphWidths) + sum(glyphGaps)
+
+	const tmp = glyphs.flatMap((glyph, i) => {
+		const strokeFn = GLYPH_STROKES?.[glyph]
+		if (!strokeFn) return []
+
+		const x = sum(glyphWidths.slice(0, i)) + sum(glyphGaps.slice(0, i + 1))
+		const strokes = strokeFn(sw).tmp.map((pts, ii) =>
+			translatePtsX(x, scalePts(scaleFactor, pts))
+		)
+
+		return [{glyph, strokes}]
+	})
+
+	return {glyphs: tmp, width, height}
+}
+
 const Line = (props: IProps) => {
 	const {children, debug = false, kerning, strokeWidth: sw} = props
 
@@ -241,6 +293,36 @@ export const NorseRunes = (props: {
 		typeof child === 'string'
 			? Font({children: child})
 			: (child?.props as IFontProps)
+	)
+
+	const words = normalizedChildren.map(({children}) =>
+		line({fontSize, kerning: 192 * 2.5, strokeWidth, children})
+	)
+
+	const translatedWords = words.map(({glyphs}, i, {[i - 1]: prevWord}) => {
+		const prevGlyphPts =
+			prevWord?.glyphs?.slice(-1)?.[0]?.strokes?.flat() ?? []
+		const prevMaxX = prevGlyphPts.length ? pts2MaxX(prevGlyphPts) : 0
+
+		// add word spacing (if prior word)
+		const glyphMinX = prevMaxX ? prevMaxX + strokeWidth * 2 : 0
+		if (!glyphMinX) return {glyphs}
+
+		return {
+			glyphs: glyphs.map(({glyph, strokes}) => {
+				return {
+					glyph,
+					strokes: strokes.map((stroke) => {
+						return translatePtsX(glyphMinX, stroke)
+					}),
+				}
+			}),
+		}
+	})
+
+	const height = Math.max(...words.map((word) => word.height))
+	const width = pts2MaxX(
+		translatedWords.slice(-1)[0].glyphs.slice(-1)[0].strokes.flat()
 	)
 
 	return (
