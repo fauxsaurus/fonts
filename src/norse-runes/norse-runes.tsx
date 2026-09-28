@@ -1,10 +1,12 @@
 import type {ReactNode} from 'react'
 import * as glyphs from './glyphs'
 import {
+	objectMap,
 	pt,
 	pts2MaxX,
 	pts2MaxY,
 	translatePtsX,
+	translatePtsY,
 	type IPt,
 	type IPts,
 } from './util'
@@ -91,9 +93,9 @@ const Tmp2dSvgBasedShading = () => {
 				y2="4.5%"
 				spreadMethod="repeat"
 			>
-				<stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
-				<stop offset="66.67%" stop-color="#ffffff" stop-opacity="0" />
-				<stop offset="100%" stop-color="#ffffff" stop-opacity="0.1" />
+				<stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+				<stop offset="66.67%" stopColor="#ffffff" stopOpacity="0" />
+				<stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
 			</linearGradient>
 
 			<linearGradient
@@ -104,9 +106,9 @@ const Tmp2dSvgBasedShading = () => {
 				y2="2.5%"
 				spreadMethod="repeat"
 			>
-				<stop offset="0%" stop-color="#000000" stop-opacity="0" />
-				<stop offset="80%" stop-color="#000000" stop-opacity="0" />
-				<stop offset="100%" stop-color="#000000" stop-opacity="0.03" />
+				<stop offset="0%" stopColor="#000000" stopOpacity="0" />
+				<stop offset="80%" stopColor="#000000" stopOpacity="0" />
+				<stop offset="100%" stopColor="#000000" stopOpacity="0.03" />
 			</linearGradient>
 
 			<linearGradient
@@ -117,9 +119,9 @@ const Tmp2dSvgBasedShading = () => {
 				y2="1.2%"
 				spreadMethod="repeat"
 			>
-				<stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
-				<stop offset="50%" stop-color="#ffffff" stop-opacity="0" />
-				<stop offset="100%" stop-color="#ffffff" stop-opacity="0.15" />
+				<stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+				<stop offset="50%" stopColor="#ffffff" stopOpacity="0" />
+				<stop offset="100%" stopColor="#ffffff" stopOpacity="0.15" />
 			</linearGradient>
 
 			<pattern
@@ -291,53 +293,161 @@ export const NorseRunes = (props: {
 		Array.isArray(children) ? children : [children]
 	).map((child) =>
 		typeof child === 'string'
-			? Font({children: child})
+			? Font({children: child, size: fontSize})
 			: (child?.props as IFontProps)
 	)
 
-	const words = normalizedChildren.map(({children}) =>
-		line({fontSize, kerning: 192 * 2.5, strokeWidth, children})
-	)
+	const defaultKerning = 192 * 2.5
+	const simplifiedData = normalizedChildren
+		// letter by letter
+		.flatMap(({children, size}) =>
+			children.split('').map((letter) => ({letter, size}))
+		)
+		/** @todo ligature support could go here by switching out strings of supported ligatures */
+		.map(({letter, size: fontSize}) => {
+			const sw = strokeWidth
 
-	const translatedWords = words.map(({glyphs}, i, {[i - 1]: prevWord}) => {
-		const prevGlyphPts =
-			prevWord?.glyphs?.slice(-1)?.[0]?.strokes?.flat() ?? []
-		const prevMaxX = prevGlyphPts.length ? pts2MaxX(prevGlyphPts) : 0
+			/** @note the ratio to adjust pts by to achieve the specified pixel height. */
+			const scaleFactor = fontSize! / 2048
 
-		// add word spacing (if prior word)
-		const glyphMinX = prevMaxX ? prevMaxX + strokeWidth * 2 : 0
-		if (!glyphMinX) return {glyphs}
+			const strokeFn = GLYPH_STROKES?.[letter]
 
-		return {
-			glyphs: glyphs.map(({glyph, strokes}) => {
+			// unsupported glyph (or letter === ' ')
+			if (!strokeFn)
 				return {
-					glyph,
-					strokes: strokes.map((stroke) => {
-						return translatePtsX(glyphMinX, stroke)
-					}),
-				}
-			}),
-		}
-	})
+					letter,
+					size: fontSize,
 
-	const height = Math.max(...words.map((word) => word.height))
-	const width = pts2MaxX(
-		translatedWords.slice(-1)[0].glyphs.slice(-1)[0].strokes.flat()
+					strokeWidth,
+					points: {
+						bottomRight: pt(
+							defaultKerning * scaleFactor,
+							fontSize!
+						),
+					},
+					ridges: [],
+					outlines: [],
+					faces: [],
+				}
+
+			const {points, ridges, outlines, faces} = strokeFn(sw)
+
+			return {
+				letter,
+				size: fontSize,
+
+				strokeWidth,
+
+				points: objectMap(
+					points,
+					(pt) => scalePts(scaleFactor, [pt])[0]
+				),
+				ridges,
+				outlines,
+				faces,
+			}
+		})
+		// calculate kerning (for future horizontal translation)
+		.map((letter, i, letters) => {
+			const prevLetter = letters[i - 1]
+			if (!prevLetter || prevLetter.letter === ' ')
+				return Object.assign({}, letter, {left: 0})
+
+			const potentialLigature = prevLetter.letter + letter.letter
+
+			const smallestLetter =
+				prevLetter.size! < letter.size! ? prevLetter : letter
+
+			const scaleFactor = smallestLetter.size! / 2048
+
+			const kerning =
+				scaleFactor *
+				(calcLetterSpacings(smallestLetter.strokeWidth)[
+					potentialLigature
+				] ?? smallestLetter.strokeWidth)
+
+			return Object.assign({}, letter, {
+				points: objectMap(
+					letter.points,
+					(pt) => translatePtsX(kerning, [pt])[0]
+				),
+			})
+		})
+		// translate all pts horizontally
+		.reduce((translatedLetters, letter) => {
+			const prevTranslatedLetter = translatedLetters.slice(-1)[0]
+			if (!prevTranslatedLetter) return [letter]
+
+			const prevPts = Object.values(prevTranslatedLetter.points)
+			const prevWidth = pts2MaxX(Object.values(prevPts))
+
+			const translatedPts = objectMap(
+				letter.points,
+				(pt) => translatePtsX(prevWidth, [pt])[0]
+			)
+
+			return translatedLetters.concat([
+				Object.assign({}, letter, {points: translatedPts}),
+			])
+		}, [])
+		// translate all pts vertically (i.e., align them with the largest baseline)
+		.map((letter, _, letters) => {
+			const maxSize = Math.max(...letters.map((letter) => letter.size))
+			if (letter.size === maxSize) return letter
+
+			const v = maxSize - letter.size
+
+			return Object.assign({}, letter, {
+				points: objectMap(
+					letter.points,
+					(pt) => translatePtsY(v, [pt])[0]
+				),
+			})
+		})
+
+	const width = pts2MaxX(Object.values(simplifiedData.slice(-1)[0].points))
+
+	const height = pts2MaxY(
+		simplifiedData.map((letter) => Object.values(letter.points)).flat()
 	)
 
 	return (
-		<>
-			{normalizedChildren.map(({children}, i) => (
-				<Line
-					key={i}
-					{...{debug, fontSize}}
-					kerning={192 * 2.5}
-					strokeWidth={strokeWidth}
-				>
-					{children}
-				</Line>
-			))}
-		</>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox={`0 0 ${width} ${height}`}
+			{...{width, height}}
+			style={{height: `${height}px`, width: `${width}px`}}
+		>
+			<Tmp2dSvgBasedShading />
+			<g stroke="none">
+				{simplifiedData.map((letter, i) => {
+					return letter.outlines
+						.concat(letter.faces)
+						.map((ptNames, ii) => {
+							const fill =
+								ii === 0 ||
+								(['i', ':'].includes(letter.letter) && i === 1)
+									? `url(#stacked-repeating-gradient)`
+									: undefined
+
+							const pts = ptNames.map(
+								(ptName) => letter.points[ptName]
+							)
+
+							return (
+								<path
+									key={`${i}:${letter}-stroke:${ii}`}
+									d={`M${pts2svg(pts)}z`}
+									data-glyph={letter.letter}
+									// not zero index-based for legacy reasons
+									data-stroke={ii + 1}
+									{...{fill}}
+								/>
+							)
+						})
+				})}
+			</g>
+		</svg>
 	)
 }
 

@@ -20,7 +20,7 @@ function App() {
 				>
 					<div className="subtitle">
 						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
-							Embers <Font size={10}>of the</Font> Nephilim:
+							Embers<Font size={10}> of the </Font>Nephilim:
 						</NorseRunes>
 					</div>
 					<div key="title-line-2">
@@ -36,7 +36,6 @@ function App() {
 						<NorseRunes key="article" fontSize={fontSizeSmall}>
 							the
 						</NorseRunes>
-						{/* <span className="space"></span> */}
 						<NorseRunes key="capital" fontSize={fontSizeLarge}>
 							Ghost Giant
 						</NorseRunes>
