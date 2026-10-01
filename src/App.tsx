@@ -7,8 +7,8 @@ import {Renderer} from './Renderer'
 function App() {
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
-	const fontSizeLarge = 64
-	const fontSizeSmall = 36
+	const fontSizeLarge = 128
+	const fontSizeSmall = 92
 
 	return (
 		<>
@@ -20,23 +20,22 @@ function App() {
 				>
 					<div className="subtitle">
 						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
-							Embers<Font size={10}> of the </Font>Nephilim:
+							Embers
+							<Font
+								size={fontSizeSmall * 0.8 ** 4}
+							>{` of the `}</Font>
+							Nephilim:
 						</NorseRunes>
 					</div>
 					<div key="title-line-2">
 						<NorseRunes key="capital" fontSize={fontSizeLarge}>
 							Ghost Girl
-						</NorseRunes>
-						<span className="space"></span>
-						<NorseRunes key="article" fontSize={fontSizeSmall}>
-							and
+							<Font size={fontSizeSmall * 0.8}>{` and`}</Font>
 						</NorseRunes>
 					</div>
 					<div key="title-line-3">
-						<NorseRunes key="article" fontSize={fontSizeSmall}>
-							the
-						</NorseRunes>
 						<NorseRunes key="capital" fontSize={fontSizeLarge}>
+							<Font size={fontSizeSmall * 0.8}>{`the `}</Font>
 							Ghost Giant
 						</NorseRunes>
 					</div>
