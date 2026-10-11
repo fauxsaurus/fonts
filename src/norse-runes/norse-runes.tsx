@@ -12,33 +12,6 @@ import {
 } from './util'
 import {Font, type IFontProps} from '../font/'
 
-type IProps = {
-	children: string
-	/** @note If true, individual glyph strokes will render with different colors to help visualize changes. */
-	debug?: boolean
-	/** @note height of the <svg> element in rem units */
-	fontSize: number
-	kerning: number
-	/** @note the width of each font segment (a number relative to 2048) */
-	strokeWidth: number
-	twoTone?: boolean
-}
-
-const DEBUG_STYLES = `@scope {
-	g[transform] path {
-		fill: hsl(
-			from plum
-			calc(
-				60 * (sibling-index() - 1)
-			) s l
-		);
-		opacity: 0.75;
-		stroke: black;
-		stroke-width: 1;
-	}
-}
-`
-
 const GLYPH_STROKES = {
 	...glyphs,
 
@@ -77,7 +50,6 @@ const calcLetterSpacings = (sw: number) => {
 }
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
-const sum = (numbers: number[]) => numbers.reduce((a, b) => a + b, 0)
 
 const scalePts = (scaleFactor: number, pts: IPts) =>
 	pts.map(([x, y]) => pt(x * scaleFactor, y * scaleFactor))
@@ -136,143 +108,6 @@ const Tmp2dSvgBasedShading = () => {
 				<rect width="100%" height="100%" fill="url(#css-grad-3)" />
 			</pattern>
 		</defs>
-	)
-}
-
-const line = (props: IProps) => {
-	const {children: word, kerning, strokeWidth: sw} = props
-
-	/** @note the ratio to adjust pts by to achieve the specified pixel height. */
-	const scaleFactor = props.fontSize / 2048
-
-	const letterSpacings = calcLetterSpacings(sw)
-
-	const glyphs = word.trim().split('')
-
-	const glyphWidths = glyphs.map((glyph) => {
-		const strokeFn = GLYPH_STROKES?.[glyph]
-		if (!strokeFn) return kerning * scaleFactor
-
-		return pts2MaxX(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
-	})
-
-	const height = Math.max(
-		...glyphs.map((glyph) => {
-			const strokeFn = GLYPH_STROKES?.[glyph]
-			if (!strokeFn) return props.fontSize
-
-			return pts2MaxY(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
-		})
-	)
-
-	const glyphGaps = word.split('').map((currentGlyph, i, glyphs) => {
-		if (!i) return 0 // no prior glyph, zero additional spacing
-
-		const prevGlyph = glyphs[i - 1]
-		const glyphPair = prevGlyph + currentGlyph
-
-		return (letterSpacings[glyphPair] ?? sw) * scaleFactor
-	})
-
-	const width = sum(glyphWidths) + sum(glyphGaps)
-
-	const tmp = glyphs.flatMap((glyph, i) => {
-		const strokeFn = GLYPH_STROKES?.[glyph]
-		if (!strokeFn) return []
-
-		const x = sum(glyphWidths.slice(0, i)) + sum(glyphGaps.slice(0, i + 1))
-		const strokes = strokeFn(sw).tmp.map((pts, ii) =>
-			translatePtsX(x, scalePts(scaleFactor, pts))
-		)
-
-		return [{glyph, strokes}]
-	})
-
-	return {glyphs: tmp, width, height}
-}
-
-const Line = (props: IProps) => {
-	const {children, debug = false, kerning, strokeWidth: sw} = props
-
-	/** @note the ratio to adjust pts by to achieve the specified pixel height. */
-	const scaleFactor = props.fontSize / 2048
-
-	const letterSpacings = calcLetterSpacings(sw)
-
-	const glyphs = children.trim().split('')
-
-	const glyphWidths = glyphs.map((glyph) => {
-		const strokeFn = GLYPH_STROKES?.[glyph]
-		if (!strokeFn) return kerning * scaleFactor
-
-		return pts2MaxX(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
-	})
-
-	const height = Math.max(
-		...glyphs.map((glyph) => {
-			const strokeFn = GLYPH_STROKES?.[glyph]
-			if (!strokeFn) return props.fontSize
-
-			return pts2MaxY(scalePts(scaleFactor, strokeFn(sw).tmp.flat()))
-		})
-	)
-
-	const glyphGaps = children.split('').map((currentGlyph, i, glyphs) => {
-		if (!i) return 0 // no prior glyph, zero additional spacing
-
-		const prevGlyph = glyphs[i - 1]
-		const glyphPair = prevGlyph + currentGlyph
-
-		return (letterSpacings[glyphPair] ?? sw) * scaleFactor
-	})
-
-	const width = sum(glyphWidths) + sum(glyphGaps)
-
-	const tmp = glyphs.flatMap((glyph, i) => {
-		const strokeFn = GLYPH_STROKES?.[glyph]
-		if (!strokeFn) return []
-
-		const x = sum(glyphWidths.slice(0, i)) + sum(glyphGaps.slice(0, i + 1))
-		const strokes = strokeFn(sw).tmp.map((pts, ii) =>
-			translatePtsX(x, scalePts(scaleFactor, pts))
-		)
-
-		return [{glyph, strokes}]
-	})
-
-	// return {glyphs: tmp, width, height}
-
-	return (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox={`0 0 ${width} ${height}`}
-			{...{width, height}}
-			style={{height: `${height}px`, width: `${width}px`}}
-		>
-			<Tmp2dSvgBasedShading />
-			{debug && <style>{DEBUG_STYLES}</style>}
-			<g stroke="none">
-				{tmp.map(({glyph, strokes}, i) => {
-					return strokes.map((stroke, ii) => {
-						const fill =
-							ii === 0 || (['i', ':'].includes(glyph) && ii === 1)
-								? `url(#stacked-repeating-gradient)`
-								: undefined
-
-						return (
-							<path
-								key={`${i}-${glyph}-stroke-${ii}`}
-								data-glyph={glyph}
-								// not zero-index-based for legacy reasons
-								data-stroke={ii + 1}
-								d={`M${pts2svg(stroke)}z`}
-								{...{fill}}
-							/>
-						)
-					})
-				})}
-			</g>
-		</svg>
 	)
 }
 
@@ -450,26 +285,3 @@ export const NorseRunes = (props: {
 		</svg>
 	)
 }
-
-/*
-const uniqueObjArray = serializerFn => {
-	const hashes = []
-	
-	return (obj, i, objs) => {
-		hash = serializerFn(obj)
-		if (hashes.includes(hash)) return false
-
-		hashes.push(hash)
-		return true
-	}
-}
-const uniquePts = uniqueObjArray(obj => obj.join(','))
-const outline = glyph(sw)
-const spin = glyph(0)
-const faces = outline.flatMap((_,i,{length}) => {
-		return i ? [i - 1, i] : [length - 1, i]
-	}).map(([i,ii]) => {
-		return [spine[i], outline[i], outline[ii], spine[ii]]
-			.filter(uniquePts)
-	})
- */
