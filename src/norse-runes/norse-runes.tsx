@@ -18,14 +18,14 @@ const GLYPH_STROKES = {
 	':': glyphs.colon,
 }
 
-const calcLetterSpacings = (sw: number) => {
+const calcLetterSpacings = (sw: number, potentialLigature: string) => {
 	const sw2 = sw / 2
 	const sw4 = sw / 4
 
 	const perpendicularDiagonals = sw4
 	const nestedDiagonals = -sw
 
-	return {
+	const ligatures = {
 		BC: nestedDiagonals,
 		be: perpendicularDiagonals,
 		bc: perpendicularDiagonals,
@@ -47,6 +47,8 @@ const calcLetterSpacings = (sw: number) => {
 		re: -perpendicularDiagonals,
 		rs: -sw2,
 	}
+
+	return ligatures?.[potentialLigature as keyof typeof ligatures] ?? sw
 }
 
 const pts2svg = (pts: IPt[]) => pts.map((pt) => pt.join(',')).join(' ')
@@ -115,14 +117,8 @@ export const NorseRunes = (props: {
 	children: ReactNode
 	fontSize?: number
 	strokeWidth?: number
-	debug?: boolean
 }) => {
-	const {
-		children = '',
-		fontSize = 12,
-		strokeWidth = 192,
-		debug = false,
-	} = props
+	const {children = '', fontSize = 12, strokeWidth = 192} = props
 
 	const normalizedChildren = (
 		Array.isArray(children) ? children : [children]
@@ -145,38 +141,33 @@ export const NorseRunes = (props: {
 			/** @note the ratio to adjust pts by to achieve the specified pixel height. */
 			const scaleFactor = fontSize! / 2048
 
-			const strokeFn = GLYPH_STROKES?.[letter]
+			const strokeFn =
+				GLYPH_STROKES?.[letter as keyof typeof GLYPH_STROKES]
 
 			// unsupported glyph (or letter === ' ')
-			if (!strokeFn)
-				return {
-					letter,
-					size: fontSize,
+			const {
+				points = {},
+				ridges = [],
+				outlines = [],
+				faces = [],
+			} = strokeFn?.(sw) ?? {}
 
-					strokeWidth,
-					points: {
+			const ptsValue = !strokeFn
+				? {
 						bottomRight: pt(
 							defaultKerning * scaleFactor,
 							fontSize!
 						),
-					},
-					ridges: [],
-					outlines: [],
-					faces: [],
-				}
-
-			const {points, ridges, outlines, faces} = strokeFn(sw)
+					}
+				: objectMap(points, (pt) => scalePts(scaleFactor, [pt])[0])
 
 			return {
 				letter,
-				size: fontSize,
+				size: fontSize!,
 
 				strokeWidth,
 
-				points: objectMap(
-					points,
-					(pt) => scalePts(scaleFactor, [pt])[0]
-				),
+				points: ptsValue,
 				ridges,
 				outlines,
 				faces,
@@ -191,15 +182,16 @@ export const NorseRunes = (props: {
 			const potentialLigature = prevLetter.letter + letter.letter
 
 			const smallestLetter =
-				prevLetter.size! < letter.size! ? prevLetter : letter
+				prevLetter.size < letter.size ? prevLetter : letter
 
-			const scaleFactor = smallestLetter.size! / 2048
+			const scaleFactor = smallestLetter.size / 2048
 
 			const kerning =
 				scaleFactor *
-				(calcLetterSpacings(smallestLetter.strokeWidth)[
+				calcLetterSpacings(
+					smallestLetter.strokeWidth,
 					potentialLigature
-				] ?? smallestLetter.strokeWidth)
+				)
 
 			return Object.assign({}, letter, {
 				points: objectMap(
