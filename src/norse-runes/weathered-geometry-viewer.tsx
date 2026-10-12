@@ -1,6 +1,5 @@
 import React, {useEffect, useRef} from 'react'
 import * as THREE from 'three'
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
 
 export type IPt = [number, number]
 export type IPts = IPt[]
@@ -79,7 +78,6 @@ export const WeatheredGeometryViewer: React.FC<
 		const scene = new THREE.Scene()
 
 		const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 10000)
-		const controls = new OrbitControls(camera, renderer.domElement)
 
 		// 1. Lighting Setup
 		// Global ambient lighting at 50% intensity (0.5)
@@ -227,9 +225,7 @@ export const WeatheredGeometryViewer: React.FC<
 				center.y,
 				center.z + Math.max(fitDistance, 20)
 			)
-			controls.target.copy(center)
 			camera.updateProjectionMatrix()
-			controls.update()
 
 			const maxDim = Math.max(canvasWidth, canvasHeight, depth)
 			mainLight.position.set(
@@ -247,17 +243,6 @@ export const WeatheredGeometryViewer: React.FC<
 		}
 
 		renderGeometry()
-
-		const handleControlsChange = () => renderer.render(scene, camera)
-
-		controls.addEventListener('change', handleControlsChange)
-
-		return () => {
-			controls.removeEventListener('change', handleControlsChange)
-			controls.dispose()
-			renderer.dispose()
-			if (currentMesh) currentMesh.geometry.dispose()
-		}
 	}, [data, depth])
 
 	return (
@@ -278,7 +263,6 @@ export const WeatheredGeometryViewer: React.FC<
 				style={{
 					display: 'block',
 					boxShadow: '0 0 25px rgba(0, 0, 0, 0.9)',
-					cursor: 'grab',
 					maxWidth: '100%',
 					maxHeight: '100%',
 					width: 'auto',
