@@ -11,6 +11,7 @@ import {
 	type IPts,
 } from './util'
 import {Font, type IFontProps} from '../font/'
+import {WeatheredGeometryViewer} from './weathered-geometry-viewer'
 
 const GLYPH_STROKES = {
 	...glyphs,
@@ -117,6 +118,7 @@ export const NorseRunes = (props: {
 	children: ReactNode
 	fontSize?: number
 	strokeWidth?: number
+	depth?: boolean
 }) => {
 	const {children = '', fontSize = 12, strokeWidth = 192} = props
 
@@ -237,6 +239,14 @@ export const NorseRunes = (props: {
 	const height = pts2MaxY(
 		simplifiedData.map((letter) => Object.values(letter.points)).flat()
 	)
+
+	if (props.depth) {
+		const scaleFactor = fontSize! / 2048
+		const sw2 = strokeWidth / 2
+		const depth = sw2 * scaleFactor
+
+		return <WeatheredGeometryViewer {...{data: simplifiedData, depth}} />
+	}
 
 	return (
 		<svg
