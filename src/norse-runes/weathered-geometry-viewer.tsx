@@ -72,30 +72,28 @@ export const WeatheredGeometryViewer: React.FC<
 			antialias: true,
 			alpha: true,
 		})
-		renderer.setClearColor(0x000000, 0) // 0 alpha means 100% transparent
+		renderer.setClearColor(0x000000, 0) // Transparent background
 		renderer.toneMapping = THREE.ACESFilmicToneMapping
 
 		const scene = new THREE.Scene()
 
-		const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 10000)
+		// Orthographic camera to eliminate perspective distortion
+		const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1000, 10000)
 
-		// 1. Lighting Setup
-		// Global ambient lighting at 50% intensity (0.5)
+		// 1. Lighting Setup (50% global ambient + directional + rim)
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
 		scene.add(ambientLight)
 
-		// Directional key light coming from upper-right hand side
 		const mainLight = new THREE.DirectionalLight(0xaaccff, 4.0)
 		scene.add(mainLight)
 
-		// Secondary rim light for contrast in dark areas
 		const rimLight = new THREE.DirectionalLight(0x224488, 2.0)
 		scene.add(rimLight)
 
 		// 2. Weathered Silver PBR Material Setup
 		const weatheredTexture = createWeatheredTexture()
 		const material = new THREE.MeshPhysicalMaterial({
-			color: 0x162126,
+			color: 0xdcdcdc,
 			metalness: 0.95,
 			roughness: 0.7,
 			roughnessMap: weatheredTexture,
@@ -110,26 +108,33 @@ export const WeatheredGeometryViewer: React.FC<
 		const renderGeometry = () => {
 			if (!data || !Array.isArray(data)) return
 
-			// 3. Automatically adjust canvas resolution to match largest X and Y coordinates
-			let maxX = 0
-			let maxY = 0
+			let minX = Infinity,
+				maxX = -Infinity
+			let minY = Infinity,
+				maxY = -Infinity
 
 			for (const item of data) {
 				if (!item.points) continue
 				for (const pt of Object.values(item.points)) {
 					const [x, y] = pt
+					if (x < minX) minX = x
 					if (x > maxX) maxX = x
+					if (y < minY) minY = y
 					if (y > maxY) maxY = y
 				}
 			}
 
-			const canvasWidth = Math.max(10, Math.ceil(maxX))
-			const canvasHeight = Math.max(10, Math.ceil(maxY))
+			if (minX === Infinity) return
 
-			renderer.setSize(canvasWidth, canvasHeight, false)
-			camera.aspect = canvasWidth / canvasHeight
+			const totalWidth = maxX - minX
+			const totalHeight = maxY - minY
+			renderer.setSize(
+				Math.max(10, Math.ceil(totalWidth)),
+				Math.max(10, Math.ceil(totalHeight)),
+				false
+			)
 
-			// 4. Construct Geometry Buffer from Flat Faces & Ridges using standard for...of loops
+			// 3. Construct Geometry Buffer with inverted Y coordinates
 			const positionList: number[] = []
 			const uvList: number[] = []
 			const indexList: number[] = []
@@ -148,7 +153,7 @@ export const WeatheredGeometryViewer: React.FC<
 				}
 
 				for (const face of item.faces) {
-					if (face.length < 3) continue // Now works properly with standard loops
+					if (face.length < 3) continue
 
 					const faceStartIndex = vertexOffset
 
@@ -160,17 +165,18 @@ export const WeatheredGeometryViewer: React.FC<
 						const [x, y] = pt
 						const z = ridgeKeys.has(key) ? depth : 0
 
-						// invert Y to match teh WebGL coordinate space
-						positionList.push(x, canvasHeight - y, z)
+						// Invert Y to flip right-side up relative to WebGL space
+						const invertedY = maxY - (y - minY)
+
+						positionList.push(x, invertedY, z)
 						uvList.push(
-							x / canvasWidth,
-							(canvasHeight - y) / canvasHeight
+							(x - minX) / (totalWidth || 1),
+							(invertedY - minY) / (totalHeight || 1)
 						)
 
 						vertexOffset++
 					}
 
-					// Triangulate flat n-gon faces using triangle fan
 					const vertCount = face.length
 					for (let i = 1; i < vertCount - 1; i++) {
 						indexList.push(
@@ -204,7 +210,7 @@ export const WeatheredGeometryViewer: React.FC<
 			currentMesh = new THREE.Mesh(geometry, material)
 			scene.add(currentMesh)
 
-			// 5. Auto-fit Camera and Light positions to bounding box
+			// 4. Automatically compute bounding box and frame the entire phrase
 			geometry.computeBoundingBox()
 			const box = geometry.boundingBox!
 			const center = new THREE.Vector3()
@@ -212,32 +218,24 @@ export const WeatheredGeometryViewer: React.FC<
 			const size = new THREE.Vector3()
 			box.getSize(size)
 
-			const fovV = (camera.fov * Math.PI) / 180
-			const fovH = 2 * Math.atan(Math.tan(fovV / 2) * camera.aspect)
+			const padding = 20
+			const halfW = size.x / 2 + padding
+			const halfH = size.y / 2 + padding
 
-			const distY = size.y / 2 / Math.tan(fovV / 2)
-			const distX = size.x / 2 / Math.tan(fovH / 2)
-			const fitDistance =
-				Math.max(distX, distY, size.z) * 1.25 + size.z / 2
-
-			camera.position.set(
-				center.x,
-				center.y,
-				center.z + Math.max(fitDistance, 20)
-			)
+			camera.left = -halfW
+			camera.right = halfW
+			camera.top = halfH
+			camera.bottom = -halfH
+			camera.near = -1000
+			camera.far = 10000
 			camera.updateProjectionMatrix()
 
-			const maxDim = Math.max(canvasWidth, canvasHeight, depth)
-			mainLight.position.set(
-				center.x + maxDim,
-				center.y + maxDim,
-				center.z + maxDim
-			)
-			rimLight.position.set(
-				center.x - maxDim,
-				center.y - maxDim,
-				center.z - depth
-			)
+			camera.position.set(center.x, center.y, 1000)
+			camera.lookAt(center.x, center.y, 0)
+
+			const maxDim = Math.max(size.x, size.y, depth)
+			mainLight.position.set(center.x + maxDim, center.y + maxDim, maxDim)
+			rimLight.position.set(center.x - maxDim, center.y - maxDim, -depth)
 
 			renderer.render(scene, camera)
 		}
@@ -262,7 +260,6 @@ export const WeatheredGeometryViewer: React.FC<
 				ref={canvasRef}
 				style={{
 					display: 'block',
-					boxShadow: '0 0 25px rgba(0, 0, 0, 0.9)',
 					maxWidth: '100%',
 					maxHeight: '100%',
 					width: 'auto',
