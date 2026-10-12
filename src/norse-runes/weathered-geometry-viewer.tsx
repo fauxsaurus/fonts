@@ -84,10 +84,10 @@ export const WeatheredGeometryViewer: React.FC<
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
 		scene.add(ambientLight)
 
-		const mainLight = new THREE.DirectionalLight(0xaaccff, 4.0)
+		const mainLight = new THREE.DirectionalLight(0xffffff, 3.5)
 		scene.add(mainLight)
 
-		const rimLight = new THREE.DirectionalLight(0x224488, 2.0)
+		const rimLight = new THREE.DirectionalLight(0xd0d8e8, 1.5)
 		scene.add(rimLight)
 
 		// 2. Weathered Silver PBR Material Setup
