@@ -6,19 +6,22 @@ import {NorseRunes} from './norse-runes'
 function App() {
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
-	const fontSizeLarge = 128
-	const fontSizeSmall = 92
+	const fontSizeLarge = 128 * 2
+	const fontSizeSmall = 92 * 2
 
 	return (
 		<>
-			<Renderer width={720} height={720} />
 			<div className="cover">
 				<div
 					className="text-title metallic"
 					style={{'--space-width': `${fontSizeSmall / 4}px`}}
 				>
 					<div className="subtitle">
-						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
+						<NorseRunes
+							key="title-line-1"
+							fontSize={fontSizeSmall}
+							depth={true}
+						>
 							Embers
 							<Font
 								size={fontSizeSmall * 0.8 ** 4}
@@ -27,13 +30,21 @@ function App() {
 						</NorseRunes>
 					</div>
 					<div key="title-line-2">
-						<NorseRunes key="capital" fontSize={fontSizeLarge}>
+						<NorseRunes
+							key="capital"
+							fontSize={fontSizeLarge}
+							depth={true}
+						>
 							Ghost Girl
 							<Font size={fontSizeSmall * 0.8}>{` and`}</Font>
 						</NorseRunes>
 					</div>
 					<div key="title-line-3">
-						<NorseRunes key="capital" fontSize={fontSizeLarge}>
+						<NorseRunes
+							key="capital"
+							fontSize={fontSizeLarge}
+							depth={true}
+						>
 							<Font size={fontSizeSmall * 0.8}>{`the `}</Font>
 							Ghost Giant
 						</NorseRunes>
@@ -45,7 +56,7 @@ function App() {
 				</div>
 			</div>
 			<br />
-			<NorseRunes key="preview" strokeWidth={64} debug>
+			<NorseRunes key="preview" strokeWidth={64}>
 				JTL
 			</NorseRunes>
 			<div></div>
