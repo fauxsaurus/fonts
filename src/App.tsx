@@ -2,7 +2,6 @@ import './App.css'
 import {Braille} from './braille'
 import {Font} from './font'
 import {NorseRunes} from './norse-runes'
-import {Renderer} from './Renderer'
 
 function App() {
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz'
