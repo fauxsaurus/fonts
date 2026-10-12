@@ -177,12 +177,33 @@ export const WeatheredGeometryViewer: React.FC<
 						vertexOffset++
 					}
 
-					const vertCount = face.length
-					for (let i = 1; i < vertCount - 1; i++) {
+					// Collect 2D flat coordinates for this face to triangulate correctly with Earcut
+					const flatCoords: number[] = []
+					for (const keyStr of face) {
+						const key = String(keyStr)
+						const pt = item.points[key]
+						if (pt) {
+							flatCoords.push(pt[0], pt[1])
+						}
+					}
+					// Convert face points into an array of THREE.Vector2 instances
+					const contourPoints = face.map((keyStr) => {
+						const pt = item.points[String(keyStr)]
+						const invertedY = maxY - (pt[1] - minY)
+						return new THREE.Vector2(pt[0], invertedY)
+					})
+
+					// Triangulate using Three.js ShapeUtils
+					// Use triangulateShape instead of triangulate
+					const triangles = THREE.ShapeUtils.triangulateShape(
+						contourPoints,
+						[]
+					)
+					for (const tri of triangles) {
 						indexList.push(
-							faceStartIndex,
-							faceStartIndex + i,
-							faceStartIndex + i + 1
+							faceStartIndex + tri[0],
+							faceStartIndex + tri[1],
+							faceStartIndex + tri[2]
 						)
 					}
 				}
