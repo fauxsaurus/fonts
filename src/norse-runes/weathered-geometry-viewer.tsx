@@ -93,11 +93,12 @@ export const WeatheredGeometryViewer: React.FC<
 		// 2. Weathered Silver PBR Material Setup
 		const weatheredTexture = createWeatheredTexture()
 		const material = new THREE.MeshPhysicalMaterial({
-			color: 0xdcdcdc,
+			color: 0xffffff,
+			flatShading: true,
 			metalness: 0.95,
 			roughness: 0.7,
-			roughnessMap: weatheredTexture,
-			bumpMap: weatheredTexture,
+			// roughnessMap: weatheredTexture,
+			// bumpMap: weatheredTexture,
 			bumpScale: 1.5,
 			clearcoat: 0.1,
 			side: THREE.DoubleSide,
