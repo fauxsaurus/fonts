@@ -2,6 +2,7 @@ import './App.css'
 import {Braille} from './braille'
 import {Font} from './font'
 import {NorseRunes} from './norse-runes'
+import SilverBarViewer from './silver-bar'
 
 function App() {
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -11,6 +12,7 @@ function App() {
 
 	return (
 		<>
+			<SilverBarViewer />
 			<div className="cover">
 				<div
 					className="text-title metallic"
