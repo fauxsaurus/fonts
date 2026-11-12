@@ -2,6 +2,281 @@ import * as THREE from 'three'
 import {useCallback, useEffect, useRef} from 'react'
 
 /* ─────────────────────────────────────────────
+   Types matching your input format
+   ───────────────────────────────────────────── */
+interface GlyphInput {
+	letter: string
+	size: number
+	strokeWidth: number
+	points: Record<string, [number, number]>
+	ridges: string[][]
+	outlines: string[][]
+	faces: string[][]
+	left: number
+}
+
+type ChamferedBoxOutput = {
+	positions: Float32Array
+	normals: Float32Array
+	indices: Uint32Array
+}
+
+/* ─────────────────────────────────────────────
+   Core: extrude glyph → same output as createChamferedBoxGeometry()
+   ───────────────────────────────────────────── */
+function createExtrudedGlyphGeometry(
+	glyph: GlyphInput,
+	depth: number,
+	chamfer: number = 0.04
+): ChamferedBoxOutput {
+	const {points, faces, outlines, ridges} = glyph
+
+	// ── helpers ──────────────────────────────────
+	const getXY = (name: string): [number, number] => {
+		const p = points[name]
+		if (!p) throw new Error(`Unknown point "${name}"`)
+		return p
+	}
+
+	// Build all quads as vertex + normal arrays, then pack
+	const verts: number[] = []
+	const norms: number[] = []
+	const idxs: number[] = []
+
+	let vCount = 0
+
+	const pushTri = (
+		ax: number,
+		ay: number,
+		az: number,
+		bx: number,
+		by: number,
+		bz: number,
+		cx: number,
+		cy: number,
+		cz: number,
+		nx: number,
+		ny: number,
+		nz: number
+	) => {
+		const base = vCount
+		verts.push(ax, ay, az, bx, by, bz, cx, cy, cz)
+		norms.push(nx, ny, nz, nx, ny, nz, nx, ny, nz)
+		idxs.push(base, base + 1, base + 2)
+		vCount += 3
+	}
+
+	const pushQuad = (
+		ax: number,
+		ay: number,
+		az: number,
+		bx: number,
+		by: number,
+		bz: number,
+		cx: number,
+		cy: number,
+		cz: number,
+		dx: number,
+		dy: number,
+		dz: number,
+		nx: number,
+		ny: number,
+		nz: number
+	) => {
+		// two triangles sharing edge b-d
+		pushTri(ax, ay, az, bx, by, bz, cx, cy, cz, nx, ny, nz)
+		pushTri(ax, ay, az, cx, cy, cz, dx, dy, dz, nx, ny, nz)
+	}
+
+	// ── 1. Top & bottom caps (z = depth and z = 0) ──
+	for (const face of faces) {
+		if (face.length < 3) continue
+
+		// Fan-triangulate convex-ish polygons (your data already has small polys)
+		const triCount = face.length - 2
+		for (let i = 0; i < triCount; i++) {
+			const [ax, ay] = getXY(face[0])
+			const [bx, by] = getXY(face[i + 1])
+			const [cx, cy] = getXY(face[i + 2])
+
+			// Top cap (z = depth), normal +Z
+			pushTri(ax, ay, depth, bx, by, depth, cx, cy, depth, 0, 0, 1)
+
+			// Bottom cap (z = 0), normal -Z (reverse winding)
+			pushTri(cx, cy, 0, bx, by, 0, ax, ay, 0, 0, 0, -1)
+		}
+	}
+
+	// ── 2. Wall segments from outlines (full height) ──
+	for (const outline of outlines) {
+		const n = outline.length
+		for (let i = 0; i < n; i++) {
+			const j = (i + 1) % n
+			const [x0, y0] = getXY(outline[i])
+			const [x1, y1] = getXY(outline[j])
+
+			// Outward-facing normal in XY plane (perpendicular to edge, pointing right of traversal)
+			const ex = x1 - x0
+			const ey = y1 - y0
+			const len = Math.hypot(ex, ey) || 1
+			const nx = ey / len
+			const ny = -ex / len
+
+			pushQuad(
+				x0,
+				y0,
+				0,
+				x1,
+				y1,
+				0,
+				x1,
+				y1,
+				depth,
+				x0,
+				y0,
+				depth,
+				nx,
+				ny,
+				0
+			)
+		}
+	}
+
+	// ── 3. Ridge walls (partial-height vertical strips along ridge edges) ──
+	// Each ridge polyline creates a thin wall rising from z=0 to z=depth
+	// between adjacent ridge points. These are internal creases; we emit
+	// them as double-sided quads so both sides catch light.
+	for (const ridge of ridges) {
+		const n = ridge.length
+		for (let i = 0; i < n; i++) {
+			const j = (i + 1) % n
+			const [x0, y0] = getXY(ridge[i])
+			const [x1, y1] = getXY(ridge[j])
+
+			const ex = x1 - x0
+			const ey = y1 - y0
+			const len = Math.hypot(ex, ey) || 1
+			const nx = ey / len
+			const ny = -ex / len
+
+			// Front side
+			pushQuad(
+				x0,
+				y0,
+				0,
+				x1,
+				y1,
+				0,
+				x1,
+				y1,
+				depth,
+				x0,
+				y0,
+				depth,
+				nx,
+				ny,
+				0
+			)
+			// Back side (opposite normal)
+			pushQuad(
+				x1,
+				y1,
+				0,
+				x0,
+				y0,
+				0,
+				x0,
+				y0,
+				depth,
+				x1,
+				y1,
+				depth,
+				-nx,
+				-ny,
+				0
+			)
+		}
+	}
+
+	// ── 4. Optional: bevel/chamfer the top & bottom rim edges ──
+	// For each outline edge, insert a chamfer band at top and bottom.
+	if (chamfer > 0) {
+		for (const outline of outlines) {
+			const n = outline.length
+			for (let i = 0; i < n; i++) {
+				const j = (i + 1) % n
+				const [x0, y0] = getXY(outline[i])
+				const [x1, y1] = getXY(outline[j])
+
+				const ex = x1 - x0
+				const ey = y1 - y0
+				const len = Math.hypot(ex, ey) || 1
+				const ux = ex / len
+				const uy = ey / len
+				// outward normal
+				const nx = uy
+				const ny = -ux
+
+				// Inset direction toward polygon interior (negative normal)
+				const ix = -nx * chamfer
+				const iy = -ny * chamfer
+
+				// Bottom chamfer: from (x,y,0) → (x+ix, y+iy, chamfer)
+				const chNx = nx * 0.7071
+				const chNy = ny * 0.7071
+				const chNz = -0.7071
+				pushQuad(
+					x0,
+					y0,
+					0,
+					x1,
+					y1,
+					0,
+					x1 + ix,
+					y1 + iy,
+					chamfer,
+					x0 + ix,
+					y0 + iy,
+					chamfer,
+					chNx,
+					chNy,
+					chNz
+				)
+
+				// Top chamfer: from (x+ix, y+iy, depth-chamfer) → (x,y,depth)
+				const tcNx = nx * 0.7071
+				const tcNy = ny * 0.7071
+				const tcNz = 0.7071
+				pushQuad(
+					x0 + ix,
+					y0 + iy,
+					depth - chamfer,
+					x1 + ix,
+					y1 + iy,
+					depth - chamfer,
+					x1,
+					y1,
+					depth,
+					x0,
+					y0,
+					depth,
+					tcNx,
+					tcNy,
+					tcNz
+				)
+			}
+		}
+	}
+
+	// ── 5. Pack into typed arrays ─────────────────
+	return {
+		positions: new Float32Array(verts),
+		normals: new Float32Array(norms),
+		indices: new Uint32Array(idxs),
+	}
+}
+
+/* ─────────────────────────────────────────────
    Rounded / chamfered box geometry
    ───────────────────────────────────────────── */
 function createChamferedBoxGeometry(
