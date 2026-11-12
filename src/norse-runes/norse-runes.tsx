@@ -12,11 +12,284 @@ import {
 } from './util'
 import {Font, type IFontProps} from '../font/'
 import {WeatheredGeometryViewer} from './weathered-geometry-viewer'
+import GeometryViewer from './geometry-viewer'
 
 const GLYPH_STROKES = {
 	...glyphs,
 
 	':': glyphs.colon,
+}
+
+interface GlyphInput {
+	letter: string
+	size: number
+	strokeWidth: number
+	points: Record<string, [number, number]>
+	ridges: string[][]
+	outlines: string[][]
+	faces: string[][]
+	left: number
+}
+
+type ChamferedBoxOutput = {
+	positions: Float32Array
+	normals: Float32Array
+	indices: Uint32Array
+}
+
+/* ─────────────────────────────────────────────
+   Core: extrude glyph → same output as createChamferedBoxGeometry()
+   ───────────────────────────────────────────── */
+function createExtrudedGlyphGeometry(
+	glyphs: GlyphInput[],
+	depth: number,
+	chamfer: number = 0.04
+): ChamferedBoxOutput {
+	const verts: number[] = []
+	const norms: number[] = []
+	const idxs: number[] = []
+
+	let vCount = 0
+
+	const pushTri = (
+		ax: number,
+		ay: number,
+		az: number,
+		bx: number,
+		by: number,
+		bz: number,
+		cx: number,
+		cy: number,
+		cz: number,
+		nx: number,
+		ny: number,
+		nz: number
+	) => {
+		const base = vCount
+		verts.push(ax, ay, az, bx, by, bz, cx, cy, cz)
+		norms.push(nx, ny, nz, nx, ny, nz, nx, ny, nz)
+		idxs.push(base, base + 1, base + 2)
+		vCount += 3
+	}
+
+	const pushQuad = (
+		ax: number,
+		ay: number,
+		az: number,
+		bx: number,
+		by: number,
+		bz: number,
+		cx: number,
+		cy: number,
+		cz: number,
+		dx: number,
+		dy: number,
+		dz: number,
+		nx: number,
+		ny: number,
+		nz: number
+	) => {
+		pushTri(ax, ay, az, bx, by, bz, cx, cy, cz, nx, ny, nz)
+		pushTri(ax, ay, az, cx, cy, cz, dx, dy, dz, nx, ny, nz)
+	}
+
+	// Layout pass
+	const offsets: number[] = []
+	let cursorX = 0
+
+	for (const glyph of glyphs) {
+		offsets.push(cursorX)
+		let minX = Infinity
+		let maxX = -Infinity
+		for (const name of Object.keys(glyph.points)) {
+			const p = glyph.points[name]
+			if (p[0] < minX) minX = p[0]
+			if (p[0] > maxX) maxX = p[0]
+		}
+		const advance = maxX - minX + glyph.strokeWidth * 0.05
+		cursorX += advance
+	}
+
+	const totalWidth = cursorX
+	const globalOffset = -totalWidth / 2
+
+	// Geometry pass
+	glyphs.forEach((glyph, gi) => {
+		const {points, faces, outlines, ridges} = glyph
+		const offX = offsets[gi] + globalOffset
+
+		const getXY = (name: string): [number, number] => {
+			const p = points[name]
+			if (!p)
+				throw new Error(
+					`Unknown point "${name}" in glyph "${glyph.letter}"`
+				)
+			return [p[0] + offX, p[1]]
+		}
+
+		// 1. Top & bottom caps
+		for (const face of faces) {
+			if (face.length < 3) continue
+			const triCount = face.length - 2
+			for (let i = 0; i < triCount; i++) {
+				const [ax, ay] = getXY(face[0])
+				const [bx, by] = getXY(face[i + 1])
+				const [cx, cy] = getXY(face[i + 2])
+
+				pushTri(ax, ay, depth, bx, by, depth, cx, cy, depth, 0, 0, 1)
+				pushTri(cx, cy, 0, bx, by, 0, ax, ay, 0, 0, 0, -1)
+			}
+		}
+
+		// 2. Outline walls
+		for (const outline of outlines) {
+			const n = outline.length
+			for (let i = 0; i < n; i++) {
+				const j = (i + 1) % n
+				const [x0, y0] = getXY(outline[i])
+				const [x1, y1] = getXY(outline[j])
+
+				const ex = x1 - x0
+				const ey = y1 - y0
+				const len = Math.hypot(ex, ey) || 1
+				const nx = ey / len
+				const ny = -ex / len
+
+				pushQuad(
+					x0,
+					y0,
+					0,
+					x1,
+					y1,
+					0,
+					x1,
+					y1,
+					depth,
+					x0,
+					y0,
+					depth,
+					nx,
+					ny,
+					0
+				)
+			}
+		}
+
+		// 3. Ridge walls — FIXED: uses ridge[i], not outline?.[i]
+		for (const ridge of ridges) {
+			const n = ridge.length
+			for (let i = 0; i < n; i++) {
+				const j = (i + 1) % n
+				const [x0, y0] = getXY(ridge[i]) // ← was: getXY(outline?.[i] ?? ridge[i])
+				const [x1, y1] = getXY(ridge[j])
+
+				const ex = x1 - x0
+				const ey = y1 - y0
+				const len = Math.hypot(ex, ey) || 1
+				const nx = ey / len
+				const ny = -ex / len
+
+				pushQuad(
+					x0,
+					y0,
+					0,
+					x1,
+					y1,
+					0,
+					x1,
+					y1,
+					depth,
+					x0,
+					y0,
+					depth,
+					nx,
+					ny,
+					0
+				)
+				pushQuad(
+					x1,
+					y1,
+					0,
+					x0,
+					y0,
+					0,
+					x0,
+					y0,
+					depth,
+					x1,
+					y1,
+					depth,
+					-nx,
+					-ny,
+					0
+				)
+			}
+		}
+
+		// 4. Chamfer bands on outline rim
+		if (chamfer > 0) {
+			for (const outline of outlines) {
+				const n = outline.length
+				for (let i = 0; i < n; i++) {
+					const j = (i + 1) % n
+					const [x0, y0] = getXY(outline[i])
+					const [x1, y1] = getXY(outline[j])
+
+					const ex = x1 - x0
+					const ey = y1 - y0
+					const len = Math.hypot(ex, ey) || 1
+					const ux = ex / len
+					const uy = ey / len
+					const nx = uy
+					const ny = -ux
+					const ix = -nx * chamfer
+					const iy = -ny * chamfer
+
+					pushQuad(
+						x0,
+						y0,
+						0,
+						x1,
+						y1,
+						0,
+						x1 + ix,
+						y1 + iy,
+						chamfer,
+						x0 + ix,
+						y0 + iy,
+						chamfer,
+						nx * 0.7071,
+						ny * 0.7071,
+						-0.7071
+					)
+
+					pushQuad(
+						x0 + ix,
+						y0 + iy,
+						depth - chamfer,
+						x1 + ix,
+						y1 + iy,
+						depth - chamfer,
+						x1,
+						y1,
+						depth,
+						x0,
+						y0,
+						depth,
+						nx * 0.7071,
+						ny * 0.7071,
+						0.7071
+					)
+				}
+			}
+		}
+	})
+
+	return {
+		positions: new Float32Array(verts),
+		normals: new Float32Array(norms),
+		indices: new Uint32Array(idxs),
+	}
 }
 
 const calcLetterSpacings = (sw: number, potentialLigature: string) => {
@@ -240,10 +513,18 @@ export const NorseRunes = (props: {
 		simplifiedData.map((letter) => Object.values(letter.points)).flat()
 	)
 
+	console.log(simplifiedData)
+
 	if (props.depth) {
 		const scaleFactor = fontSize! / 2048
 		const sw2 = strokeWidth / 2
 		const depth = sw2 * scaleFactor
+
+		return (
+			<GeometryViewer
+				geometry={createExtrudedGlyphGeometry(simplifiedData, depth, 0)}
+			/>
+		)
 
 		return <WeatheredGeometryViewer {...{data: simplifiedData, depth}} />
 	}
