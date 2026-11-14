@@ -1,3 +1,4 @@
+/** @todo remove this entire file */
 import {gt, horizontal, lt, tail, tip, vertical} from './stroke-components'
 import {
 	distanceBetweenPts,

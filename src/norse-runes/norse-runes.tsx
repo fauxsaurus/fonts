@@ -9,7 +9,7 @@ import {
 	translatePtsY,
 	type IPt,
 	type IPts,
-} from './util'
+} from './glyphs/util'
 import {Font, type IFontProps} from '../font/'
 import {WeatheredGeometryViewer} from './weathered-geometry-viewer'
 import GeometryViewer from './geometry-viewer'

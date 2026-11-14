@@ -1,4 +1,4 @@
-import {f, l, n, o} from './glyphs-lowercase'
+import {f, l, n, o} from './lowercase'
 import {gt, horizontal, tail, tip, vertical} from './stroke-components'
 import {
 	avgPts,
@@ -25,7 +25,8 @@ import {
 	type IPt,
 	type IPts,
 } from './util'
-import {m as mFlat} from './glyphs-lowercase-flat'
+/** @todo remove */
+import {m as mFlat} from './lowercase-flat'
 
 export const A = (sw: number) => {
 	const swD45 = (sw * 2) / Math.SQRT2 // diagonal stroke width (@ 45 deg angle)

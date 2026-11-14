@@ -18,13 +18,8 @@ import {
 	translatePtsX,
 	translatePtsY,
 } from './util'
-
-import {
-	e as flatE,
-	b as flatB,
-	n as flatN,
-	o as oFlat,
-} from './glyphs-lowercase-flat'
+/** @todo remove */
+import {e as flatE, b as flatB, n as flatN, o as oFlat} from './lowercase-flat'
 
 const ascenderLine = (sw: number) => 0
 const midLine = (sw: number) => 1024 - sw / 2

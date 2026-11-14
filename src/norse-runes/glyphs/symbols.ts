@@ -1,4 +1,4 @@
-import {o} from './glyphs-lowercase'
+import {o} from './lowercase'
 import {dot} from './stroke-components'
 import {mirrorPtsV, pts2MinY, returnWrapper, translatePtsY} from './util'
 
