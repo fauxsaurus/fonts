@@ -20,14 +20,14 @@ const GLYPH_STROKES = {
 	':': glyphs.colon,
 }
 
-interface GlyphInput {
+type GlyphInput<K extends string> = {
 	letter: string
 	size: number
 	strokeWidth: number
-	points: Record<string, [number, number]>
-	ridges: string[][]
-	outlines: string[][]
-	faces: string[][]
+	points: Record<K, [number, number]>
+	ridges: K[][]
+	outlines: K[][]
+	faces: K[][]
 	left: number
 }
 
@@ -40,8 +40,8 @@ type ChamferedBoxOutput = {
 /* ─────────────────────────────────────────────
    Core: extrude glyph → same output as createChamferedBoxGeometry()
    ───────────────────────────────────────────── */
-function createExtrudedGlyphGeometry(
-	glyphs: GlyphInput[],
+function createExtrudedGlyphGeometry<K extends string>(
+	glyphs: GlyphInput<K>[],
 	depth: number,
 	chamfer: number = 0.04
 ): ChamferedBoxOutput {
