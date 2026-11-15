@@ -2,6 +2,57 @@
 	box-sizing: border-box;
 }
 
+/** @note adapted from https://codepen.io/anon/pen/daqreO */
+h1 {
+	background-image:
+		repeating-linear-gradient(
+			hsla(0, 0%, 100%, 0) 0%,
+			hsla(0, 0%, 100%, 0) 3%,
+			hsla(0, 0%, 100%, 0.1) 4.5%
+		),
+		repeating-linear-gradient(
+			hsla(0, 0%, 0%, 0) 0%,
+			hsla(0, 0%, 0%, 0) 2%,
+			hsla(0, 0%, 0%, 0.03) 2.5%
+		),
+		repeating-linear-gradient(
+			hsla(0, 0%, 100%, 0) 0%,
+			hsla(0, 0%, 100%, 0) 0.6%,
+			hsla(0, 0%, 100%, 0.15) 1.2%
+		),
+		linear-gradient(
+			80deg,
+			#a6a6a6 0%,
+			#d9d9d9 45%,
+			#e0e0e0 55%,
+			#e0e0e0 65%,
+			#d9d9d9 75%,
+			#a6a6a6 100%
+		);
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: #fff;
+	font-family: 'Arial', serif;
+	position: relative;
+	font-size: 8vw;
+	margin: 0;
+	font-weight: 400;
+
+	&::after {
+		background: none;
+		content: attr(data-heading);
+		left: 0;
+		top: 0;
+		z-index: -1;
+		position: absolute;
+		text-shadow:
+			1px 0px 0px #888888,
+			0px 1px 0px #686868,
+			0px -1px 0px #c6bb9f,
+			-1px 0px 0px #686868;
+	}
+}
+
 .cover {
 	--height: 50rem;
 	--width: calc(var(--height) * 0.625);
@@ -16,6 +67,7 @@
 
 	svg {
 		background: transparent;
+		/* filter: drop-shadow(0 0 1px #0006); */
 
 		/* path:nth-child(odd) {
 			fill: color-mix(in oklab, silver, #fff 20%);
