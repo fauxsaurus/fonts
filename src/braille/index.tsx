@@ -1,9 +1,4 @@
-import {
-	DEFAULT_DOT_COORDS,
-	GLYPH_HEIGHT,
-	GLYPH_WIDTH,
-	STROKE_WIDTH,
-} from './constants'
+import {GLYPH_HEIGHT, GLYPH_WIDTH, STROKE_WIDTH} from './constants'
 import {character2metadata} from './glyphs'
 
 const uniqueCharsInString = (string: string) =>
@@ -19,7 +14,13 @@ const Dot = ({cx, cy, stroke, fill}: IProps) => (
 )
 
 // @todo need to do something about rounded edges like K's diagonals, L's horizontal from being cut off on the right edge... (MAKE IT THE SAME WIDTH AS THE UNFILLED DOTS IN THE CORNERS--SEE "t"!)
-export const Braille = ({children}: {children: string}) => {
+export const Braille = ({
+	children,
+	color = 'black',
+}: {
+	children: string
+	color?: string
+}) => {
 	const width = GLYPH_WIDTH * children.length
 	const height = GLYPH_HEIGHT
 
@@ -28,6 +29,7 @@ export const Braille = ({children}: {children: string}) => {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
+			data-font-face="braille"
 			{...{width: width + 1024, height: height + 1024, viewBox}}
 			style={{width: '100%'}}
 		>
@@ -66,7 +68,8 @@ export const Braille = ({children}: {children: string}) => {
 			<g
 				style={{
 					fill: 'none',
-					stroke: 'black',
+					stroke: color,
+					strokeLinecap: 'round',
 					strokeWidth: STROKE_WIDTH * 2,
 				}}
 			>
@@ -81,18 +84,14 @@ export const Braille = ({children}: {children: string}) => {
 							transform={`translate(${GLYPH_WIDTH * i}, 0)`}
 						>
 							{lines.map((d, i) => (
-								<path
-									key={`path-${i}`}
-									{...{d}}
-									strokeLinecap="round"
-								/>
+								<path key={`path-${i}`} {...{d}} />
 							))}
 
 							{Object.entries(pips).map(
 								([pipNumber, [cx, cy, isFilled]]) => {
 									const {stroke, fill} = isFilled
-										? {stroke: 'black', fill: 'none'}
-										: {stroke: 'none', fill: 'black'}
+										? {stroke: color, fill: 'none'}
+										: {stroke: 'none', fill: color}
 
 									return (
 										<Dot
