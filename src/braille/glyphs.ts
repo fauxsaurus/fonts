@@ -175,7 +175,7 @@ const GLYPHS = {
 	},
 	'.': {
 		dots: '256',
-		filled: '33',
+		filled: '3',
 		lines: [],
 	},
 	// '{': {
