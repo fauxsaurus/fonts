@@ -1,53 +1,35 @@
-import {
-	DOT_COORDS,
-	GLYPH_HEIGHT,
-	GLYPH_WIDTH,
-	GLYPHS,
-	STROKE_WIDTH,
-} from './constants'
+import {DOT_COORDS, GLYPH_HEIGHT, GLYPH_WIDTH, STROKE_WIDTH} from './constants'
+import {character2metadata} from './glyphs'
 
 const uniqueCharsInString = (string: string) =>
 	Array.from(new Set(string.split('')))
 
 type IProps = {cx: number; cy: number; stroke: string; fill: string}
-const Dot = ({cx, cy, stroke, fill}: IProps) => {
-	return (
-		<circle
-			{...{cx, cy, stroke, fill}}
-			r={STROKE_WIDTH * 1.5}
-			strokeWidth={STROKE_WIDTH / 1.25}
-		/>
-	)
-}
+const Dot = ({cx, cy, stroke, fill}: IProps) => (
+	<circle
+		{...{cx, cy, stroke, fill}}
+		r={STROKE_WIDTH * 1.5}
+		strokeWidth={STROKE_WIDTH / 1.25}
+	/>
+)
 
 // @todo need to do something about rounded edges like K's diagonals, L's horizontal from being cut off on the right edge... (MAKE IT THE SAME WIDTH AS THE UNFILLED DOTS IN THE CORNERS--SEE "t"!)
 export const Braille = ({children}: {children: string}) => {
 	const width = GLYPH_WIDTH * children.length
 	const height = GLYPH_HEIGHT
 
+	const viewBox = `-512 -512 ${width + 1024} ${height + 1024}`
+
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
-			{...{
-				width: width + 1024,
-				height: height + 1024,
-				viewBox: `-512 -512 ${width + 1024} ${height + 1024}`,
-			}}
+			{...{width: width + 1024, height: height + 1024, viewBox}}
 			style={{width: '100%'}}
 		>
 			<defs>
 				{uniqueCharsInString(children).map((char) => {
-					const metadata =
-						GLYPHS[char.toLocaleUpperCase() as keyof typeof GLYPHS]
-					if (!metadata) return ''
-
-					const {dots, filled, dotFix} = Object.assign(
-						{
-							filled: '',
-							dotFix: {} as Record<number, [number, number]>,
-						},
-						metadata
-					)
+					const {dots, filled, dotFix} = character2metadata(char)
+					if (!dots) return ''
 
 					return (
 						<mask key={`mask-${char}`} id={`mask-${char}`}>
@@ -88,17 +70,9 @@ export const Braille = ({children}: {children: string}) => {
 				}}
 			>
 				{children.split('').map((glyph, i) => {
-					const metadata =
-						GLYPHS[glyph.toLocaleUpperCase() as keyof typeof GLYPHS]
-					if (!metadata) return ''
-
-					const {dots, filled, dotFix} = Object.assign(
-						{
-							filled: '',
-							dotFix: {} as Record<number, [number, number]>,
-						},
-						metadata
-					)
+					const {dots, filled, dotFix, lines} =
+						character2metadata(glyph)
+					if (!dots) return ''
 
 					return (
 						<g
@@ -106,7 +80,7 @@ export const Braille = ({children}: {children: string}) => {
 							mask={`url(#mask-${glyph})`}
 							transform={`translate(${GLYPH_WIDTH * i}, 0)`}
 						>
-							{metadata.lines.map((d, i) => (
+							{lines.map((d, i) => (
 								<path
 									key={`path-${i}`}
 									{...{d}}
