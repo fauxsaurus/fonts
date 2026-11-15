@@ -1,3 +1,5 @@
+import {DEFAULT_DOT_COORDS} from './constants'
+
 export type IBrailleGlyph = {
 	/** @note a string of digits 1-6 indicating which numbered braille dots are associated each Glyph */
 	dots: string
@@ -186,13 +188,40 @@ const GLYPHS = {
 	// },
 } satisfies Record<string, Partial<IBrailleGlyph>>
 
-export const character2metadata = (char: string): IBrailleGlyph =>
-	Object.assign(
-		{
-			dots: '',
-			dotFix: {} as Record<number, [number, number]>,
-			filled: '',
-			lines: '',
-		},
-		GLYPHS[char.toLocaleUpperCase() as keyof typeof GLYPHS] ?? {}
+const METADATA_DEFAULTS: IBrailleGlyph = {
+	dots: '',
+	dotFix: {} as Record<number, [number, number]>,
+	filled: '',
+	lines: [],
+}
+
+type IMetadata = {
+	pips: Record<string, [number, number, number]>
+	lines: string[]
+}
+
+export const character2metadata = (char: string): IMetadata => {
+	const defaultMetadata =
+		GLYPHS[char.toLocaleUpperCase() as keyof typeof GLYPHS]
+	if (!defaultMetadata) return {pips: {}, lines: []}
+
+	const {dots, dotFix, filled, lines} = Object.assign(
+		{},
+		METADATA_DEFAULTS,
+		defaultMetadata ?? {}
 	)
+
+	const pipCoords = Object.assign({}, DEFAULT_DOT_COORDS, dotFix)
+
+	const pipEntries = '123456'.split('').flatMap((pipNumber) => {
+		if (!dots.includes(pipNumber) && !filled.includes(pipNumber)) return []
+
+		// @note a number is considered filled if `filled` is not specified (as all are filled by default) or if it exists in `filled`
+		const isFilled =
+			(filled || pipNumber).indexOf(pipNumber) !== -1 ? 0 : -1
+
+		return [[pipNumber, pipCoords[pipNumber].concat([isFilled])]]
+	})
+
+	return {pips: Object.fromEntries(pipEntries), lines}
+}

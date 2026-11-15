@@ -1,4 +1,9 @@
-import {DOT_COORDS, GLYPH_HEIGHT, GLYPH_WIDTH, STROKE_WIDTH} from './constants'
+import {
+	DEFAULT_DOT_COORDS,
+	GLYPH_HEIGHT,
+	GLYPH_WIDTH,
+	STROKE_WIDTH,
+} from './constants'
 import {character2metadata} from './glyphs'
 
 const uniqueCharsInString = (string: string) =>
@@ -28,8 +33,8 @@ export const Braille = ({children}: {children: string}) => {
 		>
 			<defs>
 				{uniqueCharsInString(children).map((char) => {
-					const {dots, filled, dotFix} = character2metadata(char)
-					if (!dots) return ''
+					const {pips} = character2metadata(char)
+					if (!Object.keys(pips).length) return ''
 
 					return (
 						<mask key={`mask-${char}`} id={`mask-${char}`}>
@@ -40,24 +45,20 @@ export const Braille = ({children}: {children: string}) => {
 								height={2048 + 1024}
 								fill="#fff"
 							/>
-							{(dots + filled).split('').map((num, i) => {
-								const dotI = num as keyof typeof DOT_COORDS
-								const coords = dotFix[dotI] ?? DOT_COORDS[dotI]
-								const [cx, cy] = coords
-								const isFilled =
-									filled && filled.indexOf(num) === -1
+							{Object.entries(pips).map(
+								([pipNumber, [cx, cy, isFilled]]) => {
+									const {stroke, fill} = isFilled
+										? {stroke: 'white', fill: 'black'}
+										: {stroke: 'black', fill: 'white'}
 
-								const {stroke, fill} = isFilled
-									? {stroke: 'white', fill: 'black'}
-									: {stroke: 'black', fill: 'white'}
-
-								return (
-									<Dot
-										key={`dot-${i}`}
-										{...{cx, cy, stroke, fill}}
-									/>
-								)
-							})}
+									return (
+										<Dot
+											key={`dot-${pipNumber}`}
+											{...{cx, cy, stroke, fill}}
+										/>
+									)
+								}
+							)}
 						</mask>
 					)
 				})}
@@ -70,9 +71,8 @@ export const Braille = ({children}: {children: string}) => {
 				}}
 			>
 				{children.split('').map((glyph, i) => {
-					const {dots, filled, dotFix, lines} =
-						character2metadata(glyph)
-					if (!dots) return ''
+					const {pips, lines} = character2metadata(glyph)
+					if (!Object.keys(pips).length) return ''
 
 					return (
 						<g
@@ -88,24 +88,20 @@ export const Braille = ({children}: {children: string}) => {
 								/>
 							))}
 
-							{(dots + filled).split('').map((num, i) => {
-								const dotI = num as keyof typeof DOT_COORDS
-								const coords = dotFix[dotI] ?? DOT_COORDS[dotI]
-								const [cx, cy] = coords
-								const isFilled =
-									filled && filled.indexOf(num) === -1
+							{Object.entries(pips).map(
+								([pipNumber, [cx, cy, isFilled]]) => {
+									const {stroke, fill} = isFilled
+										? {stroke: 'black', fill: 'none'}
+										: {stroke: 'none', fill: 'black'}
 
-								const {stroke, fill} = isFilled
-									? {stroke: 'black', fill: 'none'}
-									: {stroke: 'none', fill: 'black'}
-
-								return (
-									<Dot
-										key={`dot-${i}`}
-										{...{cx, cy, stroke, fill}}
-									/>
-								)
-							})}
+									return (
+										<Dot
+											key={`dot-${pipNumber}`}
+											{...{cx, cy, stroke, fill}}
+										/>
+									)
+								}
+							)}
 						</g>
 					)
 				})}

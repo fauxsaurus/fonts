@@ -1,4 +1,4 @@
-export const DOT_COORDS = {
+export const DEFAULT_DOT_COORDS = {
 	'1': [0, 0],
 	'2': [0, 1024],
 	'3': [0, 2048],
