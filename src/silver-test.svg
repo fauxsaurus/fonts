@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="100%" height="100%">
+  <defs>
+    <!-- 1. Polished Silver Gradient (Bright Specular Gleam + Cool Silver Midtones) -->
+    <linearGradient id="silver-base" x1="0%" y1="100%" x2="98.5%" y2="82.6%">
+      <stop offset="0%" stop-color="#8b929a" />
+      <stop offset="22%" stop-color="#cfd5dc" />
+      <stop offset="42%" stop-color="#eef2f6" />
+      <stop offset="48%" stop-color="#ffffff" />
+      <stop offset="53%" stop-color="#d7dde3" />
+      <stop offset="68%" stop-color="#9da4ad" />
+      <stop offset="84%" stop-color="#e6ebf0" />
+      <stop offset="100%" stop-color="#8b929a" />
+    </linearGradient>
+
+    <!-- 2. Subtle Micro-Reflection Lines (Much lighter than brushed metal) -->
+    <pattern id="silver-micro-sheen" width="100" height="18" patternUnits="userSpaceOnUse">
+      <rect width="100" height="18" fill="none" />
+      <line x1="0" y1="4" x2="100" y2="4" stroke="rgba(255, 255, 255, 0.14)" stroke-width="0.6" />
+      <line x1="0" y1="12" x2="100" y2="12" stroke="rgba(45, 52, 60, 0.03)" stroke-width="0.6" />
+    </pattern>
+
+    <!-- 3. Combined Polished Silver Fill -->
+    <pattern id="polished-silver-fill" width="800" height="300" patternUnits="userSpaceOnUse">
+      <rect width="800" height="300" fill="url(#silver-base)" />
+      <rect width="800" height="300" fill="url(#silver-micro-sheen)" />
+    </pattern>
+
+    <!-- 4. Crisp Silver Rim / Edge Highlight Filter -->
+    <filter id="silver-bevel" x="-15%" y="-15%" width="130%" height="130%">
+      <!-- Cool dark silver shadow on right and bottom -->
+      <feDropShadow dx="1.5" dy="0" stdDeviation="0" flood-color="#6e757d" flood-opacity="1" result="right" />
+      <feDropShadow dx="0" dy="1.5" stdDeviation="0" flood-color="#585e65" flood-opacity="1" result="bottom" />
+      <!-- Bright crisp highlight on top and cool silver edge on left -->
+      <feDropShadow dx="0" dy="-1.5" stdDeviation="0" flood-color="#ffffff" flood-opacity="0.95" result="top" />
+      <feDropShadow dx="-1.5" dy="0" stdDeviation="0" flood-color="#9aa2ab" flood-opacity="1" result="left" />
+      <feMerge>
+        <feMergeNode in="left" />
+        <feMergeNode in="top" />
+        <feMergeNode in="bottom" />
+        <feMergeNode in="right" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Group 1: Large Hexagon and Diamond Core -->
+  <g filter="url(#silver-bevel)" fill="url(#polished-silver-fill)">
+    <path d="M 120,40 L 280,40 L 360,150 L 280,260 L 120,260 L 40,150 Z" />
+    <path d="M 200,75 L 290,150 L 200,225 L 110,150 Z" />
+  </g>
+
+  <!-- Group 2: Large Block Chevrons -->
+  <g filter="url(#silver-bevel)" fill="url(#polished-silver-fill)">
+    <path d="M 420,60 L 580,60 L 540,150 L 580,240 L 420,240 L 460,150 Z" />
+    <path d="M 610,60 L 760,150 L 610,240 Z" />
+  </g>
+</svg>
