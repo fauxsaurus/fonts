@@ -12,18 +12,21 @@ function App() {
 
 	return (
 		<>
-			<SilverBarViewer />
+			{/* <SilverBarViewer /> */}
+			{/* <h1 data-heading="Embers of the Nephilim">
+				Embers of the Nephilim
+			</h1>
+			<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
+				E
+			</NorseRunes> */}
 			<div className="cover">
+				<img src="./cover-textless.png" />
 				<div
 					className="text-title metallic"
 					style={{'--space-width': `${fontSizeSmall / 4}px`}}
 				>
 					<div className="subtitle">
-						<NorseRunes
-							key="title-line-1"
-							fontSize={fontSizeSmall}
-							depth={true}
-						>
+						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
 							Embers
 							<Font
 								size={fontSizeSmall * 0.8 ** 4}
@@ -31,34 +34,26 @@ function App() {
 							Nephilim:
 						</NorseRunes>
 					</div>
-					<div key="title-line-2">
-						<NorseRunes
-							key="capital"
-							fontSize={fontSizeLarge}
-							depth={true}
-						>
+					{/* <div key="title-line-2">
+						<NorseRunes key="capital" fontSize={fontSizeLarge}>
 							Ghost Girl
 							<Font size={fontSizeSmall * 0.8}>{` and`}</Font>
 						</NorseRunes>
 					</div>
 					<div key="title-line-3">
-						<NorseRunes
-							key="capital"
-							fontSize={fontSizeLarge}
-							depth={true}
-						>
+						<NorseRunes key="capital" fontSize={fontSizeLarge}>
 							<Font size={fontSizeSmall * 0.8}>{`the `}</Font>
 							Ghost Giant
 						</NorseRunes>
-					</div>
+					</div> */}
 				</div>
 
 				<div className="text-author">
-					<Braille>Andrew R. H. Quinn</Braille>
+					<Braille color="white">Andrew R. H. Quinn</Braille>
 				</div>
 			</div>
 			<br />
-			<NorseRunes key="preview" strokeWidth={64}>
+			{/* <NorseRunes key="preview" strokeWidth={64}>
 				JTL
 			</NorseRunes>
 			<div></div>
@@ -85,8 +80,8 @@ function App() {
 			</NorseRunes>
 			<NorseRunes key="b5-title" strokeWidth={64}>
 				Ghost Girl and the Final Power
-			</NorseRunes>
-			<Braille>{alphabet.toLocaleUpperCase() + '.'}</Braille>
+			</NorseRunes> */}
+			{/* <Braille>{alphabet.toLocaleUpperCase() + '.'}</Braille> */}
 		</>
 	)
 }

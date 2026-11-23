@@ -383,7 +383,6 @@ export const NorseRunes = (props: {
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox={`0 0 ${width} ${height}`}
 			{...{width, height}}
-			style={{height: `${height}px`, width: `${width}px`}}
 		>
 			<Tmp2dSvgBasedShading />
 			<g stroke="none">
