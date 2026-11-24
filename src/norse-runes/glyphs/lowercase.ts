@@ -22,7 +22,7 @@ import {
 import {e as flatE, b as flatB, n as flatN, o as oFlat} from './lowercase-flat'
 
 const ascenderLine = (sw: number) => 0
-const midLine = (sw: number) => 1024 - sw / 2
+export const midLine = (sw: number) => 1024 - sw / 2
 
 const baseLine = (sw: number) => 2048
 
@@ -31,7 +31,7 @@ const baseLine = (sw: number) => 2048
 // const descenderLine = (sw: number) =>
 // 	baseLine(sw) + (ascenderLine(sw) - midLine(sw))
 
-const xHeight = (sw: number) => baseLine(sw) - midLine(sw)
+export const xHeight = (sw: number) => baseLine(sw) - midLine(sw)
 
 // @todo use this in `gt()` to simplify calculations?
 const getLowercaseMidY = (sw: number) => c(sw).tmp[0].find(([x]) => x === 0)![1]

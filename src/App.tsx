@@ -2,6 +2,7 @@ import './App.css'
 import {Braille} from './braille'
 import {Font} from './font'
 import {NorseRunes} from './norse-runes'
+import {midLine, xHeight} from './norse-runes/glyphs/lowercase'
 import SilverBarViewer from './silver-bar'
 
 function App() {
@@ -10,15 +11,15 @@ function App() {
 	const fontSizeLarge = 128 * 2
 	const fontSizeSmall = 92 * 2
 
+	const strokeWidth = 192
+
+	const subtitleSmallSize = fontSizeSmall * (xHeight(strokeWidth) / 2048)
+
+	const titleSmallSize = fontSizeLarge * 0.5
+	// and, the "a" must equal the height of l's tail. The tail is xHeight/2
+
 	return (
 		<>
-			{/* <SilverBarViewer /> */}
-			{/* <h1 data-heading="Embers of the Nephilim">
-				Embers of the Nephilim
-			</h1>
-			<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
-				E
-			</NorseRunes> */}
 			<div className="cover">
 				<img src="./cover-textless.png" />
 				<div
@@ -28,24 +29,22 @@ function App() {
 					<div className="subtitle">
 						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
 							Embers
-							<Font
-								size={fontSizeSmall * 0.8 ** 4}
-							>{` of the `}</Font>
+							<Font size={subtitleSmallSize}>{` of the `}</Font>
 							Nephilim:
 						</NorseRunes>
 					</div>
-					{/* <div key="title-line-2">
+					<div key="title-line-2" className="title-line-2">
 						<NorseRunes key="capital" fontSize={fontSizeLarge}>
 							Ghost Girl
-							<Font size={fontSizeSmall * 0.8}>{` and`}</Font>
+							<Font size={titleSmallSize}>{`and`}</Font>
 						</NorseRunes>
 					</div>
-					<div key="title-line-3">
+					<div key="title-line-3" className="title-line-3">
 						<NorseRunes key="capital" fontSize={fontSizeLarge}>
-							<Font size={fontSizeSmall * 0.8}>{`the `}</Font>
+							<Font size={titleSmallSize}>{`the`}</Font>
 							Ghost Giant
 						</NorseRunes>
-					</div> */}
+					</div>
 				</div>
 
 				<div className="text-author">

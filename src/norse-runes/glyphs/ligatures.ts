@@ -11,6 +11,7 @@ export const calcLetterSpacings = (sw: number, potentialLigature: string) => {
 		bc: perpendicularDiagonals,
 		cd: nestedDiagonals,
 		dj: sw * -0.75 /** @todo come up with a more exact figure */,
+		eG: -sw, // cover-specific
 		Em: sw2,
 		fg: -sw,
 		he: sw2,

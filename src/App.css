@@ -101,11 +101,29 @@ h1 {
 		--color-lighten: #ffffff;
 
 		.subtitle {
-			position: relative;
-			top: 1rem;
+			position: absolute;
+			top: -0.75in;
 
 			svg {
-				width: 100%;
+				width: 55%;
+			}
+		}
+
+		.title-line-2 {
+			position: absolute;
+			top: -0.2in;
+
+			svg {
+				width: 55%;
+			}
+		}
+
+		.title-line-3 {
+			position: relative;
+			top: 0.45in;
+
+			svg {
+				width: 55%;
 			}
 		}
 
@@ -532,11 +550,11 @@ h1 {
 		height: 5rem;
 		margin: 0 auto;
 		position: absolute;
-		left: 0.55in;
+		left: 0.8in;
 		bottom: 0.125in;
 		margin-top: calc(var(--height) * 0.66);
 		text-align: center;
-		width: 80%;
+		width: 70%;
 
 		svg {
 			filter: drop-shadow(1px 1px 1px #000);
