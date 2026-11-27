@@ -6,6 +6,10 @@ export const calcLetterSpacings = (sw: number, potentialLigature: string) => {
 	const nestedDiagonals = -sw
 
 	const ligatures = {
+		// cover-specific
+		eG: -sw * 3.5,
+		la: 0,
+
 		an: sw2,
 		BC: nestedDiagonals,
 		be: perpendicularDiagonals,
