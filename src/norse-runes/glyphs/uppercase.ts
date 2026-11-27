@@ -530,33 +530,6 @@ export const G = (sw: number) => {
 		],
 		// faces
 		[
-			[
-				'outerCenter',
-				'outerTop',
-				'middleTop',
-
-				'upperTipLeft',
-				'upperTip',
-				'upperTipRight',
-
-				'innerUpperIntersection',
-
-				'innerCenter',
-
-				'innerLowerIntersection',
-				'innerLeftDashIntersection',
-
-				'leftTipLeft',
-				'leftTip',
-				'leftTipRight',
-
-				'outerRightDashInterSection',
-
-				'innerBottom',
-				'middleBottom',
-				'outerBottom',
-			],
-
 			// outer upper /
 			[
 				'outerCenter',
