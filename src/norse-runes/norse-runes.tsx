@@ -402,9 +402,11 @@ export const NorseRunes = (props: {
 
 							return (
 								<path
-									key={`${i}:${letter}-stroke:${ii}`}
+									key={`${i}:${letter.letter}-stroke:${ii}`}
 									d={`M${pts2svg(pts)}z`}
+									// data-rise-run={`${h},${v}`}
 									data-glyph={letter.letter}
+									data-size={letter.size}
 									// not zero index-based for legacy reasons
 									data-stroke={ii + 1}
 									{...{fill}}

@@ -21,7 +21,6 @@ function App() {
 	return (
 		<>
 			<div className="cover">
-				<img src="./cover-textless.png" />
 				<div
 					className="text-title metallic"
 					style={{'--space-width': `${fontSizeSmall / 4}px`}}
@@ -29,19 +28,17 @@ function App() {
 					<div className="subtitle">
 						<NorseRunes key="title-line-1" fontSize={fontSizeSmall}>
 							Embers
-							<Font size={subtitleSmallSize}>{` of the `}</Font>
+							<Font
+								size={subtitleSmallSize}
+								strokeWidth={256}
+							>{` of the `}</Font>
 							Nephilim:
 						</NorseRunes>
 					</div>
-					<div key="title-line-2" className="title-line-2">
+					<div key="title" className="title">
 						<NorseRunes key="capital" fontSize={fontSizeLarge}>
 							Ghost Girl
-							<Font size={titleSmallSize}>{`and`}</Font>
-						</NorseRunes>
-					</div>
-					<div key="title-line-3" className="title-line-3">
-						<NorseRunes key="capital" fontSize={fontSizeLarge}>
-							<Font size={titleSmallSize}>{`the`}</Font>
+							<Font size={fontSizeLarge * 0.35}>{`and the`}</Font>
 							Ghost Giant
 						</NorseRunes>
 					</div>

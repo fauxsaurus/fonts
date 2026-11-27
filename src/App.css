@@ -3,9 +3,12 @@
 }
 
 html,
-body {
+body,
+#root {
+	height: 100%;
 	margin: 0;
 	padding: 0;
+	width: 100%;
 }
 
 /** @note adapted from https://codepen.io/anon/pen/daqreO */
@@ -60,21 +63,17 @@ h1 {
 }
 
 .cover {
-	--height: 50rem;
-	--width: calc(var(--height) * 0.625);
+	--height: 900px;
 
-	background-image: url('../cover-textless.jpg');
+	aspect-ratio: 5 / 8;
+	background-image: url('../cover-textless.png');
 	background-size: 100%;
 	display: flex;
 	flex-direction: column;
-	height: var(--height);
 	position: relative;
-	width: var(--width);
 
-	img {
-		position: absolute;
-		height: 8.5in;
-	}
+	height: var(--height);
+	width: auto;
 
 	svg {
 		background: transparent;
@@ -95,51 +94,49 @@ h1 {
 		position: relative;
 
 		text-align: center;
+		top: 2.5%;
 
 		--color: red;
 		--color-darken: rgb(21 21 21);
 		--color-lighten: #ffffff;
 
-		.subtitle {
-			position: absolute;
-			top: -0.75in;
-
-			svg {
-				width: 55%;
-			}
-		}
-
-		.title-line-2 {
-			position: absolute;
-			top: -0.2in;
-
-			svg {
-				width: 55%;
-			}
-		}
-
-		.title-line-3 {
+		.subtitle svg {
+			height: auto;
+			left: 1.4%;
 			position: relative;
-			top: 0.45in;
+			width: 60%;
+		}
 
-			svg {
-				width: 55%;
-			}
+		.title svg {
+			height: auto;
+			position: relative;
+			width: 80%;
+			top: -25%;
 		}
 
 		svg {
 			display: inline-block;
 
-			filter: drop-shadow(0 0 0.05rem #000);
+			filter: drop-shadow(0 0 1px #000);
 
 			/* [data-glyph]:not(path:first-child) {
 				fill: transparent;
 			} */
 
 			[data-stroke] {
-				stroke: #000;
+				stroke: #333;
 				stroke-width: 1;
 				fill: white;
+			}
+
+			/* of the*/
+			[data-size='100.625'] {
+				stroke: #555;
+			}
+
+			/* and the */
+			[data-size='89.6'] {
+				stroke: #777;
 			}
 		}
 
@@ -154,15 +151,14 @@ h1 {
 		flex-direction: column;
 		height: 5rem;
 		margin: 0 auto;
-		position: absolute;
-		left: 0.8in;
-		bottom: 0.125in;
 		margin-top: calc(var(--height) * 0.66);
+		position: relative;
 		text-align: center;
 		width: 70%;
+		top: 10%;
 
 		svg {
-			filter: drop-shadow(1px 1px 1px #000);
+			filter: drop-shadow(0px 0px 1px #000);
 		}
 	}
 }
