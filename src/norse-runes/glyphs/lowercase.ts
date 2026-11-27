@@ -323,7 +323,7 @@ export const b = (sw: number) => {
 		[
 			[
 				'topTipInset',
-				'lowerInnerIntersection',
+				'lowerMiddleIntersection',
 				'rightInner',
 				'upperMiddleIntersection',
 			],

@@ -494,7 +494,7 @@ export const G = (sw: number) => {
 				'upperTipInset',
 				'upperMiddleIntersection',
 				'middleCenter',
-				'innerLowerIntersection',
+				'lowerMiddleIntersection',
 				'innerCenter',
 				'leftTipInset',
 			],
@@ -815,7 +815,7 @@ export const N = (sw: number) => {
 		// ridges
 		[
 			['topLeftTipInset', 'bottomLeftTipInset'],
-			['topRightTipInset', 'bottomLeftTipInset'],
+			['topRightTipInset', 'bottomRightTipInset'],
 			[
 				'middleLeftDiagonalIntersection',
 				'middleRightDiagonalIntersection',
