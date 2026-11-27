@@ -16,7 +16,7 @@ export const calcLetterSpacings = (sw: number, potentialLigature: string) => {
 		fg: -sw,
 		he: sw2,
 		ho: sw2,
-		ia: sw4,
+		ia: (-sw2 * Math.SQRT2) / 2,
 		ij: -sw,
 		Ne: sw2,
 		no: sw2, // label as corner + vertical?

@@ -38,7 +38,7 @@ export const textProps2sizedGlyphs = (
 		)
 		/** @todo ligature support could go here by switching out strings of supported ligatures */
 		// scale glyphs
-		.map(({letter, size: fontSize}) => {
+		.map(({letter, size: fontSize}, i, letters) => {
 			const sw = strokeWidth
 
 			/** @note the ratio to adjust pts by to achieve the specified pixel height. */
@@ -62,6 +62,30 @@ export const textProps2sizedGlyphs = (
 						),
 					}
 				: objectMap(points, (pt) => scalePts(scaleFactor, [pt])[0])
+
+			// @note custom temp i+a ligature tweak
+			if (letter === 'i' && letters[i + 1].letter === 'a') {
+				const ogInset = ptsValue['tailTipInset']
+
+				const h =
+					(ptsValue['tailTip'][0] - ptsValue['tailTipInset'][0]) *
+					1.25
+				const v =
+					(ptsValue['tailTip'][1] - ptsValue['tailTipInset'][1]) *
+					1.25
+
+				ptsValue['tailTipLeft'][0] -= h
+				ptsValue['tailTipLeft'][1] -= v
+
+				ptsValue['tailTip'][0] -= h
+				ptsValue['tailTip'][1] -= v
+
+				ptsValue['tailTipRight'][0] -= h
+				ptsValue['tailTipRight'][1] -= v
+
+				ptsValue['tailTipInset'][0] -= h
+				ptsValue['tailTipInset'][1] -= v
+			}
 
 			return {
 				letter,
